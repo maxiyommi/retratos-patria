@@ -27,9 +27,11 @@ import styles from "./PhotoEditor.module.css";
 
 const OUTPUT_MAX_SIZE = 1024;
 const JPEG_QUALITY = 0.85;
-// Rango de zoom: el max ahora es generoso (8× del cover inicial) para que
-// el usuario pueda inspeccionar detalle aun arrancando en scale nativo 1.
-const MAX_SCALE_MULTIPLIER = 8;
+// Zoom in headroom: hasta 6× del cover (que ya es mayor que contain).
+const MAX_SCALE_MULTIPLIER_FROM_COVER = 6;
+// Color de las "bandas" cuando la foto está en scale < cover (no llena
+// el viewport por aspect mismatch). Coincide con el chrome del app.
+const BAND_BG_COLOR = "#1f5072"; // = var(--color-celeste-tinta)
 
 export interface PhotoEditorProps {
   /** dataURL del archivo subido (sin procesar). */
@@ -87,25 +89,24 @@ export function PhotoEditor({
 
   // Al cargar la imagen, calculamos el transform inicial.
   //
-  // Estrategia: empezamos en scale=1 (tamaño nativo de la imagen) para
-  // que el usuario vea su foto al pixel real. Sólo si la imagen es MÁS
-  // CHICA que el viewport en alguna dimensión, forzamos el upscale
-  // mínimo necesario para cubrir el viewport (constraint del crop: no
-  // se pueden tener bandas vacías).
+  // Estrategia: arrancamos en CONTAIN — la foto entera visible en el
+  // viewport, aunque queden bandas a los costados (o arriba/abajo) si
+  // el aspect no matchea con el 1:1. Así el usuario VE su foto completa
+  // tal como la conoce de la galería, y después decide hacer zoom in
+  // para llenar el óvalo con su cara.
   //
-  // Después centramos: si la imagen es más grande que el viewport,
-  // arranca encuadrada por el centro. Si es más chica (escalada a
-  // cover), queda exactamente del tamaño del viewport.
+  // Las bandas se rellenan con celeste-tinta al exportar el JPEG, así
+  // si el usuario no hace zoom igual el output es válido (no quedan
+  // áreas transparentes/negras).
   function handleImageLoad() {
     const img = imgRef.current;
     if (!img || !vpSize) return;
     const w = img.naturalWidth;
     const h = img.naturalHeight;
     setImageSize({ w, h });
-    const minScale = Math.max(vpSize / w, vpSize / h);
-    // initialScale = 1 si la imagen es lo suficientemente grande para
-    // cubrir el viewport a escala nativa; sino el mínimo cover.
-    const initialScale = Math.max(1, minScale);
+    // contain: la foto entera entra en el viewport.
+    const containScale = Math.min(vpSize / w, vpSize / h);
+    const initialScale = containScale;
     const tx = (vpSize - w * initialScale) / 2;
     const ty = (vpSize - h * initialScale) / 2;
     setTransform({ tx, ty, scale: initialScale });
@@ -277,10 +278,15 @@ function computeBounds(
   vpSize: number,
 ): Bounds {
   if (!imageSize.w || !imageSize.h || !vpSize) {
-    return { minScale: 1, maxScale: MAX_SCALE_MULTIPLIER };
+    return { minScale: 1, maxScale: 6 };
   }
-  const minScale = Math.max(vpSize / imageSize.w, vpSize / imageSize.h);
-  return { minScale, maxScale: minScale * MAX_SCALE_MULTIPLIER };
+  // minScale = contain: la foto entera entra (puede dejar bandas).
+  const containScale = Math.min(vpSize / imageSize.w, vpSize / imageSize.h);
+  const coverScale = Math.max(vpSize / imageSize.w, vpSize / imageSize.h);
+  return {
+    minScale: containScale,
+    maxScale: coverScale * MAX_SCALE_MULTIPLIER_FROM_COVER,
+  };
 }
 
 function clamp(
@@ -293,10 +299,24 @@ function clamp(
   const scale = Math.max(bounds.minScale, Math.min(bounds.maxScale, t.scale));
   const renderedW = imageSize.w * scale;
   const renderedH = imageSize.h * scale;
-  const minTx = vpSize - renderedW;
-  const minTy = vpSize - renderedH;
-  const tx = Math.max(minTx, Math.min(0, t.tx));
-  const ty = Math.max(minTy, Math.min(0, t.ty));
+  // Si la imagen es más chica que el viewport en una dimensión, la
+  // centramos. Si es más grande, clampeamos tx/ty para que sus bordes
+  // no entren al viewport (no quedan zonas vacías por el lado del
+  // arrastre).
+  let tx: number;
+  let ty: number;
+  if (renderedW <= vpSize) {
+    tx = (vpSize - renderedW) / 2;
+  } else {
+    const minTx = vpSize - renderedW;
+    tx = Math.max(minTx, Math.min(0, t.tx));
+  }
+  if (renderedH <= vpSize) {
+    ty = (vpSize - renderedH) / 2;
+  } else {
+    const minTy = vpSize - renderedH;
+    ty = Math.max(minTy, Math.min(0, t.ty));
+  }
   return { tx, ty, scale };
 }
 
@@ -328,13 +348,11 @@ function cropToDataURL(
   t: Transform,
   vpSize: number,
 ): string {
-  // Calculamos qué porción del source image corresponde al viewport.
-  const sx = -t.tx / t.scale;
-  const sy = -t.ty / t.scale;
-  const sw = vpSize / t.scale;
-  const sh = vpSize / t.scale;
-
-  const outSize = Math.min(OUTPUT_MAX_SIZE, Math.round(sw));
+  // Salida fija OUTPUT_MAX_SIZE px (1024). Render la imagen tal cual se
+  // ve en el viewport, escalado al output. Lo que no llena (bandas por
+  // aspect mismatch) se rellena con BAND_BG_COLOR — válido para Gemini
+  // y consistente con el chrome del app.
+  const outSize = OUTPUT_MAX_SIZE;
   const canvas = document.createElement("canvas");
   canvas.width = outSize;
   canvas.height = outSize;
@@ -344,7 +362,23 @@ function cropToDataURL(
   }
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outSize, outSize);
+
+  // Fondo neutro debajo de la imagen.
+  ctx.fillStyle = BAND_BG_COLOR;
+  ctx.fillRect(0, 0, outSize, outSize);
+
+  // Mapeo viewport → canvas. La imagen rendereada en el viewport está
+  // en (tx, ty) con tamaño (w*scale, h*scale). Esos mismos valores
+  // escalados por (outSize/vpSize) dan la posición en el canvas.
+  const k = outSize / vpSize;
+  const dx = t.tx * k;
+  const dy = t.ty * k;
+  const dw = img.naturalWidth * t.scale * k;
+  const dh = img.naturalHeight * t.scale * k;
+
+  // drawImage clipea automáticamente lo que sale del canvas.
+  ctx.drawImage(img, dx, dy, dw, dh);
+
   return canvas.toDataURL("image/jpeg", JPEG_QUALITY);
 }
 
