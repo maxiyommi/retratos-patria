@@ -146,11 +146,16 @@ export function Camera({ onPhotoReady }: CameraProps) {
     setBusy(true);
     setError(null);
     try {
+      // iOS Safari puede tener videoWidth=0 por unos ms tras attach del
+      // stream — esperamos hasta 2s para que llegue el primer frame.
+      await waitForVideoFrame(video, 2000);
       // Cropeo al cuadrado 1:1 que el usuario realmente encuadró.
       const vw = video.videoWidth;
       const vh = video.videoHeight;
       if (!vw || !vh) {
-        throw new ImageProcessingError("La cámara aún no envió ningún cuadro.");
+        throw new ImageProcessingError(
+          "La cámara está tardando en arrancar. Esperá un segundo y volvé a tocar el botón.",
+        );
       }
       const side = Math.min(vw, vh);
       const sx = (vw - side) / 2;
@@ -290,6 +295,14 @@ export function Camera({ onPhotoReady }: CameraProps) {
               autoPlay
               playsInline
               muted
+              onLoadedMetadata={() => {
+                // iOS Safari a veces no arranca el stream sin un .play()
+                // explícito aún con autoPlay. Lo forzamos cuando llegan
+                // los metadatos del video.
+                videoRef.current?.play().catch(() => {
+                  /* play() puede rechazar — defensivo */
+                });
+              }}
               className={`${styles.viewportMedia} ${
                 liveMirrored ? styles.videoMirrored : ""
               }`}
@@ -518,6 +531,35 @@ function RetakeIcon() {
       <path d="M3 21v-5h5" />
     </svg>
   );
+}
+
+/** Espera a que el elemento video tenga videoWidth/Height > 0 (primer
+ *  frame disponible). Usa requestAnimationFrame para chequear en cada
+ *  paint, con timeout máximo. Resuelve sin error en cualquier caso —
+ *  el caller verifica videoWidth después y decide. */
+function waitForVideoFrame(
+  video: HTMLVideoElement,
+  timeoutMs: number,
+): Promise<void> {
+  return new Promise((resolve) => {
+    if (video.videoWidth && video.videoHeight) {
+      resolve();
+      return;
+    }
+    const start = performance.now();
+    const tick = () => {
+      if (video.videoWidth && video.videoHeight) {
+        resolve();
+        return;
+      }
+      if (performance.now() - start >= timeoutMs) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
 }
 
 /** Lee un File a dataURL crudo (sin resize). El editor necesita la
