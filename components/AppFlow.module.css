@@ -1,18 +1,27 @@
+/*
+ * AppFlow.module.css — layout principal de la app.
+ *
+ * El shell ocupa exactamente 100dvh; el main flexea entre brand bar y
+ * footer; el step actual rellena ese main sin scrollear (cada step se
+ * autoorganiza para caber).
+ *
+ * Las transiciones reales entre steps las hace View Transitions API
+ * (ver lib/transition.ts + globals.css). La animación .step de aquí
+ * es el fallback para browsers sin soporte.
+ */
+
 .shell {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
   max-width: var(--max-width-content);
   margin: 0 auto;
-  padding: var(--space-5) var(--space-5) 0;
+  padding: 0 var(--space-5);
 }
 
+/* ── Brand bar sticky con backdrop blur ─────────────────────────────── */
+
 .brand {
-  /*
-   * App-bar pegada arriba con glass effect — feel iOS / Android nativos.
-   * Respeta safe-area-inset-top para que no se meta debajo del notch /
-   * status bar cuando la PWA corre en standalone.
-   */
   position: sticky;
   top: 0;
   z-index: 10;
@@ -20,19 +29,17 @@
   justify-content: center;
   padding-top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
   padding-bottom: var(--space-3);
-  /* Margen negativo para extender el blur al borde del viewport. */
-  margin: calc(-1 * var(--space-5)) calc(-1 * var(--space-5)) var(--space-4);
+  margin: 0 calc(-1 * var(--space-5)) var(--space-3);
   padding-left: var(--space-5);
   padding-right: var(--space-5);
   background: linear-gradient(
     to bottom,
-    rgba(91, 158, 206, 0.85),
+    rgba(91, 158, 206, 0.92),
     rgba(91, 158, 206, 0.55)
   );
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border-bottom: 1px solid rgba(231, 206, 142, 0.35);
-  /* Sombra muy sutil sólo cuando hay contenido pasando por debajo. */
   box-shadow: 0 1px 0 rgba(58, 38, 24, 0.08);
 }
 
@@ -61,27 +68,27 @@
   letter-spacing: var(--letter-spacing-tight);
 }
 
+/* ── Main + step container ──────────────────────────────────────────── */
+
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-bottom: var(--space-7);
+  min-height: 0;
 }
-
-/* ── Paso (animación de entrada al cambiar el key) ────────────────── */
 
 .step {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  animation: step-in 380ms var(--ease-out);
+  min-height: 0;
+  animation: step-fade-in 380ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes step-in {
+@keyframes step-fade-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -89,29 +96,136 @@
   }
 }
 
-/* ── Pantalla "choose" ─────────────────────────────────────────────── */
+/* En steps donde el CTA pegado al fondo (BottomActionBar) debe quedar
+   "afuera" del padding inferior del main, el main respeta su propio
+   safe-area. */
+.main[data-step="choose"] .step {
+  /* La BottomActionBar tiene margen negativo lateral y se autoextiende. */
+  padding-bottom: 0;
+}
+
+/* ── Step CAMERA — el componente Camera maneja su layout ───────────── */
+/* (sin estilos específicos acá) */
+
+/* ── Step CHOOSE — header compacto + título + picker + bottom bar ── */
 
 .choose {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
+  flex: 1;
+  min-height: 0;
 }
 
-/*
- * Mensaje de error que vuelve al usuario a esta pantalla si /api/transform
- * falló. Cálido pero claro — el usuario tiene que poder retomar.
- */
+/* Header del choose: chip de foto a la izquierda, GenderToggle ocupando el resto. */
+.chooseHeader {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+/* Chip de foto circular con badge de "retomar" abajo a la derecha. */
+.photoChip {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-dorado-suave);
+  background: var(--color-superficie);
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  transition: transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.photoChip img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.photoChip:active {
+  transform: scale(0.92);
+  transition-duration: 90ms;
+}
+
+.photoChipBadge {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 22px;
+  height: 22px;
+  background: var(--color-celeste-tinta);
+  color: var(--color-blanco-calido);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--color-blanco-calido);
+  box-shadow: 0 1px 3px rgba(31, 80, 114, 0.35);
+}
+
+/* Título central del choose con drop-cap dorado. */
+.chooseTitle {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--font-size-lg);
+  color: var(--color-blanco-calido);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: 1.1;
+}
+
+.chooseTitle em {
+  color: var(--color-dorado-suave);
+  font-style: italic;
+}
+
+/* Drop-cap: la primera E grande dorada como inicial de libro antiguo. */
+.chooseTitleDropcap {
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.45em;
+  line-height: 0.9;
+  color: var(--color-dorado-suave);
+  margin-right: 1px;
+  vertical-align: -0.06em;
+  text-shadow: 0 1px 2px rgba(31, 80, 114, 0.25);
+}
+
+/* Contenedor de la grilla — flexea para ocupar el espacio restante,
+   centra verticalmente el picker. */
+.chooseGrid {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.chooseGrid > * {
+  width: 100%;
+}
+
+/* Flash error compacto en choose. */
 .flashError {
   margin: 0;
-  padding: var(--space-4);
+  padding: var(--space-3) var(--space-4);
   background: rgba(31, 80, 114, 0.35);
   border: 1px solid var(--color-dorado-suave);
   border-radius: var(--radius-md);
   color: var(--color-blanco-calido);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
   text-align: center;
+  animation: step-fade-in 280ms var(--ease-out);
 }
 
 .flashErrorText {
@@ -134,7 +248,7 @@
   min-height: var(--target-min-tap);
   transition:
     background-color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out);
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .flashErrorAction:hover {
@@ -142,92 +256,14 @@
 }
 
 .flashErrorAction:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
+  transition-duration: 80ms;
 }
 
-/* Badge "modo demo" en la pantalla de resultado cuando el retrato es
-   el placeholder, no la generación real de IA. */
-.demoBadge {
-  margin: 0;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  background: rgba(31, 80, 114, 0.45);
-  border: 1px dashed var(--color-dorado-suave);
-  color: var(--color-blanco-calido);
-  font-family: var(--font-stack-display);
-  font-style: italic;
-  font-size: var(--font-size-sm);
-  text-align: center;
-  align-self: center;
-  max-width: 22rem;
-}
-
-.photoStrip {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(rgba(243, 236, 217, 0.35), rgba(243, 236, 217, 0.35)),
-    url("/paper-texture.svg");
-  background-blend-mode: multiply;
-  background-color: var(--color-superficie);
-  border: 1px solid rgba(231, 206, 142, 0.55);
-  box-shadow: var(--shadow-sm);
-}
-
-.photoStripImage {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-md);
-  object-fit: cover;
-  display: block;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
-}
-
-.photoStripChange {
-  flex: 1;
-  text-align: left;
-  font-family: var(--font-stack-display);
-  font-style: italic;
-  font-size: var(--font-size-base);
-  color: var(--color-celeste-tinta);
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  padding: var(--space-2);
-}
-
-.photoStripChange:hover {
-  color: var(--color-celeste-profundo);
-}
-
-.chooseBlock {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  align-items: center;
-}
-
-.chooseTitle {
-  text-align: center;
-  font-family: var(--font-stack-display);
-  font-style: italic;
-  font-weight: 500;
-  font-size: var(--font-size-lg);
-  color: var(--color-blanco-calido);
-  margin: 0;
-}
-
-.chooseTitle em {
-  color: var(--color-dorado-suave);
-  font-style: italic;
-  font-weight: 500;
-}
+/* ── CTA principal con spring physics ─────────────────────────────── */
 
 .cta {
+  width: 100%;
   min-height: calc(var(--target-min-tap) + 8px);
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-md);
@@ -238,37 +274,55 @@
   font-weight: 500;
   letter-spacing: 0.01em;
   cursor: pointer;
+  border: 0;
   box-shadow:
-    var(--shadow-md),
+    0 6px 18px rgba(31, 80, 114, 0.35),
     inset 0 -3px 0 var(--color-dorado);
+  /* Spring physics: transición larga con overshoot al soltar. */
   transition:
-    transform var(--duration-fast) var(--ease-out),
+    transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1),
     background-color var(--duration-fast) var(--ease-out),
     opacity var(--duration-fast) var(--ease-out);
 }
 
-.cta:hover {
+.cta:hover:not(:disabled) {
   background: #16415e;
 }
 
-.cta:active {
-  transform: scale(0.98);
+/* Al apretar: snap rápido down. */
+.cta:active:not(:disabled) {
+  transform: scale(0.95);
+  transition-duration: 90ms;
 }
 
 .cta:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
   box-shadow: var(--shadow-sm);
   transform: none;
 }
 
-/* ── Pantalla "result" ─────────────────────────────────────────────── */
+/* ── Step RESULT — frame + RayBurst + restart ───────────────────────── */
 
 .result {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
   align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-3) 0 var(--space-5);
+}
+
+.resultStage {
+  position: relative;
+  /* overflow: visible para que los rayos del RayBurst se salgan del marco. */
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .restart {
@@ -285,7 +339,7 @@
   min-height: var(--target-min-tap);
   transition:
     background-color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out);
+    transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .restart:hover {
@@ -293,15 +347,34 @@
 }
 
 .restart:active {
-  transform: scale(0.97);
+  transform: scale(0.94);
+  transition-duration: 80ms;
+}
+
+.demoBadge {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: rgba(31, 80, 114, 0.45);
+  border: 1px dashed var(--color-dorado-suave);
+  color: var(--color-blanco-calido);
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-size: var(--font-size-sm);
+  text-align: center;
+  align-self: center;
+  max-width: 22rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .step {
+  .step,
+  .flashError {
     animation: none;
   }
   .cta:active,
-  .restart:active {
+  .restart:active,
+  .photoChip:active,
+  .flashErrorAction:active {
     transform: none;
   }
 }

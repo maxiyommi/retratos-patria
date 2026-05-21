@@ -149,6 +149,85 @@ select {
   border-radius: var(--radius-sm);
 }
 
+/*
+ * View Transitions API — transición tipo iOS Navigation entre pasos.
+ *
+ * El helper lib/transition.ts setea html[data-transition-direction]
+ * antes de cada cambio de estado, y estas keyframes leen ese atributo
+ * para decidir si la pantalla sale a la izquierda (forward) o a la
+ * derecha (backward). El browser interpola entre el snapshot "antes"
+ * y "después" con un crossfade + slide.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    animation-fill-mode: both;
+  }
+
+  html[data-transition-direction="forward"]::view-transition-old(root) {
+    animation-name: vt-slide-out-left;
+  }
+  html[data-transition-direction="forward"]::view-transition-new(root) {
+    animation-name: vt-slide-in-right;
+  }
+  html[data-transition-direction="backward"]::view-transition-old(root) {
+    animation-name: vt-slide-out-right;
+  }
+  html[data-transition-direction="backward"]::view-transition-new(root) {
+    animation-name: vt-slide-in-left;
+  }
+}
+
+@keyframes vt-slide-out-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  to {
+    transform: translateX(-22%);
+    opacity: 0;
+    filter: brightness(0.92);
+  }
+}
+
+@keyframes vt-slide-in-right {
+  from {
+    transform: translateX(22%);
+    opacity: 0;
+    filter: brightness(0.92);
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes vt-slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(22%);
+    opacity: 0;
+  }
+}
+
+@keyframes vt-slide-in-left {
+  from {
+    transform: translateX(-22%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Respeta usuarios con preferencias de movimiento reducido. */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -158,5 +237,9 @@ select {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }

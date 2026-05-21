@@ -3,20 +3,21 @@
 /*
  * AppFlow — orquestador del flujo principal.
  *
- * Una pantalla a la vez (estilo app nativa). Transiciones simples entre
- * pantallas: cada step se monta con key={step} para disparar la animación
- * de entrada definida en page.module.css (.step).
+ * Una sola pantalla a la vez (estilo app nativa, sin scroll).
+ * Las transiciones usan View Transitions API con dirección semántica:
+ *   - forward = avanzo (slide left ↔ right)
+ *   - backward = vuelvo (slide opuesto)
+ * Fallback automático a la animación CSS .step cuando el browser no
+ * soporta startViewTransition (Safari < 18, Firefox).
  *
  * Estados:
- *   step="camera" → Camera. Cuando la foto está lista, pasa a "choose".
- *   step="choose" → preview + GenderToggle + CharacterPicker + botón
- *                   "Pintar mi retrato". Habilitado sólo cuando hay
- *                   personaje seleccionado.
- *   step="painting" → LoadingState mientras se procesa. Mock por ahora
- *                     (timeout 8s con la imagen sample). Bloque 7 conecta
- *                     a /api/transform.
- *   step="result" → PortraitFrame con el retrato + acciones de descargar,
- *                   compartir y "probar otro".
+ *   step="camera"   → Camera. Cuando la foto está lista, avanza a choose.
+ *   step="choose"   → header compacto (photoChip + GenderToggle) + título
+ *                     + CharacterPicker + BottomActionBar fija con CTA.
+ *                     Diseñado para caber en 100dvh sin scroll.
+ *   step="painting" → LoadingState (Sol bordándose) con botón Cancelar.
+ *   step="result"   → PortraitFrame con RayBurst de celebración detrás +
+ *                     "Probar con otra foto".
  */
 
 import { useRef, useState } from "react";
@@ -30,6 +31,8 @@ import { GenderToggle, type Gender } from "@/components/GenderToggle";
 import { LoadingState } from "@/components/LoadingState";
 import { PortraitFrame } from "@/components/PortraitFrame";
 import { Footer } from "@/components/Footer";
+import { BottomActionBar } from "@/components/BottomActionBar";
+import { RayBurst } from "@/components/RayBurst";
 import {
   CHARACTERS,
   getCharacterById,
@@ -38,6 +41,7 @@ import {
 } from "@/lib/characters";
 import { dataUrlToFile } from "@/lib/image";
 import { haptic } from "@/lib/haptic";
+import { transitionState } from "@/lib/transition";
 import type {
   TransformRequest,
   TransformResponse,
@@ -45,29 +49,17 @@ import type {
 
 type Step = "camera" | "choose" | "painting" | "result";
 
-// Tiempo máximo de espera antes de abortar la request. Gemini suele tardar
-// 8-15s; le damos margen amplio pero finito para que el spinner no quede
-// infinito si el modelo se cuelga o la red se cae mid-request.
 const PAINT_TIMEOUT_MS = 90_000;
 
-// Heurística: si el mensaje del backend menciona billing/cuota gratuita,
-// ofrecemos un fallback de modo demo (placeholder sepia) para que el
-// usuario pueda recorrer toda la UI sin necesidad de habilitar el pago.
 function isBillingError(message: string | null): boolean {
   if (!message) return false;
   return /billing|cuota gratuita|tier pago/i.test(message);
 }
 
-/** Convierte un error crudo del fetch en un mensaje legible en es-AR. */
 function describeFetchError(err: unknown): string {
   if (err instanceof DOMException && err.name === "AbortError") {
-    // Distinguimos abort por timeout vs abort por usuario en el contexto
-    // donde llamamos. Acá devolvemos el mensaje "neutro" — el llamador
-    // decide si lo muestra o lo descarta.
     return "La generación se canceló.";
   }
-  // "Failed to fetch" es el mensaje que tira el browser cuando no hay red,
-  // CORS bloqueado, o el server local cayó.
   if (
     err instanceof TypeError &&
     /failed to fetch|networkerror|load failed/i.test(err.message)
@@ -86,8 +78,9 @@ export function AppFlow() {
   const [portrait, setPortrait] = useState<string | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [transformError, setTransformError] = useState<string | null>(null);
-  // Ref del controller activo para que el botón Cancelar pueda abortarlo.
-  // Lo distinguimos de un abort por timeout con userCancelledRef.
+  // burstKey cambia cada vez que llega un retrato — dispara la animación
+  // de rayos dorados detrás del PortraitFrame.
+  const [burstKey, setBurstKey] = useState<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const userCancelledRef = useRef(false);
 
@@ -95,25 +88,33 @@ export function AppFlow() {
   const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
 
   function goCamera() {
-    setStep("camera");
-    setPhoto(null);
-    setCharacterId(null);
-    setPortrait(null);
-    setTransformError(null);
-    setIsDemoMode(false);
+    transitionState(() => {
+      setStep("camera");
+      setPhoto(null);
+      setCharacterId(null);
+      setPortrait(null);
+      setTransformError(null);
+      setIsDemoMode(false);
+      setBurstKey(null);
+    }, "backward");
   }
 
   function handleEnterDemoMode() {
     if (!photo || !characterId) return;
-    setTransformError(null);
-    setIsDemoMode(true);
-    setPortrait("/sample-portrait.svg");
-    setStep("result");
+    transitionState(() => {
+      setTransformError(null);
+      setIsDemoMode(true);
+      setPortrait("/sample-portrait.svg");
+      setBurstKey(Date.now());
+      setStep("result");
+    }, "forward");
   }
 
   function handlePhotoReady(dataUrl: string) {
-    setPhoto(dataUrl);
-    setStep("choose");
+    transitionState(() => {
+      setPhoto(dataUrl);
+      setStep("choose");
+    }, "forward");
   }
 
   async function handleStartPaint() {
@@ -121,11 +122,8 @@ export function AppFlow() {
     haptic("select");
     setTransformError(null);
     setIsDemoMode(false);
-    setStep("painting");
+    transitionState(() => setStep("painting"), "forward");
 
-    // AbortController fresco por request. Timeout duro a PAINT_TIMEOUT_MS;
-    // adicionalmente, el botón Cancelar de LoadingState aborta este mismo
-    // controller (vía handleCancelPaint).
     const controller = new AbortController();
     abortRef.current = controller;
     userCancelledRef.current = false;
@@ -157,30 +155,30 @@ export function AppFlow() {
         throw new Error(message);
       }
 
-      setPortrait(data.image);
-      setStep("result");
+      transitionState(() => {
+        setPortrait(data.image);
+        setBurstKey(Date.now());
+        setStep("result");
+      }, "forward");
       haptic("success");
     } catch (err) {
-      // Cancelación intencional del usuario: no mostramos error, sólo
-      // volvemos al paso de choose.
       if (
         err instanceof DOMException &&
         err.name === "AbortError" &&
         userCancelledRef.current
       ) {
-        setStep("choose");
+        transitionState(() => setStep("choose"), "backward");
         return;
       }
-      // Abort por timeout: mensaje específico distinto al de cancelación.
       if (err instanceof DOMException && err.name === "AbortError") {
         setTransformError(
           "El retrato tardó más de lo esperado. Probá con otra foto o esperá un momento y reintentá.",
         );
-        setStep("choose");
+        transitionState(() => setStep("choose"), "backward");
         return;
       }
       setTransformError(describeFetchError(err));
-      setStep("choose");
+      transitionState(() => setStep("choose"), "backward");
       haptic("error");
     } finally {
       window.clearTimeout(timeoutId);
@@ -221,18 +219,15 @@ export function AppFlow() {
         text: `Me retraté como ${fullName} de 1810.`,
         files: [file],
       };
-      // navigator.canShare valida que el navegador soporte compartir archivos.
       if (
         typeof navigator !== "undefined" &&
         navigator.canShare?.(shareData)
       ) {
         await navigator.share(shareData);
       } else {
-        // Fallback: descargar directamente.
         await handleDownload();
       }
     } catch (err) {
-      // AbortError ocurre si el usuario cancela el panel de compartir — ignorar.
       if ((err as Error).name !== "AbortError") {
         alert("No pudimos abrir el panel de compartir. Probá descargar.");
       }
@@ -252,7 +247,7 @@ export function AppFlow() {
         </button>
       </header>
 
-      <main className={styles.main}>
+      <main className={styles.main} data-step={step}>
         <div key={step} className={styles.step}>
           {step === "camera" && (
             <Camera onPhotoReady={handlePhotoReady} />
@@ -268,9 +263,7 @@ export function AppFlow() {
               onRetakePhoto={goCamera}
               onStart={handleStartPaint}
               onEnterDemo={
-                isBillingError(transformError)
-                  ? handleEnterDemoMode
-                  : null
+                isBillingError(transformError) ? handleEnterDemoMode : null
               }
               fullName={fullName}
               errorMessage={transformError}
@@ -292,6 +285,7 @@ export function AppFlow() {
               onShare={handleShare}
               onRestart={goCamera}
               isDemoMode={isDemoMode}
+              burstKey={burstKey}
             />
           )}
         </div>
@@ -302,7 +296,7 @@ export function AppFlow() {
   );
 }
 
-/* ── Pantallas internas ─────────────────────────────────────────────── */
+/* ── Pantalla CHOOSE — compacta, sin scroll, CTA en BottomActionBar ── */
 
 interface ChooseScreenProps {
   photo: string;
@@ -312,7 +306,6 @@ interface ChooseScreenProps {
   onCharacterChange: (id: CharacterId) => void;
   onRetakePhoto: () => void;
   onStart: () => void;
-  /** Si está definido, mostramos un botón "Probar en modo demo" en el flash de error. */
   onEnterDemo: (() => void) | null;
   fullName: string;
   errorMessage: string | null;
@@ -332,6 +325,22 @@ function ChooseScreen({
 }: ChooseScreenProps) {
   return (
     <div className={styles.choose}>
+      <header className={styles.chooseHeader}>
+        <button
+          type="button"
+          className={styles.photoChip}
+          onClick={onRetakePhoto}
+          aria-label="Cambiar foto"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={photo} alt="" />
+          <span className={styles.photoChipBadge} aria-hidden>
+            <RetakeGlyph />
+          </span>
+        </button>
+        <GenderToggle value={gender} onChange={onGenderChange} />
+      </header>
+
       {errorMessage && (
         <div role="alert" className={styles.flashError}>
           <p className={styles.flashErrorText}>{errorMessage}</p>
@@ -341,56 +350,41 @@ function ChooseScreen({
               className={styles.flashErrorAction}
               onClick={onEnterDemo}
             >
-              Probar en modo demo (sin generar)
+              Probar en modo demo
             </button>
           )}
         </div>
       )}
 
-      <section className={styles.photoStrip}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={photo} alt="Tu foto" className={styles.photoStripImage} />
-        <button
-          type="button"
-          className={styles.photoStripChange}
-          onClick={onRetakePhoto}
-        >
-          Cambiar foto
-        </button>
-      </section>
+      <h2 className={styles.chooseTitle}>
+        <span className={styles.chooseTitleDropcap}>E</span>legí tu{" "}
+        <em>personaje</em>
+      </h2>
 
-      <section className={styles.chooseBlock}>
-        <h2 className={styles.chooseTitle}>
-          Quiero ser <em>representad@</em> como
-        </h2>
-        <GenderToggle value={gender} onChange={onGenderChange} />
-      </section>
-
-      <section className={styles.chooseBlock}>
-        <h2 className={styles.chooseTitle}>
-          Elegí un <em>rol</em>
-        </h2>
+      <div className={styles.chooseGrid}>
         <CharacterPicker
           characters={CHARACTERS}
           selectedId={characterId}
           onSelect={onCharacterChange}
           labelFor={(c) => getShortLabel(c, gender)}
         />
-      </section>
+      </div>
 
-      <button
-        type="button"
-        className={styles.cta}
-        onClick={onStart}
-        disabled={!characterId}
-      >
-        {characterId
-          ? `Pintarme como ${fullName}`
-          : "Elegí un personaje primero"}
-      </button>
+      <BottomActionBar>
+        <button
+          type="button"
+          className={styles.cta}
+          onClick={onStart}
+          disabled={!characterId}
+        >
+          {characterId ? `Pintarme como ${fullName}` : "Elegí un rol primero"}
+        </button>
+      </BottomActionBar>
     </div>
   );
 }
+
+/* ── Pantalla RESULT — PortraitFrame + RayBurst + restart ──────────── */
 
 interface ResultScreenProps {
   portrait: string;
@@ -399,6 +393,7 @@ interface ResultScreenProps {
   onShare: () => void;
   onRestart: () => void;
   isDemoMode: boolean;
+  burstKey: number | null;
 }
 
 function ResultScreen({
@@ -408,6 +403,7 @@ function ResultScreen({
   onShare,
   onRestart,
   isDemoMode,
+  burstKey,
 }: ResultScreenProps) {
   return (
     <div className={styles.result}>
@@ -417,20 +413,40 @@ function ResultScreen({
           la IA.
         </p>
       )}
-      <PortraitFrame
-        imageDataUrl={portrait}
-        characterName={characterName}
-        variant="cabildo"
-        onDownload={onDownload}
-        onShare={onShare}
-      />
-      <button
-        type="button"
-        className={styles.restart}
-        onClick={onRestart}
-      >
+      <div className={styles.resultStage}>
+        <RayBurst trigger={burstKey} />
+        <PortraitFrame
+          imageDataUrl={portrait}
+          characterName={characterName}
+          variant="cabildo"
+          onDownload={onDownload}
+          onShare={onShare}
+        />
+      </div>
+      <button type="button" className={styles.restart} onClick={onRestart}>
         Probar con otra foto
       </button>
     </div>
+  );
+}
+
+/* ── Iconos in-place ─────────────────────────────────────────────────── */
+
+function RetakeGlyph() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="11"
+      height="11"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M2 8a6 6 0 0 1 10.5-4M14 2v3.5h-3.5" />
+      <path d="M14 8a6 6 0 0 1-10.5 4M2 14v-3.5h3.5" />
+    </svg>
   );
 }

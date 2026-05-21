@@ -1,0 +1,35 @@
+.root {
+  /*
+   * Saca al elemento del flow normal y lo planta al pie del .shell de
+   * AppFlow. Margen negativo lateral para que el blur llegue al borde
+   * del viewport.
+   */
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  margin: 0 calc(-1 * var(--space-5));
+  padding: var(--space-4) var(--space-5);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(
+    to top,
+    rgba(91, 158, 206, 0.95) 35%,
+    rgba(91, 158, 206, 0.65) 100%
+  );
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-top: 1px solid rgba(231, 206, 142, 0.4);
+  /* Hilo dorado finísimo arriba — guiño al pan de oro del marco. */
+  box-shadow: inset 0 1px 0 rgba(231, 206, 142, 0.25);
+}
+
+.inner {
+  display: flex;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.inner > * {
+  flex: 1;
+}

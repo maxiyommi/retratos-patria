@@ -1,0 +1,53 @@
+.root {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.ray {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 140px;
+  margin-left: -1.5px;
+  background: linear-gradient(
+    to top,
+    rgba(201, 161, 74, 0.85) 0%,
+    rgba(231, 206, 142, 0.5) 60%,
+    transparent 100%
+  );
+  border-radius: 999px;
+  transform: rotate(var(--ray-angle, 0deg)) scaleY(0);
+  transform-origin: top center;
+  opacity: 0;
+  animation: ray-burst 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--ray-delay, 0ms);
+  filter: blur(0.5px);
+}
+
+@keyframes ray-burst {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--ray-angle, 0deg)) scaleY(0);
+  }
+  35% {
+    opacity: 1;
+    transform: rotate(var(--ray-angle, 0deg)) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--ray-angle, 0deg)) scaleY(1.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ray {
+    animation: none;
+    opacity: 0;
+  }
+}
