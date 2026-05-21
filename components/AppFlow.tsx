@@ -34,6 +34,7 @@ import { BottomActionBar } from "@/components/BottomActionBar";
 import { RayBurst } from "@/components/RayBurst";
 import { LargeTitle } from "@/components/LargeTitle";
 import { SolFlash } from "@/components/SolFlash";
+import { Footer } from "@/components/Footer";
 import {
   CHARACTERS,
   getCharacterById,
@@ -605,6 +606,12 @@ function ResultScreen({
       <button type="button" className={styles.restart} onClick={onRestart}>
         Probar con otra foto
       </button>
+      {/*
+        Recordatorio de identidad al cierre del flujo — momento "salí
+        con tu retrato listo y enterate quién hizo esto". Mismo Footer
+        que aparece en el Splash y el TermsGate; consistente.
+      */}
+      <Footer />
     </div>
   );
 }

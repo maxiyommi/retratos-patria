@@ -332,10 +332,12 @@
   flex-direction: column;
   gap: var(--space-5);
   align-items: center;
-  justify-content: center;
+  /* Sin justify-content center: queremos que el Footer (con
+     margin-top: auto propio) sea empujado al pie del result screen,
+     mientras el PortraitFrame + restart quedan agrupados arriba/centro. */
   flex: 1;
   min-height: 0;
-  padding: var(--space-3) 0 var(--space-5);
+  padding: var(--space-3) 0 0;
 }
 
 .resultStage {
