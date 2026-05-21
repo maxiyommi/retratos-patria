@@ -37,16 +37,35 @@ body {
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   color: var(--color-texto);
-  background-color: var(--color-fondo-app);
   /*
-   * Textura sutil de papel/lienzo encima del celeste, para que la app no se
-   * sienta una "página web plana". Mantiene la paleta validada — sólo agrega
-   * grano. La opacidad real del grano se controla dentro del SVG.
+   * Fondo atmosférico estilo cielo de aurora — radial gradient con halo
+   * dorado-suave en la parte superior central (insinuación del Sol sin
+   * dibujarlo) cayendo en celeste profundo hacia los bordes y el fondo.
+   * Encima, una capa de grano de papel para textura. Esto le da depth
+   * que el celeste plano no tenía, sin sumar ruido visual.
    */
-  background-image: url("/paper-texture.svg");
-  background-repeat: repeat;
-  background-size: 320px 320px;
-  background-blend-mode: multiply;
+  background-color: var(--color-celeste-profundo);
+  background-image:
+    radial-gradient(
+      ellipse 90% 60% at 50% -10%,
+      rgba(231, 206, 142, 0.22) 0%,
+      rgba(231, 206, 142, 0) 50%
+    ),
+    radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      var(--color-celeste) 0%,
+      rgba(91, 158, 206, 0) 65%
+    ),
+    linear-gradient(
+      180deg,
+      var(--color-celeste) 0%,
+      var(--color-celeste-profundo) 100%
+    ),
+    url("/paper-texture.svg");
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 320px 320px;
+  background-blend-mode: normal, normal, normal, multiply;
+  background-attachment: fixed, fixed, fixed, scroll;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;

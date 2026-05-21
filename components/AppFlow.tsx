@@ -30,7 +30,6 @@ import {
 import { GenderToggle, type Gender } from "@/components/GenderToggle";
 import { LoadingState } from "@/components/LoadingState";
 import { PortraitFrame } from "@/components/PortraitFrame";
-import { Footer } from "@/components/Footer";
 import { BottomActionBar } from "@/components/BottomActionBar";
 import { RayBurst } from "@/components/RayBurst";
 import {
@@ -234,18 +233,23 @@ export function AppFlow() {
     }
   }
 
+  // En el step camera no mostramos botón "volver" (es el inicio); en el resto
+  // sí. Es la única affordance "back" que necesita el flujo — no es una app
+  // multinivel, sólo cuatro pasos lineales.
+  const showBack = step !== "camera";
+
   return (
     <div className={styles.shell}>
-      <header className={styles.brand}>
+      {showBack && (
         <button
           type="button"
-          className={styles.brandButton}
+          className={styles.backFab}
           onClick={goCamera}
           aria-label="Volver al inicio"
         >
-          <span className={styles.brandTitle}>Retratos de la Patria</span>
+          <BackChevron />
         </button>
-      </header>
+      )}
 
       <main className={styles.main} data-step={step}>
         <div key={step} className={styles.step}>
@@ -290,9 +294,25 @@ export function AppFlow() {
           )}
         </div>
       </main>
-
-      <Footer />
     </div>
+  );
+}
+
+function BackChevron() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
   );
 }
 

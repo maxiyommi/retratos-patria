@@ -19,6 +19,7 @@
 
 import { useEffect, useState } from "react";
 import { SolDeMayo } from "@/components/SolDeMayo";
+import { Footer } from "@/components/Footer";
 import { haptic } from "@/lib/haptic";
 import { transitionState } from "@/lib/transition";
 import styles from "./TermsGate.module.css";
@@ -121,6 +122,7 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
           Al continuar aceptás los Términos y el Aviso de Privacidad
           completos.
         </p>
+        <Footer />
       </div>
     </div>
   );
