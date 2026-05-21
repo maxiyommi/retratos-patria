@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, EB_Garamond } from "next/font/google";
 import "@/styles/tokens.css";
 import "./globals.css";
@@ -22,6 +22,25 @@ export const metadata: Metadata = {
   title: "Retratos de la Patria",
   description:
     "Webapp educativa: retratá tu cara como una figura de la Buenos Aires colonial de 1810.",
+  manifest: "/manifest.webmanifest",
+  applicationName: "Retratos de la Patria",
+  appleWebApp: {
+    capable: true,
+    title: "Retratos 1810",
+    statusBarStyle: "default",
+  },
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#5b9ece",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

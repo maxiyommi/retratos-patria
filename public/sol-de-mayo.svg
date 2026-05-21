@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200" width="160" height="160" role="img" aria-label="Sol de Mayo">
+  <!--
+    Sol de Mayo esquemático: 16 rayos alternando recto y ondulado, alrededor
+    de un disco central. Versión simplificada y plana, sin rostro, pensada
+    como ornamento decorativo del chrome de la app.
+  -->
+  <g fill="currentColor">
+    <!-- Rayos rectos (8) — orientados a 0, 45, 90, 135, 180, 225, 270, 315 grados -->
+    <g>
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(0)" />
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(45)" />
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(90)" />
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(135)" />
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(180)" />
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(225)" />
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(270)" />
+      <polygon points="-6,-50 6,-50 0,-95" transform="rotate(315)" />
+    </g>
+    <!-- Rayos ondulados/flamígeros (8) — intercalados en 22.5° -->
+    <g>
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(22.5)" />
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(67.5)" />
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(112.5)" />
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(157.5)" />
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(202.5)" />
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(247.5)" />
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(292.5)" />
+      <path d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z" transform="rotate(337.5)" />
+    </g>
+    <!-- Disco central -->
+    <circle r="38" />
+    <!-- Anillo más oscuro de contraste -->
+    <circle r="38" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2" />
+  </g>
+</svg>

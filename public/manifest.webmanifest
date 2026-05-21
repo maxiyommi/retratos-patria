@@ -1,0 +1,14 @@
+{
+  "name": "Retratos de la Patria",
+  "short_name": "Retratos 1810",
+  "description": "Sacate una foto y pintate como una figura de la Buenos Aires colonial de 1810.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#5b9ece",
+  "theme_color": "#5b9ece",
+  "lang": "es-AR",
+  "categories": ["education", "photo"],
+  "icons": []
+}

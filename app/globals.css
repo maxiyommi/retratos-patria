@@ -1,7 +1,10 @@
 /*
  * Estilos globales — Retratos de la Patria
  *
- * Reset mínimo + estilos base del chrome (celeste / blanco / dorado).
+ * Reset mínimo + estilos base del chrome (celeste / blanco / dorado) +
+ * comportamientos de "app nativa" (sin tap-highlight, sin zoom involuntario,
+ * edge-to-edge con safe-area, etc.).
+ *
  * Los tokens viven en styles/tokens.css y se cargan antes de este archivo
  * desde app/layout.tsx.
  *
@@ -23,6 +26,9 @@ body {
 
 html {
   font-size: 18px; /* base de la escala tipográfica — mobile-first */
+  /* Que el sistema no nos escale las fuentes en mobile cuando rotás el teléfono. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -32,9 +38,52 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-texto);
   background-color: var(--color-fondo-app);
+  /*
+   * Textura sutil de papel/lienzo encima del celeste, para que la app no se
+   * sienta una "página web plana". Mantiene la paleta validada — sólo agrega
+   * grano. La opacidad real del grano se controla dentro del SVG.
+   */
+  background-image: url("/paper-texture.svg");
+  background-repeat: repeat;
+  background-size: 320px 320px;
+  background-blend-mode: multiply;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+
+  /* ── Comportamiento "app nativa" ──────────────────────────────────────── */
+  /* Sin el flash azul de Android al tocar elementos. */
+  -webkit-tap-highlight-color: transparent;
+  /* Sin "rebote" al hacer overscroll, como las apps nativas. */
+  overscroll-behavior: none;
+  /* No seleccionar texto de la UI sin querer (los componentes con texto real
+     vuelven a habilitarlo). */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Permitir gestos táctiles normales pero sin el doble-tap-to-zoom. */
+  touch-action: manipulation;
+
+  /* ── Safe area (notches, barra de gestos) ─────────────────────────────── */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Volvemos a habilitar la selección de texto en lo que es contenido real. */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+blockquote,
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 h1,
@@ -84,6 +133,13 @@ button {
   background: none;
   border: 0;
   cursor: pointer;
+}
+
+/* font-size ≥16px en inputs evita que iOS haga zoom al focusear. */
+input,
+textarea,
+select {
+  font-size: max(16px, var(--font-size-base));
 }
 
 /* Foco accesible: anillo dorado visible sobre cualquier superficie del chrome. */

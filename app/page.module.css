@@ -14,7 +14,16 @@
   color: var(--color-texto-claro);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-3);
+}
+
+.sun {
+  width: clamp(72px, 22vw, 96px);
+  height: auto;
+  color: var(--color-dorado-suave);
+  filter: drop-shadow(0 4px 12px rgba(31, 80, 114, 0.35));
+  margin-bottom: var(--space-2);
 }
 
 .title {
@@ -22,6 +31,32 @@
   font-weight: 500;
   font-style: italic;
   text-shadow: 0 1px 2px rgba(31, 80, 114, 0.25);
+}
+
+/* Divisor ornamental: línea dorada — diamante — línea dorada. */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 70%;
+  max-width: 240px;
+  margin: var(--space-2) auto var(--space-3);
+  color: var(--color-dorado-suave);
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.dividerDot {
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 .tagline {
@@ -48,6 +83,16 @@
   flex-direction: column;
   gap: var(--space-3);
   color: var(--color-texto);
+  /*
+   * Textura cremita sutil — refuerza el sentido de "lienzo de papel" en la
+   * tarjeta, sin entrar al mundo pergamino reservado al retrato.
+   */
+  background-image: linear-gradient(
+      rgba(243, 236, 217, 0.45),
+      rgba(243, 236, 217, 0.45)
+    ),
+    url("/paper-texture.svg");
+  background-blend-mode: multiply;
 }
 
 .cardTitle {
