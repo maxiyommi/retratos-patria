@@ -211,16 +211,19 @@
   color: var(--color-blanco-calido);
   -webkit-overflow-scrolling: touch;
   border-top: 1px solid rgba(231, 206, 142, 0.3);
-  /* Scroll suave con scrollbar dorado finito (donde el browser lo permita). */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(231, 206, 142, 0.5) transparent;
+  /* Texto legal — el usuario tiene derecho a copiarlo. Re-habilitamos
+     selección y callout sólo en este bloque (el resto de la app los
+     bloquea globalmente para feel app nativa). */
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 
 .fullText::-webkit-scrollbar {
-  width: 5px;
+  width: 0;
 }
 .fullText::-webkit-scrollbar-thumb {
-  background: rgba(231, 206, 142, 0.5);
+  background: transparent;
   border-radius: 999px;
 }
 

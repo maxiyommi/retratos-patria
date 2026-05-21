@@ -29,6 +29,35 @@ html {
   /* Que el sistema no nos escale las fuentes en mobile cuando rotás el teléfono. */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /*
+   * El documento NUNCA scrollea. Cada step ocupa exactamente 100dvh.
+   * Si algo necesita scroll, lo maneja internamente (fullText del
+   * TermsGate, chooseGrid del CharacterPicker en casos extremos).
+   */
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  /* Mismo bloqueo a nivel body para consistencia entre browsers. */
+  overflow: hidden;
+  height: 100%;
+}
+
+/*
+ * Scrollbars invisibles GLOBALMENTE — en cualquier contenedor con
+ * overflow: auto el scroll sigue funcionando pero no se ve la barra.
+ * Esto es lo que más empuja el feel "app nativa": las apps de iOS y
+ * Android no tienen scrollbars visibles, sólo el momentum scroll.
+ */
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /*
@@ -114,16 +143,28 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
-/* Volvemos a habilitar la selección de texto en lo que es contenido real. */
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-li,
-blockquote,
+/*
+ * Bloqueo a nivel * — empuja el feel app nativa:
+ *  - sin callout menu de long-press (mobile)
+ *  - sin drag de imágenes / texto
+ *  - sin selección por defecto (los inputs la reactivan abajo)
+ */
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* Imágenes — defensa adicional, draggable=false en el DOM también. */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: auto;
+}
+
+/* En apps nativas la selección de texto sólo existe en inputs. La
+ * dejamos en input/textarea y en el bloque .fullText del TermsGate
+ * (legal — el usuario puede querer copiar los términos). */
 input,
 textarea {
   -webkit-user-select: text;
