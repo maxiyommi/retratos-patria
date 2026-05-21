@@ -27,7 +27,9 @@ import styles from "./PhotoEditor.module.css";
 
 const OUTPUT_MAX_SIZE = 1024;
 const JPEG_QUALITY = 0.85;
-const MAX_SCALE_MULTIPLIER = 4; // hasta 4x del cover inicial
+// Rango de zoom: el max ahora es generoso (8× del cover inicial) para que
+// el usuario pueda inspeccionar detalle aun arrancando en scale nativo 1.
+const MAX_SCALE_MULTIPLIER = 8;
 
 export interface PhotoEditorProps {
   /** dataURL del archivo subido (sin procesar). */
@@ -83,7 +85,17 @@ export function PhotoEditor({
     return () => ro.disconnect();
   }, []);
 
-  // Cuando la imagen carga, calculamos el transform inicial (cover) y centramos.
+  // Al cargar la imagen, calculamos el transform inicial.
+  //
+  // Estrategia: empezamos en scale=1 (tamaño nativo de la imagen) para
+  // que el usuario vea su foto al pixel real. Sólo si la imagen es MÁS
+  // CHICA que el viewport en alguna dimensión, forzamos el upscale
+  // mínimo necesario para cubrir el viewport (constraint del crop: no
+  // se pueden tener bandas vacías).
+  //
+  // Después centramos: si la imagen es más grande que el viewport,
+  // arranca encuadrada por el centro. Si es más chica (escalada a
+  // cover), queda exactamente del tamaño del viewport.
   function handleImageLoad() {
     const img = imgRef.current;
     if (!img || !vpSize) return;
@@ -91,9 +103,12 @@ export function PhotoEditor({
     const h = img.naturalHeight;
     setImageSize({ w, h });
     const minScale = Math.max(vpSize / w, vpSize / h);
-    const tx = (vpSize - w * minScale) / 2;
-    const ty = (vpSize - h * minScale) / 2;
-    setTransform({ tx, ty, scale: minScale });
+    // initialScale = 1 si la imagen es lo suficientemente grande para
+    // cubrir el viewport a escala nativa; sino el mínimo cover.
+    const initialScale = Math.max(1, minScale);
+    const tx = (vpSize - w * initialScale) / 2;
+    const ty = (vpSize - h * initialScale) / 2;
+    setTransform({ tx, ty, scale: initialScale });
   }
 
   const bounds = computeBounds(imageSize, vpSize);
