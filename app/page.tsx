@@ -10,6 +10,7 @@ import {
   type CharacterId,
 } from "@/components/CharacterPicker";
 import { GenderToggle, type Gender } from "@/components/GenderToggle";
+import { LoadingState } from "@/components/LoadingState";
 
 // Modelo extendido: los roles son neutros respecto al género, pero cada uno
 // tiene formas declinadas en femenino y masculino. La combinación de rol +
@@ -109,6 +110,19 @@ export default function Home() {
           onSelect={setSelectedId}
           labelFor={labelFor}
         />
+      </section>
+
+      <section className={styles.preview} aria-labelledby="preview-loading">
+        <header className={styles.previewHeader}>
+          <h2 id="preview-loading" className={styles.previewTitle}>
+            Mientras se <em>pinta</em>
+          </h2>
+          <p className={styles.previewNote}>
+            (Estado de espera — refrescá la página para ver la formación
+            del Sol desde el inicio.)
+          </p>
+        </header>
+        <LoadingState characterName={fullName} />
       </section>
 
       <section className={styles.preview} aria-labelledby="preview-frame">
