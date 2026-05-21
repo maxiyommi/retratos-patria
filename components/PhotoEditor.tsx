@@ -65,6 +65,7 @@ export function PhotoEditor({
     ty: 0,
     scale: 1,
   });
+  const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Pointers activos para drag y pinch.
@@ -87,30 +88,37 @@ export function PhotoEditor({
     return () => ro.disconnect();
   }, []);
 
-  // Al cargar la imagen, calculamos el transform inicial.
-  //
-  // Estrategia: arrancamos en CONTAIN — la foto entera visible en el
-  // viewport, aunque queden bandas a los costados (o arriba/abajo) si
-  // el aspect no matchea con el 1:1. Así el usuario VE su foto completa
-  // tal como la conoce de la galería, y después decide hacer zoom in
-  // para llenar el óvalo con su cara.
-  //
-  // Las bandas se rellenan con celeste-tinta al exportar el JPEG, así
-  // si el usuario no hace zoom igual el output es válido (no quedan
-  // áreas transparentes/negras).
+  // Al cargar la imagen sólo capturamos el tamaño natural. El initial
+  // transform se calcula en el useEffect siguiente — necesitamos que
+  // tanto imageSize como vpSize estén listos, y la imagen puede haber
+  // cargado ANTES que el ResizeObserver del viewport corra por primera
+  // vez (cache del browser). Sin esta separación, el initial salía con
+  // vpSize=0 y caíamos al transform default { 0, 0, scale: 1 } que para
+  // imágenes grandes se ve enormemente zoomeado in.
   function handleImageLoad() {
     const img = imgRef.current;
-    if (!img || !vpSize) return;
-    const w = img.naturalWidth;
-    const h = img.naturalHeight;
-    setImageSize({ w, h });
-    // contain: la foto entera entra en el viewport.
-    const containScale = Math.min(vpSize / w, vpSize / h);
-    const initialScale = containScale;
-    const tx = (vpSize - w * initialScale) / 2;
-    const ty = (vpSize - h * initialScale) / 2;
-    setTransform({ tx, ty, scale: initialScale });
+    if (!img) return;
+    setImageSize({ w: img.naturalWidth, h: img.naturalHeight });
   }
+
+  // Calcula el initial transform UNA VEZ, cuando imageSize y vpSize
+  // están ambos disponibles. Después el usuario controla el transform
+  // con drag/pinch; este effect no vuelve a interferir.
+  useEffect(() => {
+    if (initialized) return;
+    if (!imageSize.w || !imageSize.h || !vpSize) return;
+    const containScale = Math.min(
+      vpSize / imageSize.w,
+      vpSize / imageSize.h,
+    );
+    const tx = (vpSize - imageSize.w * containScale) / 2;
+    const ty = (vpSize - imageSize.h * containScale) / 2;
+    // Inicialización one-shot: caso legítimo del patrón "esperar a
+    // que dos fuentes async estén listas para componer el estado".
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTransform({ tx, ty, scale: containScale });
+    setInitialized(true);
+  }, [imageSize.w, imageSize.h, vpSize, initialized]);
 
   const bounds = computeBounds(imageSize, vpSize);
 
@@ -213,6 +221,9 @@ export function PhotoEditor({
           className={styles.image}
           style={{
             transform: `translate(${transform.tx}px, ${transform.ty}px) scale(${transform.scale})`,
+            // Ocultamos hasta tener el initial transform listo, así no
+            // se ve un flash con la imagen al 100% en la esquina sup.
+            visibility: initialized ? "visible" : "hidden",
           }}
           onLoad={handleImageLoad}
           draggable={false}
