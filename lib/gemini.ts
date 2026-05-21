@@ -70,9 +70,12 @@ export async function transformPortrait(
       contents: [
         {
           role: "user",
+          // Imagen PRIMERO, instrucción después. Para image-to-image con
+          // preservación de identidad, este orden ayuda al modelo a anclarse
+          // en los rasgos faciales del input antes de interpretar el prompt.
           parts: [
-            { text: prompt },
             { inlineData: { mimeType: imageMimeType, data: imageBase64 } },
+            { text: prompt },
           ],
         },
       ],

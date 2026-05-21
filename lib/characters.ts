@@ -43,14 +43,38 @@ export interface Character {
  * para que las restricciones de seguridad y estilo no dependan de un
  * sistema de mensajes separado.
  */
-const PROMPT_INTRO = `Transformá esta fotografía en un retrato pintado al óleo del Río de la Plata colonial, año 1810. Conservá EXACTAMENTE el rostro de la persona retratada: rasgos faciales, forma de la cara, edad, expresión, color de piel y complexión general. NO modifiques el rostro ni el cuerpo. Sólo cambiá indumentaria, peinado adecuado a la época, fondo y estilo pictórico.`;
+/*
+ * Estrategia de prompt:
+ *
+ * 1. La PRESERVACIÓN DE IDENTIDAD va primero y es la instrucción dominante.
+ *    Los modelos de imagen tienden a "idealizar" la cara si no se les frena
+ *    activamente. Detallamos rasgo por rasgo para que no haya margen.
+ *
+ * 2. Aclaramos explícitamente que el GÉNERO del personaje histórico se define
+ *    por la ROPA que se agrega, no por el rostro. Sin esto, el modelo intenta
+ *    "feminizar" o "masculinizar" la cara cuando hay disonancia entre el
+ *    rostro real y el rol elegido (ej. un hombre que pide Dama porteña).
+ *
+ * 3. Vestimenta específica del rol al final del bloque de instrucción.
+ *
+ * 4. Estilo pictórico y safety como cierre.
+ */
 
-const PROMPT_STYLE = `Técnica pictórica: retrato al óleo colonial rioplatense, pincelada visible pero refinada, fondo neutro oscuro (tonos sepia, ocre quemado, marrón verdoso) con un acento de luz pictórica que destaca el rostro. Encuadre de medio cuerpo, semi-perfil de tres cuartos. Paleta sobria de tierras, marfiles, dorados apagados y sepias.`;
+const PROMPT_INTRO = `Esta fotografía muestra a una persona específica. Tu tarea: crear un retrato al óleo de ESA MISMA PERSONA, reconocible, vestida con indumentaria de la Buenos Aires colonial de 1810.
 
-const PROMPT_SAFETY = `El retrato debe ser apto para audiencias escolares (niños y niñas). Sin contenido sexualizado, sin pieles expuestas más allá de lo natural en un retrato formal de época, sin violencia explícita. No alterar la edad ni el cuerpo de la persona retratada.`;
+PRESERVACIÓN DEL ROSTRO — lo más importante de toda la instrucción:
+La cara del retrato debe verse exactamente igual a la de la foto original. Conservá rigurosamente: la forma del rostro y la estructura ósea (mandíbula, mejillas, frente), la forma y el color de los ojos, la forma y el tamaño de la nariz, la forma de la boca y los labios, el arco y la posición de las cejas, el tono y la textura de la piel, la edad aparente de la persona, la expresión facial, el color y la textura del cabello, y cualquier marca distintiva (lunares, pecas, cicatrices). Alguien que conoce a la persona debe poder identificarla al instante en el retrato. La FIDELIDAD al original es más valiosa que la estética: no idealices, no embellezcas, no suavices arrugas, no rejuvenezcas ni envejezcas, no cambies proporciones, no agregues maquillaje que altere los rasgos.
+
+El peinado SÓLO se ajusta si la moda de época lo requiere (por ejemplo, recogido bajo un peinetón o un sombrero); en ese caso, mantener el color y la textura del cabello.
+
+GÉNERO DEL PERSONAJE: lo define exclusivamente la INDUMENTARIA descripta más abajo, NO el rostro. Si la indumentaria es femenina pero la cara es masculina (o viceversa), el rostro permanece tal cual está en la foto y sólo se viste el personaje según el rol. No "feminizar" ni "masculinizar" la cara para que matchee con la ropa.`;
+
+const PROMPT_STYLE = `Técnica pictórica: retrato al óleo colonial rioplatense del siglo XIX temprano, pincelada visible pero refinada. Fondo neutro oscuro (tonos sepia, ocre quemado, marrón verdoso) con un acento de luz pictórica que destaca el rostro. Encuadre de medio cuerpo, semi-perfil de tres cuartos. Paleta sobria de tierras, marfiles, dorados apagados y sepias. La piel del personaje conserva las imperfecciones naturales propias del retratado original — no la suavices artificialmente.`;
+
+const PROMPT_SAFETY = `Apto para audiencias escolares (niños y niñas). Sin contenido sexualizado, sin pieles expuestas más allá de lo natural en un retrato formal de época, sin violencia explícita. No alterar la edad ni el cuerpo del retratado.`;
 
 function buildPrompt(attire: string): string {
-  return `${PROMPT_INTRO}\n\nVestimenta y caracterización:\n${attire}\n\n${PROMPT_STYLE}\n\n${PROMPT_SAFETY}`;
+  return `${PROMPT_INTRO}\n\nINDUMENTARIA Y CARACTERIZACIÓN DEL PERSONAJE:\n${attire}\n\nESTILO PICTÓRICO:\n${PROMPT_STYLE}\n\nSEGURIDAD:\n${PROMPT_SAFETY}`;
 }
 
 export const CHARACTERS: Character[] = [
