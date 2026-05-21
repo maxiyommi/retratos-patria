@@ -290,6 +290,7 @@
 }
 
 .acceptButton {
+  will-change: transform;
   min-height: calc(var(--target-min-tap) + 4px);
   padding: var(--space-4) var(--space-5);
   border: 0;

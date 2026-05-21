@@ -141,6 +141,7 @@
 }
 
 .iconButton {
+  will-change: transform;
   justify-self: center;
   width: var(--target-min-tap);
   height: var(--target-min-tap);
@@ -169,6 +170,7 @@
 /* Shutter — botón principal redondo estilo iOS */
 
 .shutter {
+  will-change: transform;
   position: relative;
   justify-self: center;
   width: 72px;

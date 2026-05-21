@@ -26,6 +26,7 @@
 }
 
 .image {
+  will-change: transform;
   position: absolute;
   top: 0;
   left: 0;
@@ -57,6 +58,7 @@
 }
 
 .zoomButton {
+  will-change: transform;
   width: 40px;
   height: 40px;
   border-radius: 50%;

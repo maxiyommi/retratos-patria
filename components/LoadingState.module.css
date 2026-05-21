@@ -81,6 +81,7 @@
 }
 
 .solGroup {
+  will-change: transform;
   /*
    * "Respiración" sutil. Comienza desde un scale 1.0 y oscila muy poco
    * (1.0 ↔ 1.025) para que el sol parezca vivo aún después de formarse.

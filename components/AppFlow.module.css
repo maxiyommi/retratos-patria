@@ -29,6 +29,7 @@
 /* ── Back FAB flotante (sólo cuando se puede volver) ─────────────────── */
 
 .backFab {
+  will-change: transform;
   position: absolute;
   /* Más arriba y un toque más a la izquierda, fuera del flow del eyebrow.
      safe-area-inset-top respetado. */
@@ -143,6 +144,7 @@
 
 /* Chip de foto circular con badge de "retomar" abajo a la derecha. */
 .photoChip {
+  will-change: transform;
   position: relative;
   width: 52px;
   height: 52px;
@@ -283,6 +285,7 @@
 /* ── CTA principal con spring physics ─────────────────────────────── */
 
 .cta {
+  will-change: transform;
   width: 100%;
   min-height: calc(var(--target-min-tap) + 8px);
   padding: var(--space-4) var(--space-5);
@@ -346,6 +349,7 @@
 }
 
 .restart {
+  will-change: transform;
   align-self: center;
   padding: var(--space-3) var(--space-5);
   font-family: var(--font-stack-display);

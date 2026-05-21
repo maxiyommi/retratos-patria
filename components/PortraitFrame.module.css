@@ -26,6 +26,7 @@
 /* ── Marco ───────────────────────────────────────────────────────────── */
 
 .frame {
+  will-change: transform, opacity;
   position: relative;
   margin: 0;
   padding: var(--frame-pad, var(--space-4));

@@ -16,6 +16,15 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  /*
+   * backface-visibility hidden — fuerza al browser a promover
+   * elementos animados a un composite layer en GPU. Mejora notable
+   * en mobile para que transforms y animaciones corran a 60fps sin
+   * touchear el main thread.
+   */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,

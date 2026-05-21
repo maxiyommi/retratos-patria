@@ -74,6 +74,7 @@
  * 16s loop con curva ease-in-out que da pausas naturales entre rachas.
  */
 .flagBreath {
+  will-change: transform;
   transform-origin: 50% 50%;
   animation: flag-breath 16s ease-in-out infinite;
 }
@@ -100,6 +101,7 @@
  * displacement filter que generaba bordes rasgados.
  */
 .shine {
+  will-change: background-position;
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -179,6 +181,7 @@
 }
 
 .sun {
+  will-change: transform, filter;
   width: clamp(140px, 38vw, 200px);
   height: auto;
   color: var(--color-dorado);
@@ -235,6 +238,7 @@
 }
 
 .titleMain {
+  will-change: transform, filter, background-position;
   font-family: var(--font-stack-display);
   font-style: italic;
   font-weight: 600;
