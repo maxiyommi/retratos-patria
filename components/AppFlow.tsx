@@ -37,6 +37,7 @@ import {
   getShortLabel,
 } from "@/lib/characters";
 import { dataUrlToFile } from "@/lib/image";
+import { haptic } from "@/lib/haptic";
 import type {
   TransformRequest,
   TransformResponse,
@@ -117,6 +118,7 @@ export function AppFlow() {
 
   async function handleStartPaint() {
     if (!photo || !characterId) return;
+    haptic("select");
     setTransformError(null);
     setIsDemoMode(false);
     setStep("painting");
@@ -157,6 +159,7 @@ export function AppFlow() {
 
       setPortrait(data.image);
       setStep("result");
+      haptic("success");
     } catch (err) {
       // Cancelación intencional del usuario: no mostramos error, sólo
       // volvemos al paso de choose.
@@ -178,6 +181,7 @@ export function AppFlow() {
       }
       setTransformError(describeFetchError(err));
       setStep("choose");
+      haptic("error");
     } finally {
       window.clearTimeout(timeoutId);
       if (abortRef.current === controller) abortRef.current = null;
@@ -186,6 +190,7 @@ export function AppFlow() {
 
   function handleCancelPaint() {
     if (!abortRef.current) return;
+    haptic("tap");
     userCancelledRef.current = true;
     abortRef.current.abort();
   }

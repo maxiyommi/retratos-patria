@@ -1,12 +1,15 @@
 /*
  * page.tsx — Server Component raíz.
  *
- * Lee content/terminos.md desde disco, lo parsea a HTML con marked, y se
- * lo pasa al TermsGate (Client Component) que decide si mostrar el gate o
- * continuar al AppFlow.
+ * Estructura visual de arriba hacia abajo (z-index ascendente):
+ *   - BanderaAccent: franja celeste/blanco/celeste sutil al pie, animada
+ *     con onda. Identidad argentina ambiente, decorativa.
+ *   - AppFlow (envuelto por TermsGate): el contenido funcional.
+ *   - Splash: cubre todo durante ~1.2s al cargar, fade out. Sólo se ve
+ *     en cold loads (refresh / abrir desde home screen).
  *
- * El parseo de markdown ocurre server-side: el cliente nunca recibe el
- * markdown crudo ni la librería marked.
+ * Lee content/terminos.md y lo parsea a HTML server-side con marked,
+ * para pasárselo al TermsGate sin que el cliente reciba la librería.
  */
 
 import fs from "node:fs/promises";
@@ -14,13 +17,19 @@ import path from "node:path";
 import { marked } from "marked";
 import { TermsGate } from "@/components/TermsGate";
 import { AppFlow } from "@/components/AppFlow";
+import { Splash } from "@/components/Splash";
+import { BanderaAccent } from "@/components/BanderaAccent";
 
 export default async function Page() {
   const termsHtml = await loadTermsHtml();
   return (
-    <TermsGate termsHtml={termsHtml}>
-      <AppFlow />
-    </TermsGate>
+    <>
+      <BanderaAccent />
+      <TermsGate termsHtml={termsHtml}>
+        <AppFlow />
+      </TermsGate>
+      <Splash />
+    </>
   );
 }
 

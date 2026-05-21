@@ -17,6 +17,7 @@
  */
 
 import { SolDeMayo } from "@/components/SolDeMayo";
+import { haptic } from "@/lib/haptic";
 import type { Character, CharacterId } from "@/lib/characters";
 import styles from "./CharacterPicker.module.css";
 
@@ -55,7 +56,10 @@ export function CharacterPicker({
             aria-checked={isSelected}
             data-state={state}
             className={styles.card}
-            onClick={() => onSelect(c.id)}
+            onClick={() => {
+              haptic("select");
+              onSelect(c.id);
+            }}
           >
             <span className={styles.iconWindow} aria-hidden>
               <CharacterIcon id={c.id} />

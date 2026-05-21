@@ -11,6 +11,7 @@
  * pasa a celeste-tinta para contraste.
  */
 
+import { haptic } from "@/lib/haptic";
 import styles from "./GenderToggle.module.css";
 
 export type Gender = "dama" | "caballero";
@@ -21,6 +22,11 @@ export interface GenderToggleProps {
 }
 
 export function GenderToggle({ value, onChange }: GenderToggleProps) {
+  const handleSelect = (g: Gender) => {
+    if (g === value) return;
+    haptic("tap");
+    onChange(g);
+  };
   return (
     <div
       className={styles.toggle}
@@ -34,7 +40,7 @@ export function GenderToggle({ value, onChange }: GenderToggleProps) {
         aria-checked={value === "dama"}
         data-active={value === "dama"}
         className={styles.option}
-        onClick={() => onChange("dama")}
+        onClick={() => handleSelect("dama")}
       >
         Dama
       </button>
@@ -44,7 +50,7 @@ export function GenderToggle({ value, onChange }: GenderToggleProps) {
         aria-checked={value === "caballero"}
         data-active={value === "caballero"}
         className={styles.option}
-        onClick={() => onChange("caballero")}
+        onClick={() => handleSelect("caballero")}
       >
         Caballero
       </button>

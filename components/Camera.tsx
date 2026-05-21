@@ -25,6 +25,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageProcessingError, resizeImage } from "@/lib/image";
+import { haptic } from "@/lib/haptic";
 import styles from "./Camera.module.css";
 
 export interface CameraProps {
@@ -133,6 +134,7 @@ export function Camera({ onPhotoReady }: CameraProps) {
   async function handleSnapshot() {
     const video = videoRef.current;
     if (!video || status !== "active") return;
+    haptic("shutter");
     setBusy(true);
     setError(null);
     try {
@@ -217,10 +219,14 @@ export function Camera({ onPhotoReady }: CameraProps) {
   }
 
   function handleUse() {
-    if (preview) onPhotoReady(preview);
+    if (preview) {
+      haptic("select");
+      onPhotoReady(preview);
+    }
   }
 
   function toggleFacing() {
+    haptic("tap");
     setFacing((f) => (f === "user" ? "environment" : "user"));
   }
 

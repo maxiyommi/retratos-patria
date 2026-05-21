@@ -1,0 +1,42 @@
+.root {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  /* Respeta safe-area-inset-bottom (barra de gestos en iOS). */
+  padding-bottom: env(safe-area-inset-bottom);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.55;
+  /* Fade arriba para que se mezcle con el fondo celeste. */
+  -webkit-mask-image: linear-gradient(to top, #000 30%, transparent 100%);
+          mask-image: linear-gradient(to top, #000 30%, transparent 100%);
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.banderaGroup {
+  animation: bandera-drift 12s linear infinite;
+  transform-origin: center;
+}
+
+/* Sutil deriva horizontal para que la "onda" parezca viento perpetuo. */
+@keyframes bandera-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-60px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banderaGroup {
+    animation: none;
+  }
+}

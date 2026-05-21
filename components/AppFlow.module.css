@@ -8,9 +8,32 @@
 }
 
 .brand {
+  /*
+   * App-bar pegada arriba con glass effect — feel iOS / Android nativos.
+   * Respeta safe-area-inset-top para que no se meta debajo del notch /
+   * status bar cuando la PWA corre en standalone.
+   */
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   justify-content: center;
-  padding: var(--space-2) 0 var(--space-4);
+  padding-top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
+  padding-bottom: var(--space-3);
+  /* Margen negativo para extender el blur al borde del viewport. */
+  margin: calc(-1 * var(--space-5)) calc(-1 * var(--space-5)) var(--space-4);
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
+  background: linear-gradient(
+    to bottom,
+    rgba(91, 158, 206, 0.85),
+    rgba(91, 158, 206, 0.55)
+  );
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid rgba(231, 206, 142, 0.35);
+  /* Sombra muy sutil sólo cuando hay contenido pasando por debajo. */
+  box-shadow: 0 1px 0 rgba(58, 38, 24, 0.08);
 }
 
 .brandButton {
