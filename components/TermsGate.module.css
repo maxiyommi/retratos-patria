@@ -1,20 +1,48 @@
+/*
+ * TermsGate.module.css — Real Cédula digital.
+ *
+ * Diseñado para caber en 100dvh sin scroll en mobile (~390x844). El
+ * único elemento con scroll interno es el .fullText cuando se expande
+ * el <details>, capado a 40dvh para no robar pantalla.
+ *
+ * Lenguaje visual: chrome celeste + acento dorado, ornamento estilo
+ * libro antiguo (drop-cap, flourish divider, pluma estilizada). Sigue
+ * la regla "dos mundos" — todo en chrome celeste/blanco/dorado, sin
+ * pergamino (eso queda para el PortraitFrame).
+ */
+
 .boot {
-  /* Placeholder neutro mientras se lee localStorage. Sin spinner ni texto
-     para evitar flashes — el render es prácticamente instantáneo. */
+  /* Placeholder neutro mientras se lee localStorage. */
   min-height: 100dvh;
 }
 
 .root {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-5);
   max-width: var(--max-width-content);
   margin: 0 auto;
-  padding: var(--space-7) var(--space-5) var(--space-6);
+  padding: calc(var(--space-7) + env(safe-area-inset-top, 0px))
+    var(--space-5)
+    calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
   min-height: 100dvh;
+  gap: var(--space-5);
   color: var(--color-blanco-calido);
+  /* Aparición suave del gate al hidratar. */
+  animation: gate-fade-in 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+@keyframes gate-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Header con Sol + título con drop-cap + flourish ─────────────── */
 
 .header {
   display: flex;
@@ -25,59 +53,125 @@
 }
 
 .sun {
-  width: clamp(64px, 18vw, 80px);
+  width: clamp(70px, 18vw, 84px);
   height: auto;
   color: var(--color-dorado-suave);
-  filter: drop-shadow(0 4px 12px rgba(31, 80, 114, 0.35));
+  filter: drop-shadow(0 4px 14px rgba(31, 80, 114, 0.4));
+  /* Pulse muy suave para que se sienta vivo. */
+  animation: sun-breathe 4s var(--ease-in-out) infinite;
+}
+
+@keyframes sun-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
 }
 
 .title {
+  margin: 0;
   font-size: var(--font-size-2xl);
+  font-family: var(--font-stack-display);
   font-style: italic;
   font-weight: 500;
   letter-spacing: var(--letter-spacing-tight);
-  margin: 0;
+  line-height: 1.05;
 }
+
+.title em {
+  font-style: italic;
+  color: var(--color-dorado-suave);
+}
+
+.titleDropcap {
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.55em;
+  line-height: 0.85;
+  color: var(--color-dorado-suave);
+  margin-right: 1px;
+  vertical-align: -0.08em;
+  text-shadow: 0 1px 3px rgba(31, 80, 114, 0.3);
+}
+
+/* Divisor con flourish: línea — pluma estilizada — línea. */
+.flourish {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 80%;
+  max-width: 280px;
+  color: var(--color-dorado-suave);
+  margin-top: var(--space-1);
+}
+
+.flourishLine {
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.flourishSvg {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* ── Summary cards "celeste papel" con bullets dorados ────────────── */
 
 .summary {
   list-style: none;
   margin: 0;
-  padding: var(--space-5);
-  background:
-    linear-gradient(rgba(243, 236, 217, 0.45), rgba(243, 236, 217, 0.45)),
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-superficie);
+  background-image:
+    linear-gradient(rgba(243, 236, 217, 0.4), rgba(243, 236, 217, 0.4)),
     url("/paper-texture.svg");
   background-blend-mode: multiply;
-  background-color: var(--color-superficie);
+  background-size: auto, 240px;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  color: var(--color-texto);
+  border: 1px solid rgba(231, 206, 142, 0.45);
+  box-shadow: 0 6px 18px rgba(31, 80, 114, 0.18);
+  color: var(--color-celeste-tinta);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
 }
 
 .summary li {
   position: relative;
-  padding-left: var(--space-5);
+  padding-left: calc(var(--space-5) + 2px);
+}
+
+.summary li strong {
+  font-weight: 600;
+  color: var(--color-celeste-profundo);
 }
 
 .summary li::before {
   content: "✦";
   position: absolute;
   left: 0;
-  top: 0.05em;
+  top: -0.05em;
+  font-size: 1.1em;
   color: var(--color-dorado);
-  font-size: 1.05em;
+  /* Halo dorado micro detrás del bullet. */
+  text-shadow: 0 0 6px rgba(201, 161, 74, 0.4);
 }
 
-/* Detalles desplegables del texto completo */
+/* ── Details desplegable (texto completo) ─────────────────────────── */
 
 .details {
-  border: 1px solid rgba(231, 206, 142, 0.5);
+  border: 1px solid rgba(231, 206, 142, 0.45);
   border-radius: var(--radius-md);
-  background: rgba(31, 80, 114, 0.15);
+  background: rgba(31, 80, 114, 0.18);
+  overflow: hidden;
 }
 
 .detailsToggle {
@@ -87,10 +181,11 @@
   font-family: var(--font-stack-display);
   font-style: italic;
   font-weight: 500;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-base);
   color: var(--color-blanco-calido);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-2);
 }
 
@@ -98,27 +193,35 @@
   display: none;
 }
 
-.detailsToggle::after {
-  content: "▾";
-  margin-left: auto;
+.detailsChevron {
   color: var(--color-dorado-suave);
-  transition: transform var(--duration-normal) var(--ease-out);
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.details[open] .detailsToggle::after {
+.details[open] .detailsChevron {
   transform: rotate(180deg);
 }
 
 .fullText {
-  padding: 0 var(--space-4) var(--space-4);
-  max-height: 50dvh;
+  padding: var(--space-4);
+  max-height: 40dvh;
   overflow-y: auto;
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
   color: var(--color-blanco-calido);
   -webkit-overflow-scrolling: touch;
   border-top: 1px solid rgba(231, 206, 142, 0.3);
-  padding-top: var(--space-4);
+  /* Scroll suave con scrollbar dorado finito (donde el browser lo permita). */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(231, 206, 142, 0.5) transparent;
+}
+
+.fullText::-webkit-scrollbar {
+  width: 5px;
+}
+.fullText::-webkit-scrollbar-thumb {
+  background: rgba(231, 206, 142, 0.5);
+  border-radius: 999px;
 }
 
 .fullText h1,
@@ -133,11 +236,9 @@
 .fullText h1 {
   font-size: var(--font-size-lg);
 }
-
 .fullText h2 {
   font-size: var(--font-size-md);
 }
-
 .fullText h3 {
   font-size: var(--font-size-base);
 }
@@ -176,11 +277,19 @@
   color: rgba(251, 247, 236, 0.85);
 }
 
-/* Botón de aceptación — destacado, primary */
+/* ── Acciones al pie ─────────────────────────────────────────────── */
+
+.actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
 
 .acceptButton {
-  min-height: var(--target-min-tap);
+  min-height: calc(var(--target-min-tap) + 4px);
   padding: var(--space-4) var(--space-5);
+  border: 0;
   border-radius: var(--radius-md);
   background: var(--color-celeste-tinta);
   color: var(--color-blanco-calido);
@@ -188,12 +297,13 @@
   font-size: var(--font-size-md);
   font-weight: 500;
   letter-spacing: 0.01em;
-  box-shadow:
-    var(--shadow-md),
-    inset 0 -3px 0 var(--color-dorado);
   cursor: pointer;
+  box-shadow:
+    0 8px 24px rgba(31, 80, 114, 0.35),
+    inset 0 -3px 0 var(--color-dorado);
+  /* Spring physics — overshoot al soltar. */
   transition:
-    transform var(--duration-fast) var(--ease-out),
+    transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1),
     background-color var(--duration-fast) var(--ease-out);
 }
 
@@ -202,7 +312,8 @@
 }
 
 .acceptButton:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
+  transition-duration: 90ms;
 }
 
 .fineprint {
@@ -215,8 +326,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .acceptButton:active,
-  .details[open] .detailsToggle::after {
+  .root,
+  .sun,
+  .detailsChevron {
+    animation: none;
+    transition: none;
+  }
+  .acceptButton:active {
     transform: none;
   }
 }

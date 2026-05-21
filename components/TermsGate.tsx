@@ -3,21 +3,24 @@
 /*
  * TermsGate — bloquea el uso de la app hasta que se acepten los términos.
  *
- * Lee/escribe localStorage con una clave VERSIONADA (TERMS_VERSION_KEY). Si
- * los términos se actualizan, basta con bumpear el sufijo de la clave para
- * volver a pedir aceptación.
+ * Diseñado como una "Real Cédula" digital: ornamentos coloniales, drop-cap
+ * en el título, divisor con flourish, Sol de Mayo arriba, franja dorada
+ * interior. Cabe en 100dvh sin scroll (el texto completo se despliega en
+ * un <details> con scroll interno limitado).
  *
- * Recibe el HTML ya pre-renderizado de content/terminos.md (lo parsea el
- * Server Component padre con marked). Renderiza el texto completo en un
- * scroll-container con styling propio.
+ * Persistencia: localStorage versionado con TERMS_VERSION_KEY. Si los
+ * términos se actualizan, bumpear el sufijo de la clave para re-pedir
+ * aceptación.
  *
- * En el primer render (antes de hidratarse y leer localStorage) muestra un
- * placeholder neutro para evitar un "flash de gate" para usuarios que ya
- * aceptaron.
+ * Al aceptar: transición fade-out + scale, después se monta el children
+ * (la app real). En browsers con View Transitions, se usa para que el
+ * cambio sea aún más fluido.
  */
 
 import { useEffect, useState } from "react";
 import { SolDeMayo } from "@/components/SolDeMayo";
+import { haptic } from "@/lib/haptic";
+import { transitionState } from "@/lib/transition";
 import styles from "./TermsGate.module.css";
 
 const TERMS_VERSION_KEY = "terminos_aceptados_v1";
@@ -33,31 +36,24 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
   const [accepted, setAccepted] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Patrón "leer localStorage post-mount": no podemos hacerlo durante SSR
-    // (no hay window). El estado inicial es null y se actualiza una sola vez
-    // al hidratarse. La regla react-hooks/set-state-in-effect previene
-    // cascadas de renders, pero este caso es lectura única de estado
-    // externo: el equivalente "correcto" sería useSyncExternalStore pero es
-    // sobre-engineering para un único getter.
     try {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setAccepted(window.localStorage.getItem(TERMS_VERSION_KEY) === "yes");
     } catch {
-      // Sin localStorage (privacy mode estricto): tratamos como no aceptado.
       setAccepted(false);
     }
   }, []);
 
   function handleAccept() {
+    haptic("success");
     try {
       window.localStorage.setItem(TERMS_VERSION_KEY, "yes");
     } catch {
       // ignoramos: si falla, igual avanzamos para esta sesión.
     }
-    setAccepted(true);
+    transitionState(() => setAccepted(true), "forward");
   }
 
-  // Primer render — placeholder neutro para evitar flash del gate
   if (accepted === null) {
     return <div className={styles.boot} aria-hidden />;
   }
@@ -67,53 +63,109 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
   }
 
   return (
-    <div className={styles.root} role="dialog" aria-modal="true" aria-labelledby="terms-title">
+    <div
+      className={styles.root}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="terms-title"
+    >
       <header className={styles.header}>
         <SolDeMayo className={styles.sun} aria-hidden />
         <h1 id="terms-title" className={styles.title}>
-          Antes de empezar
+          <span className={styles.titleDropcap}>A</span>ntes de{" "}
+          <em>empezar</em>
         </h1>
+        <div className={styles.flourish} aria-hidden>
+          <span className={styles.flourishLine} />
+          <FlourishMark />
+          <span className={styles.flourishLine} />
+        </div>
       </header>
 
       <ul className={styles.summary}>
         <li>
-          No guardamos tu foto en ningún lado. Se procesa y se descarta.
+          <strong>No guardamos tu foto.</strong> Se procesa y se descarta.
         </li>
         <li>
-          La foto se envía momentáneamente a Google Gemini para generar el
+          La foto se manda a Google Gemini un instante para generar el
           retrato.
         </li>
         <li>
-          Si sos menor de edad, necesitás autorización de un adulto
-          responsable.
+          Si sos menor, necesitás autorización de un adulto responsable.
         </li>
-        <li>Es un proyecto educativo, sin fines comerciales.</li>
+        <li>Proyecto educativo, sin fines comerciales.</li>
       </ul>
 
       <details className={styles.details}>
         <summary className={styles.detailsToggle}>
-          Leer el texto completo
+          <span>Leer el texto completo</span>
+          <ChevronGlyph />
         </summary>
         <div
           className={styles.fullText}
-          // El HTML viene del .md propio del proyecto, parseado server-side
-          // con marked. No hay fuente externa = no XSS.
+          // HTML del .md propio del proyecto, parseado server-side con
+          // marked. No hay fuente externa = no XSS.
           dangerouslySetInnerHTML={{ __html: termsHtml }}
         />
       </details>
 
-      <button
-        type="button"
-        className={styles.acceptButton}
-        onClick={handleAccept}
-      >
-        Acepto y continúo
-      </button>
-
-      <p className={styles.fineprint}>
-        Al continuar aceptás los Términos y el Aviso de Privacidad
-        completos.
-      </p>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.acceptButton}
+          onClick={handleAccept}
+        >
+          Acepto y continúo
+        </button>
+        <p className={styles.fineprint}>
+          Al continuar aceptás los Términos y el Aviso de Privacidad
+          completos.
+        </p>
+      </div>
     </div>
+  );
+}
+
+/* ── Ornamento de divisor — pluma estilizada ───────────────────────── */
+
+function FlourishMark() {
+  return (
+    <svg
+      viewBox="0 0 28 14"
+      width="28"
+      height="14"
+      className={styles.flourishSvg}
+      aria-hidden
+    >
+      <path
+        d="M 2 7 Q 8 1 14 7 Q 20 13 26 7"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <circle cx="14" cy="7" r="1.4" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ChevronGlyph() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="14"
+      height="14"
+      className={styles.detailsChevron}
+      aria-hidden
+    >
+      <path
+        d="M 4 6 L 8 10 L 12 6"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
