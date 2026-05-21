@@ -9,34 +9,61 @@ import {
   type Character,
   type CharacterId,
 } from "@/components/CharacterPicker";
+import { GenderToggle, type Gender } from "@/components/GenderToggle";
 
-// Datos temporales — pasan a lib/characters.ts en el bloque 5 junto con los
-// prompts de Gemini.
+// Modelo extendido: los roles son neutros respecto al género, pero cada uno
+// tiene formas declinadas en femenino y masculino. La combinación de rol +
+// género arma el nombre completo del personaje (cartela del retrato, prompt).
+// Esto pasa formalmente a lib/characters.ts en el bloque 5.
 const CHARACTERS: Character[] = [
   {
-    id: "dama",
-    nombre: "Dama porteña",
-    descripcionCorta: "vestido bordado, peinetón, mantilla de encaje",
+    id: "porteno",
+    nombreDama: "Dama porteña",
+    nombreCaballero: "Caballero porteño",
+    descripcionCorta: "vestimenta de sociedad porteña",
   },
   {
-    id: "caballero",
-    nombre: "Caballero patriota",
-    descripcionCorta: "chaqueta militar azul, charreteras, casaca",
+    id: "patriota",
+    nombreDama: "Dama patriota",
+    nombreCaballero: "Caballero patriota",
+    descripcionCorta: "casaca azul y tricornio de Mayo",
   },
   {
     id: "vendedor",
-    nombre: "Vendedor ambulante",
-    descripcionCorta: "poncho, sombrero de paja, canasto al hombro",
+    nombreDama: "Vendedora ambulante",
+    nombreCaballero: "Vendedor ambulante",
+    descripcionCorta: "poncho, sombrero y canasto",
   },
   {
     id: "soldado",
-    nombre: "Soldado de la Patria",
-    descripcionCorta: "morrión con escarapela, fusil, casaca blanca",
+    nombreDama: "Soldada de la Patria",
+    nombreCaballero: "Soldado de la Patria",
+    descripcionCorta: "morrión, escarapela y fusil",
   },
 ];
 
+// Etiqueta corta para mostrar dentro de la card (declinada por género).
+const SHORT_BY_ID: Record<CharacterId, { dama: string; caballero: string }> = {
+  porteno: { dama: "Porteña", caballero: "Porteño" },
+  patriota: { dama: "Patriota", caballero: "Patriota" },
+  vendedor: { dama: "Vendedora", caballero: "Vendedor" },
+  soldado: { dama: "Soldada", caballero: "Soldado" },
+};
+
 export default function Home() {
+  const [gender, setGender] = useState<Gender>("dama");
   const [selectedId, setSelectedId] = useState<CharacterId | null>(null);
+
+  const labelFor = (c: Character) => SHORT_BY_ID[c.id][gender];
+
+  const selected = selectedId
+    ? CHARACTERS.find((c) => c.id === selectedId)
+    : null;
+  const fullName = selected
+    ? gender === "dama"
+      ? selected.nombreDama
+      : selected.nombreCaballero
+    : "Sin elegir";
 
   const handleDownload = () => {
     alert("Descarga (simulada): el retrato se guardaría en tu galería.");
@@ -61,19 +88,26 @@ export default function Home() {
         </p>
       </section>
 
+      <section className={styles.preview} aria-labelledby="preview-gender">
+        <header className={styles.previewHeader}>
+          <h2 id="preview-gender" className={styles.previewTitle}>
+            Quiero ser <em>representad@</em> como
+          </h2>
+        </header>
+        <GenderToggle value={gender} onChange={setGender} />
+      </section>
+
       <section className={styles.preview} aria-labelledby="preview-picker">
         <header className={styles.previewHeader}>
           <h2 id="preview-picker" className={styles.previewTitle}>
-            Elegí un <em>personaje</em>
+            Elegí un <em>rol</em>
           </h2>
-          <p className={styles.previewNote}>
-            Tocá una tarjeta para previsualizar la selección.
-          </p>
         </header>
         <CharacterPicker
           characters={CHARACTERS}
           selectedId={selectedId}
           onSelect={setSelectedId}
+          labelFor={labelFor}
         />
       </section>
 
@@ -88,11 +122,7 @@ export default function Home() {
         </header>
         <PortraitFrame
           imageDataUrl="/sample-portrait.svg"
-          characterName={
-            selectedId
-              ? CHARACTERS.find((c) => c.id === selectedId)!.nombre
-              : "Sin elegir"
-          }
+          characterName={fullName}
           variant="cabildo"
           onDownload={handleDownload}
           onShare={handleShare}
