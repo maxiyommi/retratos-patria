@@ -69,7 +69,14 @@ El peinado SÓLO se ajusta si la moda de época lo requiere (por ejemplo, recogi
 
 GÉNERO DEL PERSONAJE: lo define exclusivamente la INDUMENTARIA descripta más abajo, NO el rostro. Si la indumentaria es femenina pero la cara es masculina (o viceversa), el rostro permanece tal cual está en la foto y sólo se viste el personaje según el rol. No "feminizar" ni "masculinizar" la cara para que matchee con la ropa.`;
 
-const PROMPT_STYLE = `Técnica pictórica: retrato al óleo colonial rioplatense del siglo XIX temprano, pincelada visible pero refinada. Fondo neutro oscuro (tonos sepia, ocre quemado, marrón verdoso) con un acento de luz pictórica que destaca el rostro. Encuadre de medio cuerpo, semi-perfil de tres cuartos. Paleta sobria de tierras, marfiles, dorados apagados y sepias. La piel del personaje conserva las imperfecciones naturales propias del retratado original — no la suavices artificialmente.`;
+const PROMPT_STYLE = `IMPORTANTE: el estilo pictórico TIENE MENOR PRIORIDAD que la preservación del rostro. Si hay tensión entre "más al óleo" y "que se parezca a la persona", siempre gana el parecido.
+
+Pautas del estilo (aplicalas con moderación):
+- Acabado de óleo sutil, técnica realista al estilo de los retratos coloniales rioplatenses del siglo XIX temprano. NO uses pincelada gruesa, impresionista ni expresiva: preferí trazos suaves que conserven los detalles finos del rostro (ojos, cejas, comisuras de la boca, lunares, líneas de expresión).
+- Fondo neutro oscuro en tonos tierra (sepia, ocre quemado, marrón verdoso). Sin elementos distractores en el fondo.
+- Iluminación suave y uniforme sobre el rostro. NO uses sombras dramáticas, claroscuro fuerte ni recortes de luz que oculten rasgos.
+- Encuadre y pose: respetar la orientación de la foto original. Si la persona está de frente, dejala de frente; si está en tres cuartos, dejala en tres cuartos. NO rotes la cabeza ni reposiciones a la persona. Encuadre de busto a medio cuerpo.
+- Paleta sobria: tierras, marfiles, dorados apagados y sepias.`;
 
 const PROMPT_SAFETY = `Apto para audiencias escolares (niños y niñas). Sin contenido sexualizado, sin pieles expuestas más allá de lo natural en un retrato formal de época, sin violencia explícita. No alterar la edad ni el cuerpo del retratado.`;
 
