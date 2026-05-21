@@ -155,6 +155,16 @@ export function Camera({ onPhotoReady }: CameraProps) {
       }
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
+      // Espejo horizontal cuando se está usando la cámara frontal — así la
+      // foto capturada matchea exactamente con lo que el usuario vio en
+      // vivo (que también está espejado por CSS para el feel de selfie).
+      // Si no espejáramos, el preview "saltaría" de orientación y resulta
+      // confuso. Para Gemini no afecta: las caras son ~simétricas y la
+      // ropa real se reemplaza por la de 1810.
+      if (facing === "user") {
+        ctx.translate(side, 0);
+        ctx.scale(-1, 1);
+      }
       ctx.drawImage(video, sx, sy, side, side, 0, 0, side, side);
 
       const blob = await new Promise<Blob>((resolve, reject) => {
