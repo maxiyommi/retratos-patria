@@ -267,14 +267,23 @@
 .titleSub {
   font-family: var(--font-stack-display);
   font-style: italic;
-  font-weight: 500;
-  font-size: clamp(1.15rem, 4.8vw, 1.65rem);
-  letter-spacing: 0.04em;
-  color: var(--color-blanco-calido);
+  font-weight: 600;
+  /* Bumpeado de clamp(1.15, 4.8, 1.65) — antes parecía un footnote. */
+  font-size: clamp(1.55rem, 6vw, 2.2rem);
+  letter-spacing: 0.03em;
+  /*
+   * Color: celeste-tinta en lugar de blanco-cálido. La franja del medio
+   * de la bandera es BLANCA, así que el texto blanco se perdía sobre
+   * blanco. El azul oscuro tipo "tinta sobre papel" da contraste fuerte
+   * y un guiño caligráfico colonial.
+   */
+  color: var(--color-celeste-tinta);
   margin-top: -0.05em;
+  /* Sombra muy sutil que da peso sin halos negros (que no van sobre
+     un fondo claro). */
   text-shadow:
-    0 2px 0 rgba(0, 0, 0, 0.35),
-    0 4px 18px rgba(0, 0, 0, 0.5);
+    0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 8px rgba(31, 80, 114, 0.25);
   animation: title-sub-emerge 1000ms var(--ease-out) 2900ms backwards;
 }
 
