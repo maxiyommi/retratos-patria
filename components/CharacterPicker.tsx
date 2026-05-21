@@ -17,16 +17,12 @@
  */
 
 import { SolDeMayo } from "@/components/SolDeMayo";
+import type { Character, CharacterId } from "@/lib/characters";
 import styles from "./CharacterPicker.module.css";
 
-export type CharacterId = "porteno" | "patriota" | "vendedor" | "soldado";
-
-export interface Character {
-  id: CharacterId;
-  nombreDama: string;
-  nombreCaballero: string;
-  descripcionCorta: string;
-}
+// Re-exportamos los tipos para que los consumidores del componente puedan
+// seguir importándolos de aquí si ya lo hacían.
+export type { Character, CharacterId };
 
 export interface CharacterPickerProps {
   characters: Character[];

@@ -6,65 +6,23 @@ import { SolDeMayo } from "@/components/SolDeMayo";
 import { PortraitFrame } from "@/components/PortraitFrame";
 import {
   CharacterPicker,
-  type Character,
   type CharacterId,
 } from "@/components/CharacterPicker";
 import { GenderToggle, type Gender } from "@/components/GenderToggle";
 import { LoadingState } from "@/components/LoadingState";
-
-// Modelo extendido: los roles son neutros respecto al género, pero cada uno
-// tiene formas declinadas en femenino y masculino. La combinación de rol +
-// género arma el nombre completo del personaje (cartela del retrato, prompt).
-// Esto pasa formalmente a lib/characters.ts en el bloque 5.
-const CHARACTERS: Character[] = [
-  {
-    id: "porteno",
-    nombreDama: "Dama porteña",
-    nombreCaballero: "Caballero porteño",
-    descripcionCorta: "vestimenta de sociedad porteña",
-  },
-  {
-    id: "patriota",
-    nombreDama: "Dama patriota",
-    nombreCaballero: "Caballero patriota",
-    descripcionCorta: "casaca azul y tricornio de Mayo",
-  },
-  {
-    id: "vendedor",
-    nombreDama: "Vendedora ambulante",
-    nombreCaballero: "Vendedor ambulante",
-    descripcionCorta: "poncho, sombrero y canasto",
-  },
-  {
-    id: "soldado",
-    nombreDama: "Soldada de la Patria",
-    nombreCaballero: "Soldado de la Patria",
-    descripcionCorta: "morrión, escarapela y fusil",
-  },
-];
-
-// Etiqueta corta para mostrar dentro de la card (declinada por género).
-const SHORT_BY_ID: Record<CharacterId, { dama: string; caballero: string }> = {
-  porteno: { dama: "Porteña", caballero: "Porteño" },
-  patriota: { dama: "Patriota", caballero: "Patriota" },
-  vendedor: { dama: "Vendedora", caballero: "Vendedor" },
-  soldado: { dama: "Soldada", caballero: "Soldado" },
-};
+import {
+  CHARACTERS,
+  getCharacterById,
+  getFullName,
+  getShortLabel,
+} from "@/lib/characters";
 
 export default function Home() {
   const [gender, setGender] = useState<Gender>("dama");
   const [selectedId, setSelectedId] = useState<CharacterId | null>(null);
 
-  const labelFor = (c: Character) => SHORT_BY_ID[c.id][gender];
-
-  const selected = selectedId
-    ? CHARACTERS.find((c) => c.id === selectedId)
-    : null;
-  const fullName = selected
-    ? gender === "dama"
-      ? selected.nombreDama
-      : selected.nombreCaballero
-    : "Sin elegir";
+  const selected = selectedId ? getCharacterById(selectedId) : null;
+  const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
 
   const handleDownload = () => {
     alert("Descarga (simulada): el retrato se guardaría en tu galería.");
@@ -108,7 +66,7 @@ export default function Home() {
           characters={CHARACTERS}
           selectedId={selectedId}
           onSelect={setSelectedId}
-          labelFor={labelFor}
+          labelFor={(c) => getShortLabel(c, gender)}
         />
       </section>
 

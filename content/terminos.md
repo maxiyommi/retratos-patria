@@ -1,0 +1,75 @@
+# Términos y Condiciones · Aviso de Privacidad
+
+*Versión 1 — vigente desde mayo de 2026.*
+
+## En dos minutos
+
+- **Retratos de la Patria** es una app educativa que transforma tu foto en un retrato pintado al óleo de una figura de la Buenos Aires colonial de **1810**.
+- **No guardamos tu foto en ningún lado.** Se procesa y se descarta.
+- Para hacer el retrato, mandamos tu foto a la IA de Google (Gemini). Eso significa que tu imagen sale momentáneamente hacia servidores de Google. Más detalle abajo.
+- **Si sos menor de edad, necesitás autorización** de tu mamá, papá o adulto responsable para usar la app.
+- Al tocar "Acepto y continúo" estás aceptando estos términos. Sin esa aceptación, no podés usar la app.
+
+---
+
+## Qué hace la app
+
+Tomás una foto desde tu cámara (o subís una que ya tengas), elegís entre cuatro personajes históricos de la Buenos Aires de 1810 — Dama o Caballero porteño, patriota, vendedor o soldado de la Patria — y la inteligencia artificial te devuelve un retrato pintado al óleo donde estás vestido como esa figura. El proyecto es educativo y nació para la **Semana de Mayo**.
+
+## Qué NO hace la app (privacidad)
+
+- **No guardamos tu foto** en ningún servidor ni base de datos nuestra. Se procesa, se devuelve el resultado, y se descarta.
+- **No guardamos el retrato generado.** Vive sólo en el navegador. Si querés conservarlo, tenés que descargarlo o compartirlo vos.
+- **No te pedimos cuenta, mail, ni datos personales.** No hay registro ni login.
+- **No te trackeamos.** No hay cookies de seguimiento, ni analítica de terceros, ni perfilado.
+- **No logueamos el contenido de las imágenes** ni en archivos del servidor ni en métricas.
+
+## Tu foto y Google Gemini
+
+Para generar el retrato necesitamos un modelo de inteligencia artificial. Usamos la API de **Google Gemini**. Implicancias importantes:
+
+- **Tu foto se envía momentáneamente a servidores de Google** para que el modelo la transforme.
+- Google **puede usar esos datos para mejorar sus modelos** cuando se utiliza el *tier gratuito* de la API.
+- Cuando se utiliza el *tier pago*, Google se compromete a **no usar los datos para entrenamiento**.
+- **Si la app se va a exponer a un grupo escolar con niños y niñas, se recomienda usar el tier pago.** La clave de API es local de quien instala la app: cada instalación elige qué tier usar.
+- Tras procesar tu foto, **nosotros no la conservamos** del lado del servidor.
+
+## Sobre menores de 18 años
+
+Esta app está pensada para uso educativo en escuelas y entornos familiares.
+
+- **Si sos menor de 18 años, sólo podés usarla con autorización** de tu mamá, papá, tutor/a o adulto responsable.
+- **Si sos docente o adulto responsable**, asegurate de tener el consentimiento de los padres/madres de los/las menores antes de usar la app con ellos. Idealmente firmado.
+- **No subas la foto de un menor que no tenés autorización para fotografiar.**
+- Las imágenes generadas con la foto de un menor merecen el mismo cuidado que la foto original: no compartirlas en redes públicas sin autorización.
+
+## Marco legal argentino
+
+Retratos de la Patria se ajusta al marco legal de la República Argentina:
+
+- **Ley 25.326 de Protección de Datos Personales.** Regula el tratamiento de datos personales, incluidas las imágenes. La app procesa la foto que voluntariamente nos provees, sin almacenarla, y con la finalidad explícita de generar el retrato.
+- **Código Civil y Comercial de la Nación, artículo 53 (Derecho a la propia imagen).** Para captar, reproducir o publicar la imagen de una persona se requiere su consentimiento (o el de su representante legal si es menor). Al aceptar estos términos estás dando ese consentimiento, **acotado al uso descripto en este documento**.
+
+## Sin fines comerciales · Código abierto
+
+- Retratos de la Patria es un **proyecto personal de Maximiliano Yommi**.
+- **No tiene fines comerciales.** No vendemos las imágenes ni los datos. No hay publicidad. No hay suscripciones.
+- Es **código abierto** bajo licencia MIT. Podés revisar el código y hacer tu propia copia: <https://github.com/maxiyommi/retratos-patria>.
+- Cualquier persona que despliegue la app usa su propia clave de Google Gemini (ver "Tu foto y Google Gemini" más arriba).
+
+## Si cambiás de opinión
+
+Como no guardamos nada nuestro lado, no hay nada que borrar de nuestros servidores: tu foto y tu retrato nunca se persistieron.
+
+Si descargaste el retrato o lo compartiste, esa copia vive en **tu dispositivo** o en **el dispositivo de quien la haya recibido** — esas copias las administrás vos.
+
+## Si tenés dudas o querés contactarnos
+
+Maximiliano Yommi — autor del proyecto:
+
+- LinkedIn: <https://www.linkedin.com/in/maximilianoyommi/>
+- Reportar un problema: <https://github.com/maxiyommi/retratos-patria/issues>
+
+---
+
+*Estos términos pueden actualizarse para mejorar su claridad o ajustarse a cambios legales. Si la versión cambia, se te volverá a pedir aceptación la próxima vez que uses la app.*
