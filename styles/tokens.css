@@ -1,0 +1,102 @@
+/*
+ * Tokens de diseño — Retratos de la Patria
+ *
+ * Dos mundos visuales conviven en la app:
+ *
+ * 1. El "chrome" (la cáscara de la app, la Argentina de hoy): celeste, blanco
+ *    cálido y dorado. Es la identidad dominante de la interfaz.
+ * 2. El "retrato" (el mundo de 1810): pergamino y sepia. Vive solamente
+ *    dentro del marco del retrato, nunca en el chrome.
+ *
+ * Los tokens del mundo "retrato" están en la sección "Mundo 1810" y se usan
+ * exclusivamente en PortraitFrame.module.css.
+ */
+
+:root {
+  /* ── Paleta — Chrome (Argentina hoy) ─────────────────────────────────── */
+  --color-celeste: #5b9ece;
+  --color-celeste-profundo: #2f6f9b;
+  --color-celeste-tinta: #1f5072;
+  --color-blanco-calido: #fbf7ec;
+  --color-crema: #f3ecd9;
+  --color-dorado: #c9a14a;
+  --color-dorado-suave: #e7ce8e;
+
+  /* ── Paleta — Mundo 1810 (solo dentro del retrato) ───────────────────── */
+  --color-pergamino: #efe1bf;
+  --color-sepia: #6b4a2b;
+  --color-tinta-vieja: #3a2618;
+
+  /* ── Aliases semánticos ──────────────────────────────────────────────── */
+  --color-fondo-app: var(--color-celeste);
+  --color-superficie: var(--color-blanco-calido);
+  --color-superficie-suave: var(--color-crema);
+  --color-texto: var(--color-celeste-tinta);
+  --color-texto-claro: var(--color-blanco-calido);
+  --color-acento: var(--color-dorado);
+  --color-accion-primaria: var(--color-celeste-profundo);
+  --color-accion-primaria-hover: var(--color-celeste-tinta);
+  --color-foco: var(--color-dorado);
+
+  /* ── Tipografía ──────────────────────────────────────────────────────── */
+  /*
+   * Las variables --font-display y --font-body se definen desde
+   * app/layout.tsx vía next/font/google (Cormorant Garamond + EB Garamond).
+   * Acá sólo declaramos los stacks completos con fallbacks.
+   */
+  --font-stack-display: var(--font-display), "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-stack-body: var(--font-body), "EB Garamond", Georgia, "Times New Roman", serif;
+
+  /* Escala tipográfica — modular ratio 1.25, base 18px (mobile-first) */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px (root está en 18px → ver html) */
+  --font-size-md: 1.125rem;    /* 18px */
+  --font-size-lg: 1.375rem;    /* 22px */
+  --font-size-xl: 1.75rem;     /* 28px */
+  --font-size-2xl: 2.25rem;    /* 36px */
+  --font-size-3xl: 3rem;       /* 48px */
+
+  --line-height-tight: 1.15;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.04em;
+
+  /* ── Espaciado — escala de 4px ───────────────────────────────────────── */
+  --space-1: 0.25rem;   /*  4px */
+  --space-2: 0.5rem;    /*  8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 3rem;      /* 48px */
+  --space-8: 4rem;      /* 64px */
+  --space-9: 6rem;      /* 96px */
+
+  /* ── Radios ──────────────────────────────────────────────────────────── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-pill: 999px;
+
+  /* ── Sombras ─────────────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(31, 80, 114, 0.08);
+  --shadow-md: 0 4px 12px rgba(31, 80, 114, 0.12);
+  --shadow-lg: 0 12px 32px rgba(31, 80, 114, 0.18);
+  --shadow-marco: 0 16px 40px rgba(58, 38, 24, 0.35); /* sombra del retrato */
+
+  /* ── Transiciones ────────────────────────────────────────────────────── */
+  --duration-fast: 120ms;
+  --duration-normal: 240ms;
+  --duration-slow: 480ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Layout ──────────────────────────────────────────────────────────── */
+  --max-width-content: 28rem;   /* ~448px — mobile-first, una columna */
+  --target-min-tap: 2.75rem;    /* 44px mínimo para botones tactiles */
+}

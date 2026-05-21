@@ -1,0 +1,56 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5);
+  min-height: 100dvh;
+  justify-content: center;
+}
+
+.hero {
+  text-align: center;
+  color: var(--color-texto-claro);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.title {
+  /* h1 ya viene del globals; acá afinamos el peso y agregamos un acento. */
+  font-weight: 500;
+  font-style: italic;
+  text-shadow: 0 1px 2px rgba(31, 80, 114, 0.25);
+}
+
+.tagline {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-blanco-calido);
+  opacity: 0.92;
+}
+
+.tagline em {
+  font-style: normal;
+  color: var(--color-dorado-suave);
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.card {
+  background: var(--color-superficie);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-crema);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--color-texto);
+}
+
+.cardTitle {
+  font-size: var(--font-size-xl);
+  color: var(--color-celeste-profundo);
+}

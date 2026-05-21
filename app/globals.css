@@ -1,3 +1,14 @@
+/*
+ * Estilos globales — Retratos de la Patria
+ *
+ * Reset mínimo + estilos base del chrome (celeste / blanco / dorado).
+ * Los tokens viven en styles/tokens.css y se cargan antes de este archivo
+ * desde app/layout.tsx.
+ *
+ * El "mundo 1810" (pergamino / sepia) NO vive acá: vive aislado en
+ * components/PortraitFrame.module.css.
+ */
+
 *,
 *::before,
 *::after {
@@ -10,9 +21,86 @@ body {
   padding: 0;
 }
 
+html {
+  font-size: 18px; /* base de la escala tipográfica — mobile-first */
+}
+
 body {
-  min-height: 100vh;
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
+  min-height: 100dvh;
+  font-family: var(--font-stack-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-texto);
+  background-color: var(--color-fondo-app);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-stack-display);
+  font-weight: 600;
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-celeste-tinta);
+  text-decoration: underline;
+  text-decoration-color: var(--color-dorado-suave);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--duration-fast) var(--ease-out);
+}
+
+a:hover {
+  text-decoration-color: var(--color-dorado);
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Foco accesible: anillo dorado visible sobre cualquier superficie del chrome. */
+:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Respeta usuarios con preferencias de movimiento reducido. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

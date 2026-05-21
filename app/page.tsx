@@ -1,8 +1,23 @@
+import styles from "./page.module.css";
+
 export default function Home() {
   return (
-    <main>
-      <h1>Retratos de la Patria</h1>
-      <p>Próximamente: retratos de 1810 a partir de tu foto.</p>
+    <main className={styles.main}>
+      <section className={styles.hero}>
+        <h1 className={styles.title}>Retratos de la Patria</h1>
+        <p className={styles.tagline}>
+          Sacate una foto y pintate como una figura de la Buenos Aires
+          colonial de <em>1810</em>.
+        </p>
+      </section>
+
+      <section className={styles.card}>
+        <h2 className={styles.cardTitle}>Próximamente</h2>
+        <p>
+          Estamos preparando el bastidor. En unos días vas a poder elegir
+          entre cuatro personajes y ver tu retrato pintado al óleo.
+        </p>
+      </section>
     </main>
   );
 }
