@@ -31,41 +31,66 @@ html {
   text-size-adjust: 100%;
 }
 
+/*
+ * Variables de fondo por step — el AppFlow setea html[data-step] y estas
+ * reglas pisan los tokens, dando a cada habitación del flujo su atmósfera
+ * propia. El body usa estas variables y transiciona suavemente al cambio.
+ */
+:root {
+  --bg-top: var(--color-celeste);
+  --bg-bottom: var(--color-celeste-profundo);
+  --bg-halo: rgba(231, 206, 142, 0.22);
+}
+
+/* El espejo — celeste profundo (cabina de fotos sobria). */
+html[data-step="camera"] {
+  --bg-top: #2f6f9b;
+  --bg-bottom: #143b5a;
+  --bg-halo: rgba(231, 206, 142, 0.14);
+}
+
+/* El catálogo — celeste vivo con halo dorado prominente. */
+html[data-step="choose"] {
+  --bg-top: var(--color-celeste);
+  --bg-bottom: var(--color-celeste-profundo);
+  --bg-halo: rgba(231, 206, 142, 0.32);
+}
+
+/* El taller del pintor — mundo 1810: sepia + tinta. */
+html[data-step="painting"] {
+  --bg-top: #6b4a2b;
+  --bg-bottom: #2a1a0e;
+  --bg-halo: rgba(231, 206, 142, 0.45);
+}
+
+/* La galería — museo con spotlight dorado sobre el retrato. */
+html[data-step="result"] {
+  --bg-top: #2a1a0e;
+  --bg-bottom: #110a05;
+  --bg-halo: rgba(231, 206, 142, 0.55);
+}
+
 body {
   min-height: 100dvh;
   font-family: var(--font-stack-body);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   color: var(--color-texto);
-  /*
-   * Fondo atmosférico estilo cielo de aurora — radial gradient con halo
-   * dorado-suave en la parte superior central (insinuación del Sol sin
-   * dibujarlo) cayendo en celeste profundo hacia los bordes y el fondo.
-   * Encima, una capa de grano de papel para textura. Esto le da depth
-   * que el celeste plano no tenía, sin sumar ruido visual.
-   */
-  background-color: var(--color-celeste-profundo);
+  background-color: var(--bg-bottom);
   background-image:
     radial-gradient(
       ellipse 90% 60% at 50% -10%,
-      rgba(231, 206, 142, 0.22) 0%,
-      rgba(231, 206, 142, 0) 50%
+      var(--bg-halo) 0%,
+      transparent 50%
     ),
-    radial-gradient(
-      ellipse 80% 50% at 50% 0%,
-      var(--color-celeste) 0%,
-      rgba(91, 158, 206, 0) 65%
-    ),
-    linear-gradient(
-      180deg,
-      var(--color-celeste) 0%,
-      var(--color-celeste-profundo) 100%
-    ),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%),
     url("/paper-texture.svg");
-  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
-  background-size: 100% 100%, 100% 100%, 100% 100%, 320px 320px;
-  background-blend-mode: normal, normal, normal, multiply;
-  background-attachment: fixed, fixed, fixed, scroll;
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: 100% 100%, 100% 100%, 320px 320px;
+  background-blend-mode: normal, normal, multiply;
+  background-attachment: fixed, fixed, scroll;
+  /* Transición suave del color de fondo al cambiar de step. */
+  transition: background-color 540ms cubic-bezier(0.32, 0.72, 0, 1);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;

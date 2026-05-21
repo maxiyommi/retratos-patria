@@ -20,7 +20,7 @@
  *                     "Probar con otra foto".
  */
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./AppFlow.module.css";
 import { Camera } from "@/components/Camera";
 import {
@@ -32,6 +32,8 @@ import { LoadingState } from "@/components/LoadingState";
 import { PortraitFrame } from "@/components/PortraitFrame";
 import { BottomActionBar } from "@/components/BottomActionBar";
 import { RayBurst } from "@/components/RayBurst";
+import { LargeTitle } from "@/components/LargeTitle";
+import { SolFlash } from "@/components/SolFlash";
 import {
   CHARACTERS,
   getCharacterById,
@@ -85,6 +87,12 @@ export function AppFlow() {
 
   const selected = characterId ? getCharacterById(characterId) : null;
   const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
+
+  // Sincronizamos el step actual con html[data-step] para que globals.css
+  // pueda cambiar el background atmosférico por habitación.
+  useEffect(() => {
+    document.documentElement.dataset.step = step;
+  }, [step]);
 
   function goCamera() {
     transitionState(() => {
@@ -251,46 +259,77 @@ export function AppFlow() {
         </button>
       )}
 
+      <SolFlash trigger={step} />
+
       <main className={styles.main} data-step={step}>
         <div key={step} className={styles.step}>
           {step === "camera" && (
-            <Camera onPhotoReady={handlePhotoReady} />
+            <>
+              <LargeTitle
+                eyebrow="Paso 1 · El espejo"
+                subtitle="Encuadrá tu cara en el óvalo y tocá el obturador."
+              >
+                Mirate
+              </LargeTitle>
+              <Camera onPhotoReady={handlePhotoReady} />
+            </>
           )}
 
           {step === "choose" && photo && (
-            <ChooseScreen
-              photo={photo}
-              gender={gender}
-              onGenderChange={setGender}
-              characterId={characterId}
-              onCharacterChange={setCharacterId}
-              onRetakePhoto={goCamera}
-              onStart={handleStartPaint}
-              onEnterDemo={
-                isBillingError(transformError) ? handleEnterDemoMode : null
-              }
-              fullName={fullName}
-              errorMessage={transformError}
-            />
+            <>
+              <LargeTitle
+                eyebrow="Paso 2 · El catálogo"
+                subtitle="Elegí cómo querés ser pintado en 1810."
+              >
+                ¿Quién <em>serás</em>?
+              </LargeTitle>
+              <ChooseScreen
+                photo={photo}
+                gender={gender}
+                onGenderChange={setGender}
+                characterId={characterId}
+                onCharacterChange={setCharacterId}
+                onRetakePhoto={goCamera}
+                onStart={handleStartPaint}
+                onEnterDemo={
+                  isBillingError(transformError) ? handleEnterDemoMode : null
+                }
+                fullName={fullName}
+                errorMessage={transformError}
+              />
+            </>
           )}
 
           {step === "painting" && (
-            <LoadingState
-              characterName={fullName}
-              onCancel={handleCancelPaint}
-            />
+            <>
+              <LargeTitle
+                eyebrow="Paso 3 · El taller"
+                subtitle="El artista no se apura. Esperá unos segundos."
+              >
+                Pintándote
+              </LargeTitle>
+              <LoadingState
+                characterName={fullName}
+                onCancel={handleCancelPaint}
+              />
+            </>
           )}
 
           {step === "result" && portrait && (
-            <ResultScreen
-              portrait={portrait}
-              characterName={fullName}
-              onDownload={handleDownload}
-              onShare={handleShare}
-              onRestart={goCamera}
-              isDemoMode={isDemoMode}
-              burstKey={burstKey}
-            />
+            <>
+              <LargeTitle eyebrow="Paso 4 · La galería" align="center">
+                Vos en <em>1810</em>
+              </LargeTitle>
+              <ResultScreen
+                portrait={portrait}
+                characterName={fullName}
+                onDownload={handleDownload}
+                onShare={handleShare}
+                onRestart={goCamera}
+                isDemoMode={isDemoMode}
+                burstKey={burstKey}
+              />
+            </>
           )}
         </div>
       </main>
