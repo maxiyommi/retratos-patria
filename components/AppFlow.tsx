@@ -19,7 +19,7 @@
  *                   compartir y "probar otro".
  */
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import styles from "./AppFlow.module.css";
 import { Camera } from "@/components/Camera";
 import {
@@ -37,12 +37,12 @@ import {
   getShortLabel,
 } from "@/lib/characters";
 import { dataUrlToFile } from "@/lib/image";
+import type {
+  TransformRequest,
+  TransformResponse,
+} from "@/app/api/transform/types";
 
 type Step = "camera" | "choose" | "painting" | "result";
-
-// Duración del mock de "pintado" — pisado por la respuesta real de Gemini
-// cuando conectemos la ruta /api/transform en el bloque 7.
-const MOCK_PAINTING_MS = 8500;
 
 export function AppFlow() {
   const [step, setStep] = useState<Step>("camera");
@@ -50,20 +50,17 @@ export function AppFlow() {
   const [characterId, setCharacterId] = useState<CharacterId | null>(null);
   const [gender, setGender] = useState<Gender>("dama");
   const [portrait, setPortrait] = useState<string | null>(null);
-  const paintingTimer = useRef<number | null>(null);
+  const [transformError, setTransformError] = useState<string | null>(null);
 
   const selected = characterId ? getCharacterById(characterId) : null;
   const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
 
   function goCamera() {
-    if (paintingTimer.current) {
-      window.clearTimeout(paintingTimer.current);
-      paintingTimer.current = null;
-    }
     setStep("camera");
     setPhoto(null);
     setCharacterId(null);
     setPortrait(null);
+    setTransformError(null);
   }
 
   function handlePhotoReady(dataUrl: string) {
@@ -71,15 +68,46 @@ export function AppFlow() {
     setStep("choose");
   }
 
-  function handleStartPaint() {
+  async function handleStartPaint() {
     if (!photo || !characterId) return;
+    setTransformError(null);
     setStep("painting");
-    // Mock — bloque 7 reemplaza esto con POST /api/transform.
-    paintingTimer.current = window.setTimeout(() => {
-      setPortrait("/sample-portrait.svg");
+
+    const requestBody: TransformRequest = {
+      image: photo,
+      characterId,
+      gender,
+    };
+
+    try {
+      const res = await fetch("/api/transform", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+      // Parseamos siempre — la API devuelve JSON en ok y en error.
+      const data = (await res.json()) as TransformResponse;
+
+      if (!res.ok || "error" in data) {
+        const message =
+          "error" in data
+            ? data.error
+            : "Algo salió mal al generar el retrato.";
+        throw new Error(message);
+      }
+
+      setPortrait(data.image);
       setStep("result");
-      paintingTimer.current = null;
-    }, MOCK_PAINTING_MS);
+    } catch (err) {
+      const message =
+        err instanceof Error && err.message
+          ? err.message
+          : "No pudimos generar el retrato. Probá de nuevo.";
+      setTransformError(message);
+      // Volvemos a "choose" para que el usuario pueda cambiar opciones o
+      // reintentar sin perder la foto que ya sacó.
+      setStep("choose");
+    }
   }
 
   async function handleDownload() {
@@ -155,6 +183,7 @@ export function AppFlow() {
               onRetakePhoto={goCamera}
               onStart={handleStartPaint}
               fullName={fullName}
+              errorMessage={transformError}
             />
           )}
 
@@ -190,6 +219,7 @@ interface ChooseScreenProps {
   onRetakePhoto: () => void;
   onStart: () => void;
   fullName: string;
+  errorMessage: string | null;
 }
 
 function ChooseScreen({
@@ -201,9 +231,16 @@ function ChooseScreen({
   onRetakePhoto,
   onStart,
   fullName,
+  errorMessage,
 }: ChooseScreenProps) {
   return (
     <div className={styles.choose}>
+      {errorMessage && (
+        <p role="alert" className={styles.flashError}>
+          {errorMessage}
+        </p>
+      )}
+
       <section className={styles.photoStrip}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={photo} alt="Tu foto" className={styles.photoStripImage} />
