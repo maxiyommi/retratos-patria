@@ -44,12 +44,21 @@ import type {
 
 type Step = "camera" | "choose" | "painting" | "result";
 
+// Heurística: si el mensaje del backend menciona billing/cuota gratuita,
+// ofrecemos un fallback de modo demo (placeholder sepia) para que el
+// usuario pueda recorrer toda la UI sin necesidad de habilitar el pago.
+function isBillingError(message: string | null): boolean {
+  if (!message) return false;
+  return /billing|cuota gratuita|tier pago/i.test(message);
+}
+
 export function AppFlow() {
   const [step, setStep] = useState<Step>("camera");
   const [photo, setPhoto] = useState<string | null>(null);
   const [characterId, setCharacterId] = useState<CharacterId | null>(null);
   const [gender, setGender] = useState<Gender>("dama");
   const [portrait, setPortrait] = useState<string | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [transformError, setTransformError] = useState<string | null>(null);
 
   const selected = characterId ? getCharacterById(characterId) : null;
@@ -61,6 +70,15 @@ export function AppFlow() {
     setCharacterId(null);
     setPortrait(null);
     setTransformError(null);
+    setIsDemoMode(false);
+  }
+
+  function handleEnterDemoMode() {
+    if (!photo || !characterId) return;
+    setTransformError(null);
+    setIsDemoMode(true);
+    setPortrait("/sample-portrait.svg");
+    setStep("result");
   }
 
   function handlePhotoReady(dataUrl: string) {
@@ -71,6 +89,7 @@ export function AppFlow() {
   async function handleStartPaint() {
     if (!photo || !characterId) return;
     setTransformError(null);
+    setIsDemoMode(false);
     setStep("painting");
 
     const requestBody: TransformRequest = {
@@ -182,6 +201,11 @@ export function AppFlow() {
               onCharacterChange={setCharacterId}
               onRetakePhoto={goCamera}
               onStart={handleStartPaint}
+              onEnterDemo={
+                isBillingError(transformError)
+                  ? handleEnterDemoMode
+                  : null
+              }
               fullName={fullName}
               errorMessage={transformError}
             />
@@ -198,6 +222,7 @@ export function AppFlow() {
               onDownload={handleDownload}
               onShare={handleShare}
               onRestart={goCamera}
+              isDemoMode={isDemoMode}
             />
           )}
         </div>
@@ -218,6 +243,8 @@ interface ChooseScreenProps {
   onCharacterChange: (id: CharacterId) => void;
   onRetakePhoto: () => void;
   onStart: () => void;
+  /** Si está definido, mostramos un botón "Probar en modo demo" en el flash de error. */
+  onEnterDemo: (() => void) | null;
   fullName: string;
   errorMessage: string | null;
 }
@@ -230,15 +257,25 @@ function ChooseScreen({
   onCharacterChange,
   onRetakePhoto,
   onStart,
+  onEnterDemo,
   fullName,
   errorMessage,
 }: ChooseScreenProps) {
   return (
     <div className={styles.choose}>
       {errorMessage && (
-        <p role="alert" className={styles.flashError}>
-          {errorMessage}
-        </p>
+        <div role="alert" className={styles.flashError}>
+          <p className={styles.flashErrorText}>{errorMessage}</p>
+          {onEnterDemo && (
+            <button
+              type="button"
+              className={styles.flashErrorAction}
+              onClick={onEnterDemo}
+            >
+              Probar en modo demo (sin generar)
+            </button>
+          )}
+        </div>
       )}
 
       <section className={styles.photoStrip}>
@@ -292,6 +329,7 @@ interface ResultScreenProps {
   onDownload: () => void;
   onShare: () => void;
   onRestart: () => void;
+  isDemoMode: boolean;
 }
 
 function ResultScreen({
@@ -300,9 +338,16 @@ function ResultScreen({
   onDownload,
   onShare,
   onRestart,
+  isDemoMode,
 }: ResultScreenProps) {
   return (
     <div className={styles.result}>
+      {isDemoMode && (
+        <p className={styles.demoBadge} role="note">
+          Modo demo — este retrato es un placeholder, no fue generado por
+          la IA.
+        </p>
+      )}
       <PortraitFrame
         imageDataUrl={portrait}
         characterName={characterName}

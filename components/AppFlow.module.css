@@ -80,14 +80,63 @@
  */
 .flashError {
   margin: 0;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4);
   background: rgba(31, 80, 114, 0.35);
   border: 1px solid var(--color-dorado-suave);
   border-radius: var(--radius-md);
   color: var(--color-blanco-calido);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.flashErrorText {
+  margin: 0;
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
+}
+
+.flashErrorAction {
+  align-self: center;
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px solid var(--color-dorado-suave);
+  border-radius: var(--radius-pill);
+  color: var(--color-blanco-calido);
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  min-height: var(--target-min-tap);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.flashErrorAction:hover {
+  background: rgba(231, 206, 142, 0.18);
+}
+
+.flashErrorAction:active {
+  transform: scale(0.97);
+}
+
+/* Badge "modo demo" en la pantalla de resultado cuando el retrato es
+   el placeholder, no la generación real de IA. */
+.demoBadge {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: rgba(31, 80, 114, 0.45);
+  border: 1px dashed var(--color-dorado-suave);
+  color: var(--color-blanco-calido);
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-size: var(--font-size-sm);
   text-align: center;
+  align-self: center;
+  max-width: 22rem;
 }
 
 .photoStrip {
