@@ -46,8 +46,8 @@
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
   color: var(--color-blanco-calido);
-  opacity: 0.78;
-  max-width: 32ch;
+  opacity: 0.82;
+  /* Sin max-width: que ocupe todo el ancho del contenedor padre. */
 }
 
 @keyframes title-in {

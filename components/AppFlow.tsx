@@ -267,7 +267,7 @@ export function AppFlow() {
             <>
               <LargeTitle
                 eyebrow="Paso 1 · El espejo"
-                subtitle="Encuadrá tu cara en el óvalo y tocá el obturador."
+                subtitle="Centrá tu cara en el óvalo dorado. Una sola persona en la foto da mejores resultados."
               >
                 Mirate
               </LargeTitle>

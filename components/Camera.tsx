@@ -236,15 +236,11 @@ export function Camera({ onPhotoReady }: CameraProps) {
 
   return (
     <div className={styles.root}>
-      {!preview && (
-        <div className={styles.intro}>
-          <h2 className={styles.heading}>Sacate una foto</h2>
-          <p className={styles.subheading}>
-            Centrá tu cara dentro del óvalo. Una sola persona en la foto da
-            mejores resultados.
-          </p>
-        </div>
-      )}
+      {/*
+        El LargeTitle del AppFlow ya cumple la función de "intro": eyebrow
+        "Paso 1 · El espejo" + título "Mirate" + subtítulo guía. Aquí
+        renderizamos directamente el viewport sin texto redundante.
+      */}
 
       <div className={styles.viewport}>
         {preview ? (
