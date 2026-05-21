@@ -1,0 +1,285 @@
+"use client";
+
+/*
+ * AppFlow — orquestador del flujo principal.
+ *
+ * Una pantalla a la vez (estilo app nativa). Transiciones simples entre
+ * pantallas: cada step se monta con key={step} para disparar la animación
+ * de entrada definida en page.module.css (.step).
+ *
+ * Estados:
+ *   step="camera" → Camera. Cuando la foto está lista, pasa a "choose".
+ *   step="choose" → preview + GenderToggle + CharacterPicker + botón
+ *                   "Pintar mi retrato". Habilitado sólo cuando hay
+ *                   personaje seleccionado.
+ *   step="painting" → LoadingState mientras se procesa. Mock por ahora
+ *                     (timeout 8s con la imagen sample). Bloque 7 conecta
+ *                     a /api/transform.
+ *   step="result" → PortraitFrame con el retrato + acciones de descargar,
+ *                   compartir y "probar otro".
+ */
+
+import { useRef, useState } from "react";
+import styles from "./AppFlow.module.css";
+import { Camera } from "@/components/Camera";
+import {
+  CharacterPicker,
+  type CharacterId,
+} from "@/components/CharacterPicker";
+import { GenderToggle, type Gender } from "@/components/GenderToggle";
+import { LoadingState } from "@/components/LoadingState";
+import { PortraitFrame } from "@/components/PortraitFrame";
+import { Footer } from "@/components/Footer";
+import {
+  CHARACTERS,
+  getCharacterById,
+  getFullName,
+  getShortLabel,
+} from "@/lib/characters";
+import { dataUrlToFile } from "@/lib/image";
+
+type Step = "camera" | "choose" | "painting" | "result";
+
+// Duración del mock de "pintado" — pisado por la respuesta real de Gemini
+// cuando conectemos la ruta /api/transform en el bloque 7.
+const MOCK_PAINTING_MS = 8500;
+
+export function AppFlow() {
+  const [step, setStep] = useState<Step>("camera");
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [characterId, setCharacterId] = useState<CharacterId | null>(null);
+  const [gender, setGender] = useState<Gender>("dama");
+  const [portrait, setPortrait] = useState<string | null>(null);
+  const paintingTimer = useRef<number | null>(null);
+
+  const selected = characterId ? getCharacterById(characterId) : null;
+  const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
+
+  function goCamera() {
+    if (paintingTimer.current) {
+      window.clearTimeout(paintingTimer.current);
+      paintingTimer.current = null;
+    }
+    setStep("camera");
+    setPhoto(null);
+    setCharacterId(null);
+    setPortrait(null);
+  }
+
+  function handlePhotoReady(dataUrl: string) {
+    setPhoto(dataUrl);
+    setStep("choose");
+  }
+
+  function handleStartPaint() {
+    if (!photo || !characterId) return;
+    setStep("painting");
+    // Mock — bloque 7 reemplaza esto con POST /api/transform.
+    paintingTimer.current = window.setTimeout(() => {
+      setPortrait("/sample-portrait.svg");
+      setStep("result");
+      paintingTimer.current = null;
+    }, MOCK_PAINTING_MS);
+  }
+
+  async function handleDownload() {
+    if (!portrait) return;
+    try {
+      const file = dataUrlToFile(portrait, `retrato-${characterId}.jpg`);
+      const url = URL.createObjectURL(file);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("No pudimos preparar la descarga. Probá de nuevo.");
+    }
+  }
+
+  async function handleShare() {
+    if (!portrait) return;
+    try {
+      const file = dataUrlToFile(portrait, `retrato-${characterId}.jpg`);
+      const shareData: ShareData = {
+        title: "Mi Retrato de la Patria",
+        text: `Me retraté como ${fullName} de 1810.`,
+        files: [file],
+      };
+      // navigator.canShare valida que el navegador soporte compartir archivos.
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.canShare?.(shareData)
+      ) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: descargar directamente.
+        await handleDownload();
+      }
+    } catch (err) {
+      // AbortError ocurre si el usuario cancela el panel de compartir — ignorar.
+      if ((err as Error).name !== "AbortError") {
+        alert("No pudimos abrir el panel de compartir. Probá descargar.");
+      }
+    }
+  }
+
+  return (
+    <div className={styles.shell}>
+      <header className={styles.brand}>
+        <button
+          type="button"
+          className={styles.brandButton}
+          onClick={goCamera}
+          aria-label="Volver al inicio"
+        >
+          <span className={styles.brandTitle}>Retratos de la Patria</span>
+        </button>
+      </header>
+
+      <main className={styles.main}>
+        <div key={step} className={styles.step}>
+          {step === "camera" && (
+            <Camera onPhotoReady={handlePhotoReady} />
+          )}
+
+          {step === "choose" && photo && (
+            <ChooseScreen
+              photo={photo}
+              gender={gender}
+              onGenderChange={setGender}
+              characterId={characterId}
+              onCharacterChange={setCharacterId}
+              onRetakePhoto={goCamera}
+              onStart={handleStartPaint}
+              fullName={fullName}
+            />
+          )}
+
+          {step === "painting" && (
+            <LoadingState characterName={fullName} />
+          )}
+
+          {step === "result" && portrait && (
+            <ResultScreen
+              portrait={portrait}
+              characterName={fullName}
+              onDownload={handleDownload}
+              onShare={handleShare}
+              onRestart={goCamera}
+            />
+          )}
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+/* ── Pantallas internas ─────────────────────────────────────────────── */
+
+interface ChooseScreenProps {
+  photo: string;
+  gender: Gender;
+  onGenderChange: (g: Gender) => void;
+  characterId: CharacterId | null;
+  onCharacterChange: (id: CharacterId) => void;
+  onRetakePhoto: () => void;
+  onStart: () => void;
+  fullName: string;
+}
+
+function ChooseScreen({
+  photo,
+  gender,
+  onGenderChange,
+  characterId,
+  onCharacterChange,
+  onRetakePhoto,
+  onStart,
+  fullName,
+}: ChooseScreenProps) {
+  return (
+    <div className={styles.choose}>
+      <section className={styles.photoStrip}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={photo} alt="Tu foto" className={styles.photoStripImage} />
+        <button
+          type="button"
+          className={styles.photoStripChange}
+          onClick={onRetakePhoto}
+        >
+          Cambiar foto
+        </button>
+      </section>
+
+      <section className={styles.chooseBlock}>
+        <h2 className={styles.chooseTitle}>
+          Quiero ser <em>representad@</em> como
+        </h2>
+        <GenderToggle value={gender} onChange={onGenderChange} />
+      </section>
+
+      <section className={styles.chooseBlock}>
+        <h2 className={styles.chooseTitle}>
+          Elegí un <em>rol</em>
+        </h2>
+        <CharacterPicker
+          characters={CHARACTERS}
+          selectedId={characterId}
+          onSelect={onCharacterChange}
+          labelFor={(c) => getShortLabel(c, gender)}
+        />
+      </section>
+
+      <button
+        type="button"
+        className={styles.cta}
+        onClick={onStart}
+        disabled={!characterId}
+      >
+        {characterId
+          ? `Pintarme como ${fullName}`
+          : "Elegí un personaje primero"}
+      </button>
+    </div>
+  );
+}
+
+interface ResultScreenProps {
+  portrait: string;
+  characterName: string;
+  onDownload: () => void;
+  onShare: () => void;
+  onRestart: () => void;
+}
+
+function ResultScreen({
+  portrait,
+  characterName,
+  onDownload,
+  onShare,
+  onRestart,
+}: ResultScreenProps) {
+  return (
+    <div className={styles.result}>
+      <PortraitFrame
+        imageDataUrl={portrait}
+        characterName={characterName}
+        variant="cabildo"
+        onDownload={onDownload}
+        onShare={onShare}
+      />
+      <button
+        type="button"
+        className={styles.restart}
+        onClick={onRestart}
+      >
+        Probar con otra foto
+      </button>
+    </div>
+  );
+}

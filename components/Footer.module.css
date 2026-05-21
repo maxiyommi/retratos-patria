@@ -1,0 +1,41 @@
+.root {
+  margin-top: auto;
+  padding: var(--space-6) var(--space-5) var(--space-4);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--color-blanco-calido);
+}
+
+.line {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  opacity: 0.85;
+  letter-spacing: 0.01em;
+}
+
+.author {
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--color-dorado-suave);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.author:hover {
+  border-bottom-color: var(--color-dorado-suave);
+}
+
+.muted {
+  color: var(--color-blanco-calido);
+  text-decoration-color: var(--color-dorado-suave);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  opacity: 0.85;
+  font-size: var(--font-size-xs);
+}
