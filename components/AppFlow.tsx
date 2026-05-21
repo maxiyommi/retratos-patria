@@ -71,6 +71,57 @@ function describeFetchError(err: unknown): string {
   return "No pudimos generar el retrato. Probá de nuevo.";
 }
 
+/**
+ * Estampa el retrato con la inscripción "Imagen generada con IA" en la
+ * esquina inf. derecha (banda gradient oscura + texto italic blanco).
+ * Devuelve un nuevo dataURL JPEG. Se llama en useEffect apenas llega el
+ * retrato, así el resultado queda cacheado y los handlers download/share
+ * son síncronos respecto al click.
+ */
+function stampWithAiNotice(dataUrl: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("no canvas"));
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const fontSize = Math.round(h * 0.024);
+        const padY = Math.round(h * 0.015);
+        const padX = Math.round(w * 0.025);
+
+        // Banda gradient del 88% al 100% del alto.
+        const gradient = ctx.createLinearGradient(0, h * 0.88, 0, h);
+        gradient.addColorStop(0, "rgba(0,0,0,0)");
+        gradient.addColorStop(1, "rgba(0,0,0,0.45)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, h * 0.88, w, h * 0.12);
+
+        ctx.fillStyle = "rgba(251, 247, 236, 0.95)";
+        ctx.font = `italic ${fontSize}px "EB Garamond", Georgia, serif`;
+        ctx.textBaseline = "alphabetic";
+        ctx.textAlign = "right";
+        ctx.shadowColor = "rgba(0,0,0,0.7)";
+        ctx.shadowBlur = 4;
+        ctx.fillText("Imagen generada con IA", w - padX, h - padY);
+        ctx.shadowBlur = 0;
+
+        resolve(canvas.toDataURL("image/jpeg", 0.92));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    img.onerror = () => reject(new Error("img load failed"));
+    img.src = dataUrl;
+  });
+}
+
 export function AppFlow() {
   const [step, setStep] = useState<Step>("camera");
   const [photo, setPhoto] = useState<string | null>(null);
@@ -200,72 +251,45 @@ export function AppFlow() {
     abortRef.current.abort();
   }
 
-  /** Construye un nuevo dataURL con la inscripción "Imagen generada
-   *  con IA" estampada en la esquina inferior derecha, encima del
-   *  retrato. Tanto download como share usan esta versión, no el
-   *  raw dataURL que viene del backend. */
-  async function buildShareableDataUrl(): Promise<string | null> {
-    if (!portrait) return null;
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const w = img.naturalWidth;
-          const h = img.naturalHeight;
-          const canvas = document.createElement("canvas");
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) return reject(new Error("no canvas"));
-          ctx.drawImage(img, 0, 0, w, h);
+  /*
+   * stampedPortrait: versión del retrato con la inscripción 'Imagen
+   * generada con IA' renderizada encima. Se pre-computa apenas llega el
+   * retrato (effect siguiente) y se cachea, así cuando el usuario toca
+   * Compartir el click handler es prácticamente síncrono y el browser
+   * conserva el 'user activation' para abrir el panel nativo.
+   *
+   * Sin esta cache, el await del canvas drawing borraba la activation
+   * y navigator.share era rechazado en Safari/Chrome mobile.
+   */
+  const [stampedPortrait, setStampedPortrait] = useState<string | null>(
+    null,
+  );
 
-          // Inscripción al pie. Banda semi-transparente oscura abajo +
-          // texto italic blanco. Escala según el tamaño del canvas para
-          // que se vea consistente en cualquier resolución de Gemini.
-          const fontSize = Math.round(h * 0.024);
-          const padY = Math.round(h * 0.015);
-          const padX = Math.round(w * 0.025);
+  useEffect(() => {
+    if (!portrait) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStampedPortrait(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const stamped = await stampWithAiNotice(portrait);
+        if (!cancelled) setStampedPortrait(stamped);
+      } catch {
+        if (!cancelled) setStampedPortrait(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [portrait]);
 
-          // Banda gradiente del bajo del retrato hacia arriba.
-          const gradient = ctx.createLinearGradient(0, h * 0.88, 0, h);
-          gradient.addColorStop(0, "rgba(0,0,0,0)");
-          gradient.addColorStop(1, "rgba(0,0,0,0.45)");
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, h * 0.88, w, h * 0.12);
-
-          // Texto
-          ctx.fillStyle = "rgba(251, 247, 236, 0.95)";
-          ctx.font = `italic ${fontSize}px "EB Garamond", Georgia, serif`;
-          ctx.textBaseline = "alphabetic";
-          ctx.textAlign = "right";
-          ctx.shadowColor = "rgba(0,0,0,0.7)";
-          ctx.shadowBlur = 4;
-          ctx.fillText(
-            "Imagen generada con IA",
-            w - padX,
-            h - padY,
-          );
-          ctx.shadowBlur = 0;
-
-          resolve(canvas.toDataURL("image/jpeg", 0.92));
-        } catch (e) {
-          reject(e);
-        }
-      };
-      img.onerror = () => reject(new Error("img load failed"));
-      img.src = portrait;
-    });
-  }
-
-  async function handleDownload() {
+  function handleDownload() {
     if (!portrait) return;
     try {
-      const stampedDataUrl = await buildShareableDataUrl();
-      if (!stampedDataUrl) return;
-      const file = dataUrlToFile(
-        stampedDataUrl,
-        `retrato-${characterId}.jpg`,
-      );
+      const dataUrl = stampedPortrait ?? portrait;
+      const file = dataUrlToFile(dataUrl, `retrato-${characterId}.jpg`);
       const url = URL.createObjectURL(file);
       const a = document.createElement("a");
       a.href = url;
@@ -282,52 +306,58 @@ export function AppFlow() {
 
   async function handleShare() {
     if (!portrait) return;
-    try {
-      const stampedDataUrl = await buildShareableDataUrl();
-      if (!stampedDataUrl) return;
-      const file = dataUrlToFile(
-        stampedDataUrl,
-        `retrato-${characterId}.jpg`,
+
+    // Diagnóstico — Web Share API requiere secure context (HTTPS o
+    // localhost). Si estás probando sobre LAN HTTP, no funciona.
+    if (
+      typeof window !== "undefined" &&
+      window.isSecureContext === false
+    ) {
+      alert(
+        "Para compartir necesitás abrir la app desde HTTPS o localhost. Si estás probando desde la red local con http://, probá Descargar — al desplegar a producción funciona normal.",
       );
+      return;
+    }
 
-      const shareData: ShareData = {
-        title: "Mi Retrato de la Patria",
-        text: `Me retraté como ${fullName} de 1810. Imagen generada con IA.`,
-        files: [file],
-      };
+    if (
+      typeof navigator === "undefined" ||
+      typeof navigator.share !== "function"
+    ) {
+      alert(
+        "Tu navegador no soporta el panel nativo de compartir. Probá Descargar.",
+      );
+      return;
+    }
 
-      // Intento 1: share completo con archivo (mobile típico).
+    const dataUrl = stampedPortrait ?? portrait;
+    const file = dataUrlToFile(dataUrl, `retrato-${characterId}.jpg`);
+    const shareData: ShareData = {
+      title: "Mi Retrato de la Patria",
+      text: `Me retraté como ${fullName} de 1810. Imagen generada con IA.`,
+      files: [file],
+    };
+
+    try {
+      haptic("tap");
       if (
-        typeof navigator !== "undefined" &&
         typeof navigator.canShare === "function" &&
         navigator.canShare(shareData)
       ) {
-        haptic("tap");
         await navigator.share(shareData);
         return;
       }
-
-      // Intento 2: share sin archivo, sólo texto + título.
-      // En navegadores que soportan navigator.share pero no archivos.
-      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-        haptic("tap");
-        await navigator.share({
-          title: shareData.title,
-          text: shareData.text,
-        });
-        return;
-      }
-
-      // Fallback final: descargar.
-      await handleDownload();
+      // Algunos browsers no soportan share con archivos pero sí texto.
+      await navigator.share({
+        title: shareData.title,
+        text: shareData.text,
+      });
     } catch (err) {
-      // AbortError = el usuario cerró el panel de compartir nativo. No
-      // mostramos error en ese caso.
-      if ((err as Error).name !== "AbortError") {
-        alert(
-          "No pudimos abrir el panel de compartir. Probá con el botón de descargar.",
-        );
-      }
+      // AbortError = el usuario cerró el panel nativo. Silencio.
+      if ((err as Error).name === "AbortError") return;
+      console.error("[share] error:", err);
+      alert(
+        "No pudimos abrir el panel de compartir. Probá con Descargar.",
+      );
     }
   }
 
