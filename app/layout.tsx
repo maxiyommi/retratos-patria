@@ -27,12 +27,22 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "Retratos 1810",
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
   },
   formatDetection: {
     telephone: false,
     email: false,
     address: false,
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
+  // Next 16 sólo emite `mobile-web-app-capable`, pero iOS Safari históricamente
+  // requiere `apple-mobile-web-app-capable` para abrir en modo standalone
+  // (sin la barra del navegador) desde el ícono de pantalla principal.
+  other: {
+    "apple-mobile-web-app-capable": "yes",
   },
 };
 

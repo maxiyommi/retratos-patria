@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Ícono de la app para PWA (manifest) y apple-touch-icon. Sol de Mayo
+       dorado sobre fondo celeste, con esquinas un poco redondeadas. -->
+  <rect width="512" height="512" rx="96" fill="#5b9ece" />
+  <g transform="translate(256 256)" fill="#e7ce8e">
+    <g>
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(0)" />
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(45)" />
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(90)" />
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(135)" />
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(180)" />
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(225)" />
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(270)" />
+      <polygon points="-15,-130 15,-130 0,-235" transform="rotate(315)" />
+    </g>
+    <g>
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(22.5)" />
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(67.5)" />
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(112.5)" />
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(157.5)" />
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(202.5)" />
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(247.5)" />
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(292.5)" />
+      <path d="M-10,-130 Q 0,-170 -8,-200 Q 0,-225 10,-130 Z" transform="rotate(337.5)" />
+    </g>
+    <circle r="100" fill="#c9a14a" />
+    <circle r="100" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="4" />
+  </g>
+</svg>
