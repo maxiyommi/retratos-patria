@@ -461,11 +461,13 @@ function FaceGuide() {
       className={styles.faceGuide}
       aria-hidden
     >
-      {/* Vignette: opacidad sólo afuera del óvalo. */}
+      {/* Vignette: opacidad sólo afuera del óvalo. Óvalo más chico
+          (rx 17, ry 23) para que un selfie a brazo normal entre cómodo,
+          sin tener que estirar el brazo a lo Stretch Armstrong. */}
       <defs>
         <mask id="face-guide-mask">
           <rect width="100" height="100" fill="white" />
-          <ellipse cx="50" cy="48" rx="22" ry="30" fill="black" />
+          <ellipse cx="50" cy="50" rx="17" ry="23" fill="black" />
         </mask>
       </defs>
       <rect
@@ -477,9 +479,9 @@ function FaceGuide() {
       {/* Óvalo dorado con stroke discontinuo — el "encuadre" sugerido. */}
       <ellipse
         cx="50"
-        cy="48"
-        rx="22"
-        ry="30"
+        cy="50"
+        rx="17"
+        ry="23"
         fill="none"
         stroke="rgba(231, 206, 142, 0.92)"
         strokeWidth="0.55"
