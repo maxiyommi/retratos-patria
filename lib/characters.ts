@@ -80,8 +80,25 @@ Pautas del estilo (aplicalas con moderación):
 
 const PROMPT_SAFETY = `Apto para audiencias escolares (niños y niñas). Sin contenido sexualizado, sin pieles expuestas más allá de lo natural en un retrato formal de época, sin violencia explícita. No alterar la edad ni el cuerpo del retratado.`;
 
+/*
+ * Sandwich emphasis: repetimos la regla de oro al final del prompt. Los
+ * modelos grandes a veces "olvidan" la primera instrucción cuando el
+ * prompt es largo (efecto lost-in-the-middle). Esta repetición final hace
+ * que el modelo termine de leer con la preservación del rostro fresca en
+ * la atención antes de generar.
+ */
+const PROMPT_CLOSING_REMINDER = `RECORDATORIO FINAL — la regla que rige todo lo anterior:
+
+ESTE RETRATO TIENE QUE SER RECONOCIBLEMENTE LA MISMA PERSONA DE LA FOTO. La cara permanece igual: mismos ojos, misma nariz, misma boca, misma mandíbula, misma piel, mismas marcas, misma edad, misma expresión. La indumentaria y el fondo de 1810 son sólo el envoltorio; el sujeto del retrato es exactamente la persona de la foto original, sin idealizar, sin embellecer, sin homogeneizar. Si tenés dudas entre seguir el estilo de época o conservar un rasgo del rostro, conservá el rasgo.`;
+
 function buildPrompt(attire: string): string {
-  return `${PROMPT_INTRO}\n\nINDUMENTARIA Y CARACTERIZACIÓN DEL PERSONAJE:\n${attire}\n\nESTILO PICTÓRICO:\n${PROMPT_STYLE}\n\nSEGURIDAD:\n${PROMPT_SAFETY}`;
+  return [
+    PROMPT_INTRO,
+    `INDUMENTARIA Y CARACTERIZACIÓN DEL PERSONAJE:\n${attire}`,
+    `ESTILO PICTÓRICO:\n${PROMPT_STYLE}`,
+    `SEGURIDAD:\n${PROMPT_SAFETY}`,
+    PROMPT_CLOSING_REMINDER,
+  ].join("\n\n");
 }
 
 export const CHARACTERS: Character[] = [
