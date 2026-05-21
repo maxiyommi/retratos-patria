@@ -68,16 +68,66 @@
   }
 }
 
-.flagDrift {
-  animation: flag-drift 18s linear infinite;
+/*
+ * Respiración global de la bandera: muy sutil deriva en X + leve
+ * variación de scaleY que sugiere tensión cambiante de la tela.
+ * 16s loop con curva ease-in-out que da pausas naturales entre rachas.
+ */
+.flagBreath {
+  transform-origin: 50% 50%;
+  animation: flag-breath 16s ease-in-out infinite;
 }
 
-@keyframes flag-drift {
-  from {
-    transform: translateX(0);
+@keyframes flag-breath {
+  0%, 100% {
+    transform: translateX(0) scaleY(1);
   }
-  to {
-    transform: translateX(-72px);
+  25% {
+    transform: translateX(-6px) scaleY(1.008);
+  }
+  50% {
+    transform: translateX(0) scaleY(1);
+  }
+  75% {
+    transform: translateX(6px) scaleY(1.008);
+  }
+}
+
+/*
+ * Brillo diagonal — gradiente blanco semitransparente que recorre la
+ * bandera de izquierda a derecha cada 9 segundos, con larga pausa al
+ * final. Es lo que da feel de "tela reflejando luz", suplantando el
+ * displacement filter que generaba bordes rasgados.
+ */
+.shine {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 28%,
+    rgba(255, 255, 255, 0.12) 42%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.12) 58%,
+    transparent 72%
+  );
+  background-size: 260% 100%;
+  background-position: 260% 0;
+  mix-blend-mode: overlay;
+  animation: shine-sweep 9s ease-in-out 2400ms infinite;
+}
+
+@keyframes shine-sweep {
+  0% {
+    background-position: 260% 0;
+  }
+  45% {
+    background-position: -60% 0;
+  }
+  /* Pausa hasta el final del ciclo para que no sea constante. */
+  100% {
+    background-position: -60% 0;
   }
 }
 
@@ -382,7 +432,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .flagUnfurl,
-  .flagDrift,
+  .flagBreath,
+  .shine,
   .vignette,
   .sun,
   .titleMain,
@@ -390,6 +441,9 @@
   .cta,
   .footer {
     animation: none;
+  }
+  .shine {
+    opacity: 0;
   }
   .sun {
     transform: scale(1);

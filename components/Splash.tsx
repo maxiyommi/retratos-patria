@@ -59,49 +59,45 @@ export function Splash() {
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <defs>
-          <filter
-            id="splash-wave"
-            x="-10%"
-            y="-10%"
-            width="120%"
-            height="120%"
-          >
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.008 0.018"
-              numOctaves="1"
-              seed="7"
-            />
-            <feDisplacementMap in="SourceGraphic" scale="14" />
-          </filter>
-        </defs>
+        {/*
+          Bandera limpia sin filtros — tres franjas con bordes nítidos.
+          La sensación de "viento" se da con la capa .shine (gradiente
+          diagonal que barre por encima) y el .flagBreath (respiración
+          sutil de toda la bandera). Sin displacement, sin papel rasgado.
+        */}
         <g className={styles.flagUnfurl}>
-          <g className={styles.flagDrift} filter="url(#splash-wave)">
+          <g className={styles.flagBreath}>
             <rect
-              x="-100"
+              x="0"
               y="0"
-              width="1400"
+              width="1200"
               height="267"
               fill="var(--color-celeste)"
             />
             <rect
-              x="-100"
+              x="0"
               y="267"
-              width="1400"
+              width="1200"
               height="266"
               fill="var(--color-blanco-calido)"
             />
             <rect
-              x="-100"
+              x="0"
               y="533"
-              width="1400"
+              width="1200"
               height="267"
               fill="var(--color-celeste)"
             />
           </g>
         </g>
       </svg>
+
+      {/*
+        Brillo diagonal que barre la bandera periódicamente. Es lo que da
+        sensación de "tela reflejando luz". Pause largo entre pasadas para
+        que no sea agresivo.
+      */}
+      <div className={styles.shine} aria-hidden />
 
       <div className={styles.vignette} aria-hidden />
 
