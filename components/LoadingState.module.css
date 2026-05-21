@@ -43,6 +43,11 @@
   border-radius: 4px;
   background-color: var(--color-pergamino);
   overflow: hidden;
+  /* Flex centering para que el sol quede CENTRADO de forma robusta en
+     todos los browsers (Safari iOS tenía issues con inset:16%). */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   /*
    * Mismo lenguaje visual que el PortraitFrame: marco dorado fino + hilo
    * sepia adentro + sombra interna pronunciada + sombra externa de "objeto".
@@ -75,8 +80,12 @@
 /* ── Sol de Mayo bordándose ──────────────────────────────────────────── */
 
 .sol {
-  position: absolute;
-  inset: 16%;
+  /* Sin position absolute + inset (issues en Safari iOS): ahora es
+     un elemento flex-item que el .canvas centra. width/height en %
+     determinan el tamaño relativo al lienzo. */
+  position: relative;
+  width: 68%;
+  height: 68%;
   filter: drop-shadow(0 2px 4px rgba(58, 38, 24, 0.35));
 }
 

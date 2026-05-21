@@ -53,6 +53,19 @@ type Step = "camera" | "choose" | "painting" | "result";
 
 const PAINT_TIMEOUT_MS = 90_000;
 
+/*
+ * theme-color por step — matchea con --bg-bottom de cada habitación
+ * en globals.css. Cuando el step cambia, actualizamos el meta tag y
+ * la URL bar / tab strip del browser se tiñe del color del fondo, así
+ * la app y el chrome del browser parecen un único continuo.
+ */
+const THEME_COLOR_BY_STEP: Record<Step, string> = {
+  camera: "#143b5a",
+  choose: "#2f6f9b",
+  painting: "#2a1a0e",
+  result: "#110a05",
+};
+
 function isBillingError(message: string | null): boolean {
   if (!message) return false;
   return /billing|cuota gratuita|tier pago/i.test(message);
@@ -141,9 +154,19 @@ export function AppFlow() {
   const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
 
   // Sincronizamos el step actual con html[data-step] para que globals.css
-  // pueda cambiar el background atmosférico por habitación.
+  // pueda cambiar el background atmosférico por habitación. Además
+  // actualizamos el meta theme-color dinámicamente — eso hace que la
+  // URL bar / tab strip de Safari iOS y la status bar de Chrome Android
+  // matcheen el color de fondo de cada step, dando la sensación de
+  // que la app y el chrome del browser son un solo continuo.
   useEffect(() => {
     document.documentElement.dataset.step = step;
+    const meta = document.querySelector(
+      'meta[name="theme-color"]',
+    ) as HTMLMetaElement | null;
+    if (meta) {
+      meta.setAttribute("content", THEME_COLOR_BY_STEP[step]);
+    }
   }, [step]);
 
   function goCamera() {
