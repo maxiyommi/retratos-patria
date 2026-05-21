@@ -1,0 +1,235 @@
+/*
+ * CharacterPicker.module.css
+ *
+ * Grid 2x2 de tarjetas-naipe. Vive en el chrome (blanco cálido / celeste /
+ * dorado). La ÚNICA pieza con guiño al mundo 1810 es la ventanita pergamino
+ * que aloja el iconograma — una elipsis circular donde el personaje "vive"
+ * antes de que la IA pinte el retrato real.
+ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+}
+
+@media (max-width: 320px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Tarjeta ─────────────────────────────────────────────────────────── */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-3);
+  min-height: 11rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-blanco-calido);
+  background-image: linear-gradient(
+      rgba(243, 236, 217, 0.35),
+      rgba(243, 236, 217, 0.35)
+    ),
+    url("/paper-texture.svg");
+  background-blend-mode: multiply;
+  border: 1px solid rgba(91, 158, 206, 0.45); /* celeste suave */
+  color: var(--color-celeste-tinta);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  cursor: pointer;
+  /*
+   * Single transition with consistent easing — buscamos ese feel de "esto
+   * responde" tipo iOS/Android.
+   */
+  transition:
+    transform 260ms var(--ease-out),
+    opacity 260ms var(--ease-out),
+    border-color 260ms var(--ease-out),
+    box-shadow 260ms var(--ease-out),
+    background-color 260ms var(--ease-out);
+
+  /* Aparición escalonada — la mano del usuario "destapa" las cartas. */
+  animation: card-in 400ms var(--ease-out) backwards;
+}
+
+.card:nth-child(1) { animation-delay: 60ms; }
+.card:nth-child(2) { animation-delay: 130ms; }
+.card:nth-child(3) { animation-delay: 200ms; }
+.card:nth-child(4) { animation-delay: 270ms; }
+
+.card:hover {
+  border-color: var(--color-celeste-profundo);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.card:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+/* ── Estados ─────────────────────────────────────────────────────────── */
+
+.card[data-state="dim"] {
+  opacity: 0.42;
+  transform: scale(0.97);
+  border-color: rgba(91, 158, 206, 0.25);
+  box-shadow: none;
+}
+
+.card[data-state="selected"] {
+  /* Borde dorado + leve scale up + sombra mixta dorada/celeste. */
+  border: 2px solid var(--color-dorado);
+  padding: calc(var(--space-4) - 1px) calc(var(--space-3) - 1px);
+  background-color: var(--color-blanco-calido);
+  transform: scale(1.02);
+  box-shadow:
+    0 8px 24px rgba(201, 161, 74, 0.35),
+    0 12px 32px rgba(31, 80, 114, 0.18);
+  color: var(--color-celeste-tinta);
+}
+
+.card[data-state="selected"]:active {
+  transform: scale(1.0);
+}
+
+/* ── Ventanita pergamino que aloja el iconograma ─────────────────────── */
+
+.iconWindow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(72px, 22vw, 96px);
+  height: clamp(72px, 22vw, 96px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    var(--color-pergamino);
+  box-shadow:
+    inset 0 0 0 1px rgba(107, 74, 43, 0.45),
+    inset 0 -3px 6px rgba(107, 74, 43, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  color: var(--color-celeste-tinta);
+  transition: transform 260ms var(--ease-out), color 260ms var(--ease-out);
+}
+
+.card[data-state="selected"] .iconWindow {
+  /* "Se enciende": un anillo dorado por fuera, ícono en celeste-profundo. */
+  box-shadow:
+    inset 0 0 0 1px rgba(107, 74, 43, 0.55),
+    inset 0 -3px 6px rgba(107, 74, 43, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.7),
+    0 0 0 3px rgba(231, 206, 142, 0.55);
+  color: var(--color-celeste-profundo);
+  transform: scale(1.04);
+}
+
+.icon {
+  width: 65%;
+  height: 65%;
+  display: block;
+}
+
+/* ── Etiqueta (nombre + descripción) ─────────────────────────────────── */
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.name {
+  font-family: var(--font-stack-display);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--color-celeste-tinta);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.card[data-state="selected"] .name {
+  color: var(--color-celeste-profundo);
+}
+
+.description {
+  font-style: italic;
+  font-size: var(--font-size-xs);
+  line-height: 1.3;
+  color: var(--color-celeste-profundo);
+  opacity: 0.78;
+  padding: 0 2px;
+}
+
+/* ── Stamp Sol de Mayo (esquina sup. derecha cuando está seleccionada) ── */
+
+.stamp {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-blanco-calido);
+  color: var(--color-dorado);
+  box-shadow:
+    0 4px 12px rgba(201, 161, 74, 0.45),
+    inset 0 0 0 1px var(--color-dorado);
+  /* Pequeño "pop" cuando se selecciona */
+  animation: stamp-in 280ms var(--ease-out) backwards;
+}
+
+.stamp svg {
+  width: 78%;
+  height: 78%;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────── */
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-20deg);
+  }
+  70% {
+    transform: scale(1.15) rotate(8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .stamp {
+    animation: none;
+  }
+  .card:hover {
+    transform: none;
+  }
+  .card[data-state="selected"] {
+    transform: none;
+  }
+}

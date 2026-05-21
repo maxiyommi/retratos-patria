@@ -1,12 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import styles from "./page.module.css";
 import { SolDeMayo } from "@/components/SolDeMayo";
 import { PortraitFrame } from "@/components/PortraitFrame";
+import {
+  CharacterPicker,
+  type Character,
+  type CharacterId,
+} from "@/components/CharacterPicker";
+
+// Datos temporales — pasan a lib/characters.ts en el bloque 5 junto con los
+// prompts de Gemini.
+const CHARACTERS: Character[] = [
+  {
+    id: "dama",
+    nombre: "Dama porteña",
+    descripcionCorta: "vestido bordado, peinetón, mantilla de encaje",
+  },
+  {
+    id: "caballero",
+    nombre: "Caballero patriota",
+    descripcionCorta: "chaqueta militar azul, charreteras, casaca",
+  },
+  {
+    id: "vendedor",
+    nombre: "Vendedor ambulante",
+    descripcionCorta: "poncho, sombrero de paja, canasto al hombro",
+  },
+  {
+    id: "soldado",
+    nombre: "Soldado de la Patria",
+    descripcionCorta: "morrión con escarapela, fusil, casaca blanca",
+  },
+];
 
 export default function Home() {
+  const [selectedId, setSelectedId] = useState<CharacterId | null>(null);
+
   const handleDownload = () => {
-    // Stub: la implementación real llega en bloque 6.
     alert("Descarga (simulada): el retrato se guardaría en tu galería.");
   };
   const handleShare = () => {
@@ -29,35 +61,39 @@ export default function Home() {
         </p>
       </section>
 
-      <section className={styles.preview} aria-labelledby="preview-cabildo">
+      <section className={styles.preview} aria-labelledby="preview-picker">
         <header className={styles.previewHeader}>
-          <h2 id="preview-cabildo" className={styles.previewTitle}>
-            Variante <em>Cabildo</em>
+          <h2 id="preview-picker" className={styles.previewTitle}>
+            Elegí un <em>personaje</em>
           </h2>
-          <p className={styles.previewNote}>Austera, despacho colonial.</p>
+          <p className={styles.previewNote}>
+            Tocá una tarjeta para previsualizar la selección.
+          </p>
         </header>
-        <PortraitFrame
-          imageDataUrl="/sample-portrait.svg"
-          characterName="Dama porteña"
-          variant="cabildo"
-          onDownload={handleDownload}
-          onShare={handleShare}
+        <CharacterPicker
+          characters={CHARACTERS}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
         />
       </section>
 
-      <section className={styles.preview} aria-labelledby="preview-recoleta">
+      <section className={styles.preview} aria-labelledby="preview-frame">
         <header className={styles.previewHeader}>
-          <h2 id="preview-recoleta" className={styles.previewTitle}>
-            Variante <em>Recoleta</em>
+          <h2 id="preview-frame" className={styles.previewTitle}>
+            Tu <em>retrato</em>
           </h2>
           <p className={styles.previewNote}>
-            Ornamentada, palmetas y badge 1810.
+            (Placeholder sepia hasta que conectemos Gemini.)
           </p>
         </header>
         <PortraitFrame
           imageDataUrl="/sample-portrait.svg"
-          characterName="Caballero patriota"
-          variant="recoleta"
+          characterName={
+            selectedId
+              ? CHARACTERS.find((c) => c.id === selectedId)!.nombre
+              : "Sin elegir"
+          }
+          variant="cabildo"
           onDownload={handleDownload}
           onShare={handleShare}
         />
