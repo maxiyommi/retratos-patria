@@ -37,9 +37,33 @@ type Facing = "user" | "environment";
 type CameraStatus = "booting" | "active" | "denied" | "unsupported";
 
 export function Camera({ onPhotoReady }: CameraProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // videoRef se rellena por videoCallbackRef cuando el <video> monta.
+  // Usado por handleSnapshot para leer videoWidth/Height y dibujar.
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /*
+   * Callback ref para el elemento <video>. Se ejecuta cuando el video
+   * MONTA en el DOM (no antes), lo cual es crítico porque el video se
+   * renderea conditionally cuando status === 'active'. Si asignamos
+   * srcObject en startStream antes de que el video monte, videoRef es
+   * null y el stream nunca se conecta. La callback ref garantiza que
+   * el assign ocurra en el momento correcto.
+   *
+   * Adicionalmente fuerza play() en el momento del mount — algunos
+   * browsers (Android Chrome, Safari iOS) requieren llamado explícito
+   * aún con autoPlay.
+   */
+  const videoCallbackRef = useCallback((node: HTMLVideoElement | null) => {
+    videoRef.current = node;
+    if (node && streamRef.current) {
+      node.srcObject = streamRef.current;
+      node.play().catch(() => {
+        /* play() puede rechazar — defensivo */
+      });
+    }
+  }, []);
 
   const [facing, setFacing] = useState<Facing>("user");
   const [status, setStatus] = useState<CameraStatus>("booting");
@@ -291,17 +315,15 @@ export function Camera({ onPhotoReady }: CameraProps) {
         ) : showLiveCamera ? (
           <>
             <video
-              ref={videoRef}
+              ref={videoCallbackRef}
               autoPlay
               playsInline
               muted
               onLoadedMetadata={() => {
-                // iOS Safari a veces no arranca el stream sin un .play()
-                // explícito aún con autoPlay. Lo forzamos cuando llegan
-                // los metadatos del video.
-                videoRef.current?.play().catch(() => {
-                  /* play() puede rechazar — defensivo */
-                });
+                // Defensa adicional: si por alguna razón el videoCallbackRef
+                // no llegó a llamar play() (race con StrictMode dev),
+                // re-intentamos cuando llegan los metadatos.
+                videoRef.current?.play().catch(() => {});
               }}
               className={`${styles.viewportMedia} ${
                 liveMirrored ? styles.videoMirrored : ""
