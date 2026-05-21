@@ -1,20 +1,29 @@
 "use client";
 
 /*
- * Camera — captura de foto desde la cámara o subida de archivo.
+ * Camera — captura con cámara en vivo + guía de óvalo facial.
  *
- * UX:
- *  - Estado inicial: dos botones grandes. "Sacar foto" abre directamente
- *    la cámara trasera en mobile (capture="environment"). "Subir foto"
- *    abre el picker de archivos normal.
- *  - Después de seleccionar: se muestra una previsualización + "Usar esta
- *    foto" (avanza al picker de personaje) y "Sacar otra" (reset).
+ * Usa getUserMedia para mostrar la cámara FRONTAL (selfie) por defecto en
+ * un viewport cuadrado 1:1 con un óvalo dorado superpuesto que indica
+ * dónde encuadrar la cara. Esto le da feel de app nativa de selfie:
+ *   - video en vivo (no la cámara del sistema)
+ *   - mirror flip horizontal para que se vea como un espejo
+ *   - botón de captura redondo grande estilo iOS
+ *   - botones laterales para alternar cámara (frontal/trasera) y subir
+ *     una foto desde la galería
  *
- * El componente NO decide cuándo avanzar al próximo paso — sólo llama
- * `onPhotoReady` con el dataURL JPEG ya redimensionado.
+ * Fallback automático cuando getUserMedia no está disponible:
+ *   - permiso denegado por el usuario (NotAllowedError)
+ *   - contexto inseguro (http en LAN, sin HTTPS)
+ *   - browser sin soporte
+ *   → cae a un botón único "Subir foto" que usa el file picker normal.
+ *
+ * Snapshot: cropea al cuadrado 1:1 que el usuario realmente vio (centrado
+ * con object-fit cover), después pasa por resizeImage para garantizar
+ * lado máximo 1024px y JPEG 0.85.
  */
 
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageProcessingError, resizeImage } from "@/lib/image";
 import styles from "./Camera.module.css";
 
@@ -22,21 +31,162 @@ export interface CameraProps {
   onPhotoReady: (dataUrl: string) => void;
 }
 
+type Facing = "user" | "environment";
+type CameraStatus = "booting" | "active" | "denied" | "unsupported";
+
 export function Camera({ onPhotoReady }: CameraProps) {
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [facing, setFacing] = useState<Facing>("user");
+  const [status, setStatus] = useState<CameraStatus>("booting");
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const stopStream = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, []);
+
+  const startStream = useCallback(
+    async (face: Facing) => {
+      if (
+        typeof navigator === "undefined" ||
+        !navigator.mediaDevices?.getUserMedia
+      ) {
+        setStatus("unsupported");
+        return;
+      }
+      setStatus("booting");
+      setError(null);
+      stopStream();
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: face },
+            width: { ideal: 1280 },
+            height: { ideal: 1280 },
+          },
+          audio: false,
+        });
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+        setStatus("active");
+      } catch (err) {
+        const name = (err as Error).name;
+        if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+          setStatus("denied");
+        } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+          // No hay cámara con ese facingMode — probar la otra antes de rendirse.
+          if (face === "user") {
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: "environment" } },
+                audio: false,
+              });
+              streamRef.current = stream;
+              if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+              }
+              setFacing("environment");
+              setStatus("active");
+              return;
+            } catch {
+              setStatus("unsupported");
+            }
+          } else {
+            setStatus("unsupported");
+          }
+        } else {
+          setStatus("unsupported");
+        }
+      }
+    },
+    [stopStream],
+  );
+
+  // Encender la cámara al montar y cuando cambia el facing. Apagarla
+  // mientras se previsualiza una foto (privacidad + batería).
+  useEffect(() => {
+    if (preview) {
+      stopStream();
+      return;
+    }
+    // startStream actualiza estado (status/error) — eslint marca esto pero
+    // es el patrón correcto para "iniciar un side-effect async al montar /
+    // cambiar facing". useSyncExternalStore no aplica acá porque la lógica
+    // de transición de estados es propia del componente.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    startStream(facing);
+    return () => stopStream();
+  }, [facing, preview, startStream, stopStream]);
+
+  async function handleSnapshot() {
+    const video = videoRef.current;
+    if (!video || status !== "active") return;
+    setBusy(true);
+    setError(null);
+    try {
+      // Cropeo al cuadrado 1:1 que el usuario realmente encuadró.
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+      if (!vw || !vh) {
+        throw new ImageProcessingError("La cámara aún no envió ningún cuadro.");
+      }
+      const side = Math.min(vw, vh);
+      const sx = (vw - side) / 2;
+      const sy = (vh - side) / 2;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = side;
+      canvas.height = side;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new ImageProcessingError("No se pudo crear el canvas.");
+      }
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(video, sx, sy, side, side, 0, 0, side, side);
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (b) =>
+            b
+              ? resolve(b)
+              : reject(new ImageProcessingError("Snapshot vacío.")),
+          "image/jpeg",
+          0.95,
+        );
+      });
+      const file = new File([blob], "snapshot.jpg", { type: "image/jpeg" });
+      const dataUrl = await resizeImage(file);
+      setPreview(dataUrl);
+    } catch (err) {
+      if (err instanceof ImageProcessingError) {
+        setError(err.message);
+      } else {
+        setError("No pudimos capturar la foto. Probá de nuevo.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    // Reset el input para que volver a seleccionar el mismo archivo dispare onChange.
     e.target.value = "";
     if (!file) return;
-
-    setError(null);
     setBusy(true);
+    setError(null);
     try {
       const dataUrl = await resizeImage(file);
       setPreview(dataUrl);
@@ -60,32 +210,75 @@ export function Camera({ onPhotoReady }: CameraProps) {
     if (preview) onPhotoReady(preview);
   }
 
+  function toggleFacing() {
+    setFacing((f) => (f === "user" ? "environment" : "user"));
+  }
+
+  const showLiveCamera = !preview && status === "active";
+  const showFallback = !preview && status !== "active";
+  const liveMirrored = facing === "user";
+
   return (
     <div className={styles.root}>
       {!preview && (
         <div className={styles.intro}>
           <h2 className={styles.heading}>Sacate una foto</h2>
           <p className={styles.subheading}>
-            Procurá buena luz y mirá de frente. Una sola persona en la foto
-            da mejores resultados.
+            Centrá tu cara dentro del óvalo. Una sola persona en la foto da
+            mejores resultados.
           </p>
         </div>
       )}
 
-      {preview ? (
-        <figure className={styles.previewWrap}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+      <div className={styles.viewport}>
+        {preview ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={preview}
             alt="Foto recién tomada"
-            className={styles.previewImage}
+            className={styles.viewportMedia}
           />
-        </figure>
-      ) : (
-        <div className={styles.placeholder} aria-hidden>
-          <CameraGlyph />
-        </div>
-      )}
+        ) : showLiveCamera ? (
+          <>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className={`${styles.viewportMedia} ${
+                liveMirrored ? styles.videoMirrored : ""
+              }`}
+            />
+            <FaceGuide />
+          </>
+        ) : (
+          <div className={styles.fallback}>
+            <CameraGlyph />
+            {status === "booting" ? (
+              <p className={styles.fallbackText}>Preparando la cámara…</p>
+            ) : status === "denied" ? (
+              <>
+                <p className={styles.fallbackText}>
+                  La app no tiene permiso para usar la cámara.
+                </p>
+                <p className={styles.fallbackHint}>
+                  Podés subir una foto desde la galería con el botón de
+                  abajo.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className={styles.fallbackText}>
+                  No se puede acceder a la cámara desde acá.
+                </p>
+                <p className={styles.fallbackHint}>
+                  Probá subiendo una foto desde la galería.
+                </p>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {error && (
         <p role="alert" className={styles.error}>
@@ -94,28 +287,7 @@ export function Camera({ onPhotoReady }: CameraProps) {
       )}
 
       <div className={styles.actions}>
-        {!preview ? (
-          <>
-            <button
-              type="button"
-              className={`${styles.actionButton} ${styles.actionPrimary}`}
-              onClick={() => cameraInputRef.current?.click()}
-              disabled={busy}
-            >
-              <CameraIcon />
-              <span>{busy ? "Procesando…" : "Sacar foto"}</span>
-            </button>
-            <button
-              type="button"
-              className={styles.actionButton}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={busy}
-            >
-              <UploadIcon />
-              <span>Subir foto</span>
-            </button>
-          </>
-        ) : (
+        {preview ? (
           <>
             <button
               type="button"
@@ -134,19 +306,59 @@ export function Camera({ onPhotoReady }: CameraProps) {
               <span>Sacar otra</span>
             </button>
           </>
+        ) : showLiveCamera ? (
+          <div className={styles.captureRow}>
+            <button
+              type="button"
+              className={styles.iconButton}
+              onClick={toggleFacing}
+              aria-label={
+                facing === "user"
+                  ? "Cambiar a cámara trasera"
+                  : "Cambiar a cámara frontal"
+              }
+            >
+              <FlipIcon />
+            </button>
+            <button
+              type="button"
+              className={styles.shutter}
+              onClick={handleSnapshot}
+              disabled={busy}
+              aria-label="Sacar foto"
+            >
+              <span className={styles.shutterRing} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className={styles.iconButton}
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Subir foto desde la galería"
+            >
+              <UploadIcon />
+            </button>
+          </div>
+        ) : (
+          // Fallback: sólo "Subir foto"
+          <button
+            type="button"
+            className={`${styles.actionButton} ${styles.actionPrimary}`}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={busy}
+          >
+            <UploadIcon />
+            <span>{busy ? "Procesando…" : "Subir foto"}</span>
+          </button>
         )}
       </div>
 
-      {/* Inputs ocultos. capture="environment" abre la cámara trasera en mobile. */}
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileChange}
-        className={styles.hidden}
-        aria-hidden
-      />
+      {showFallback && status === "denied" && (
+        <p className={styles.hintBelow}>
+          Tip: en el celular se vuelve a pedir el permiso recargando la
+          página.
+        </p>
+      )}
+
       <input
         ref={fileInputRef}
         type="file"
@@ -159,14 +371,59 @@ export function Camera({ onPhotoReady }: CameraProps) {
   );
 }
 
-/* ── Iconos inline ────────────────────────────────────────────────────── */
+/* ── Guía facial sobre el viewport en vivo ──────────────────────────── */
+
+function FaceGuide() {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid meet"
+      className={styles.faceGuide}
+      aria-hidden
+    >
+      {/* Vignette: opacidad sólo afuera del óvalo. */}
+      <defs>
+        <mask id="face-guide-mask">
+          <rect width="100" height="100" fill="white" />
+          <ellipse cx="50" cy="48" rx="22" ry="30" fill="black" />
+        </mask>
+      </defs>
+      <rect
+        width="100"
+        height="100"
+        fill="rgba(0, 0, 0, 0.45)"
+        mask="url(#face-guide-mask)"
+      />
+      {/* Óvalo dorado con stroke discontinuo — el "encuadre" sugerido. */}
+      <ellipse
+        cx="50"
+        cy="48"
+        rx="22"
+        ry="30"
+        fill="none"
+        stroke="rgba(231, 206, 142, 0.92)"
+        strokeWidth="0.55"
+        strokeDasharray="2 1.4"
+      />
+      {/* Pequeños "marcadores de esquina" para dar geometría tipo visor. */}
+      <g stroke="rgba(231, 206, 142, 0.85)" strokeWidth="0.5" fill="none">
+        <path d="M 18 14 L 18 10 L 22 10" />
+        <path d="M 82 14 L 82 10 L 78 10" />
+        <path d="M 18 86 L 18 90 L 22 90" />
+        <path d="M 82 86 L 82 90 L 78 90" />
+      </g>
+    </svg>
+  );
+}
+
+/* ── Iconos ─────────────────────────────────────────────────────────── */
 
 function CameraGlyph() {
   return (
     <svg
       viewBox="0 0 120 90"
       xmlns="http://www.w3.org/2000/svg"
-      className={styles.placeholderSvg}
+      className={styles.fallbackSvg}
       aria-hidden
     >
       <rect x="6" y="18" width="108" height="66" rx="8" fill="currentColor" opacity="0.18" />
@@ -178,11 +435,13 @@ function CameraGlyph() {
   );
 }
 
-function CameraIcon() {
+function FlipIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M14 4h2l2 3h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2l2-3h2" />
-      <circle cx="12" cy="13" r="4" />
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M21 8a8 8 0 0 0-14-3" />
+      <path d="M21 3v5h-5" />
+      <path d="M3 16a8 8 0 0 0 14 3" />
+      <path d="M3 21v-5h5" />
     </svg>
   );
 }
