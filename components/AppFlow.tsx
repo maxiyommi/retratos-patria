@@ -200,10 +200,72 @@ export function AppFlow() {
     abortRef.current.abort();
   }
 
+  /** Construye un nuevo dataURL con la inscripción "Imagen generada
+   *  con IA" estampada en la esquina inferior derecha, encima del
+   *  retrato. Tanto download como share usan esta versión, no el
+   *  raw dataURL que viene del backend. */
+  async function buildShareableDataUrl(): Promise<string | null> {
+    if (!portrait) return null;
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const w = img.naturalWidth;
+          const h = img.naturalHeight;
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return reject(new Error("no canvas"));
+          ctx.drawImage(img, 0, 0, w, h);
+
+          // Inscripción al pie. Banda semi-transparente oscura abajo +
+          // texto italic blanco. Escala según el tamaño del canvas para
+          // que se vea consistente en cualquier resolución de Gemini.
+          const fontSize = Math.round(h * 0.024);
+          const padY = Math.round(h * 0.015);
+          const padX = Math.round(w * 0.025);
+
+          // Banda gradiente del bajo del retrato hacia arriba.
+          const gradient = ctx.createLinearGradient(0, h * 0.88, 0, h);
+          gradient.addColorStop(0, "rgba(0,0,0,0)");
+          gradient.addColorStop(1, "rgba(0,0,0,0.45)");
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, h * 0.88, w, h * 0.12);
+
+          // Texto
+          ctx.fillStyle = "rgba(251, 247, 236, 0.95)";
+          ctx.font = `italic ${fontSize}px "EB Garamond", Georgia, serif`;
+          ctx.textBaseline = "alphabetic";
+          ctx.textAlign = "right";
+          ctx.shadowColor = "rgba(0,0,0,0.7)";
+          ctx.shadowBlur = 4;
+          ctx.fillText(
+            "Imagen generada con IA",
+            w - padX,
+            h - padY,
+          );
+          ctx.shadowBlur = 0;
+
+          resolve(canvas.toDataURL("image/jpeg", 0.92));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      img.onerror = () => reject(new Error("img load failed"));
+      img.src = portrait;
+    });
+  }
+
   async function handleDownload() {
     if (!portrait) return;
     try {
-      const file = dataUrlToFile(portrait, `retrato-${characterId}.jpg`);
+      const stampedDataUrl = await buildShareableDataUrl();
+      if (!stampedDataUrl) return;
+      const file = dataUrlToFile(
+        stampedDataUrl,
+        `retrato-${characterId}.jpg`,
+      );
       const url = URL.createObjectURL(file);
       const a = document.createElement("a");
       a.href = url;
@@ -212,6 +274,7 @@ export function AppFlow() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+      haptic("tap");
     } catch {
       alert("No pudimos preparar la descarga. Probá de nuevo.");
     }
@@ -220,23 +283,50 @@ export function AppFlow() {
   async function handleShare() {
     if (!portrait) return;
     try {
-      const file = dataUrlToFile(portrait, `retrato-${characterId}.jpg`);
+      const stampedDataUrl = await buildShareableDataUrl();
+      if (!stampedDataUrl) return;
+      const file = dataUrlToFile(
+        stampedDataUrl,
+        `retrato-${characterId}.jpg`,
+      );
+
       const shareData: ShareData = {
         title: "Mi Retrato de la Patria",
-        text: `Me retraté como ${fullName} de 1810.`,
+        text: `Me retraté como ${fullName} de 1810. Imagen generada con IA.`,
         files: [file],
       };
+
+      // Intento 1: share completo con archivo (mobile típico).
       if (
         typeof navigator !== "undefined" &&
-        navigator.canShare?.(shareData)
+        typeof navigator.canShare === "function" &&
+        navigator.canShare(shareData)
       ) {
+        haptic("tap");
         await navigator.share(shareData);
-      } else {
-        await handleDownload();
+        return;
       }
+
+      // Intento 2: share sin archivo, sólo texto + título.
+      // En navegadores que soportan navigator.share pero no archivos.
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        haptic("tap");
+        await navigator.share({
+          title: shareData.title,
+          text: shareData.text,
+        });
+        return;
+      }
+
+      // Fallback final: descargar.
+      await handleDownload();
     } catch (err) {
+      // AbortError = el usuario cerró el panel de compartir nativo. No
+      // mostramos error en ese caso.
       if ((err as Error).name !== "AbortError") {
-        alert("No pudimos abrir el panel de compartir. Probá descargar.");
+        alert(
+          "No pudimos abrir el panel de compartir. Probá con el botón de descargar.",
+        );
       }
     }
   }

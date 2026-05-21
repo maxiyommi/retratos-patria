@@ -92,37 +92,55 @@ function CharacterIcon({ id }: { id: CharacterId }) {
 }
 
 function PeinetonIcon() {
+  // Peinetón con abanico calado (3 ribs en hueco) y dientes claros abajo.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
       <path
         fill="currentColor"
-        d="M 14 50 Q 14 26 22 12 Q 28 4 32 4 Q 36 4 42 12 Q 50 26 50 50 L 50 54 L 14 54 Z"
+        d="M 12 50 Q 12 24 22 10 Q 28 3 32 3 Q 36 3 42 10 Q 52 24 52 50 Z"
       />
-      <path
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-        d="M 18 54 L 19 60 M 23 54 L 24 60 M 28 54 L 29 60 M 33 54 L 34 60 M 38 54 L 39 60 M 43 54 L 44 60 M 47 54 L 48 60"
-      />
+      {/* Cutout ribs — strokes en color pergamino simulan calado */}
+      <g stroke="#efe1bf" strokeWidth="2.5" strokeLinecap="round" fill="none">
+        <path d="M 22 16 V 46" />
+        <path d="M 32 10 V 46" />
+        <path d="M 42 16 V 46" />
+      </g>
+      {/* Dientes del peine debajo */}
+      <g stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none">
+        <path d="M 17 50 V 60" />
+        <path d="M 23 50 V 62" />
+        <path d="M 29 50 V 62" />
+        <path d="M 35 50 V 62" />
+        <path d="M 41 50 V 62" />
+        <path d="M 47 50 V 60" />
+      </g>
     </svg>
   );
 }
 
 function TricornioIcon() {
+  // Tricornio con escarapela celeste/blanca al frente.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
       <path
         fill="currentColor"
-        d="M 8 38 L 22 14 L 32 18 L 42 14 L 56 38 Q 56 46 48 46 L 16 46 Q 8 46 8 38 Z"
+        d="M 8 42 L 22 16 L 32 20 L 42 16 L 56 42 Q 56 50 48 50 L 16 50 Q 8 50 8 42 Z"
       />
+      {/* Escarapela celeste/blanca en la copa central */}
+      <circle cx="32" cy="32" r="4.5" fill="#5b9ece" />
+      <circle cx="32" cy="32" r="2.3" fill="#fbf7ec" />
     </svg>
   );
 }
 
 function CanastoIcon() {
+  // Canasto de mimbre con pan/baguette asomando.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
+      {/* Pan asomando atrás */}
+      <ellipse cx="24" cy="28" rx="7" ry="3.5" fill="currentColor" opacity="0.7" />
+      <ellipse cx="40" cy="26" rx="6" ry="3" fill="currentColor" opacity="0.55" />
+      {/* Asa */}
       <path
         stroke="currentColor"
         strokeWidth="3"
@@ -130,25 +148,39 @@ function CanastoIcon() {
         fill="none"
         d="M 18 30 Q 32 10 46 30"
       />
+      {/* Cuerpo del canasto */}
       <path
         fill="currentColor"
         d="M 14 32 L 18 56 Q 18 60 22 60 L 42 60 Q 46 60 46 56 L 50 32 Z"
       />
+      {/* Trama de mimbre (líneas color pergamino sobre el cuerpo) */}
+      <g stroke="#efe1bf" strokeWidth="1.4" fill="none" strokeLinecap="round">
+        <path d="M 17 40 H 47" />
+        <path d="M 18 48 H 46" />
+        <path d="M 19 55 H 45" />
+      </g>
     </svg>
   );
 }
 
 function MorrionIcon() {
+  // Morrión con escarapela celeste/blanca prominente al frente.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
+      {/* Cuerpo del morrión */}
       <path
         fill="currentColor"
-        d="M 24 12 L 22 44 Q 22 48 26 48 L 38 48 Q 42 48 42 44 L 40 12 Z"
+        d="M 24 10 L 22 44 Q 22 48 26 48 L 38 48 Q 42 48 42 44 L 40 10 Z"
       />
+      {/* Visera */}
       <path
         fill="currentColor"
         d="M 16 48 L 48 48 L 44 56 L 20 56 Z"
       />
+      {/* Escarapela celeste/blanca grande al frente */}
+      <circle cx="32" cy="26" r="5.5" fill="#5b9ece" />
+      <circle cx="32" cy="26" r="2.8" fill="#fbf7ec" />
+      <circle cx="32" cy="26" r="1.2" fill="#5b9ece" />
     </svg>
   );
 }

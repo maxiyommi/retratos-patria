@@ -30,31 +30,35 @@
 
 .backFab {
   position: absolute;
-  top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
-  left: var(--space-4);
+  /* Más arriba y un toque más a la izquierda, fuera del flow del eyebrow.
+     safe-area-inset-top respetado. */
+  top: calc(var(--space-2) + env(safe-area-inset-top, 0px));
+  left: calc(var(--space-3));
   z-index: 10;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(31, 80, 114, 0.55);
-  color: var(--color-blanco-calido);
-  border: 1px solid rgba(231, 206, 142, 0.35);
+  /* Ghost button transparente con borde dorado-suave — integra con el
+     eyebrow del LargeTitle (que también es dorado-suave) sin competir.
+     Color del chevron = mismo dorado-suave. */
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-dorado-suave);
+  border: 1px solid rgba(231, 206, 142, 0.4);
   border-radius: 50%;
   cursor: pointer;
   padding: 0;
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  box-shadow:
-    0 4px 14px rgba(31, 80, 114, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
   animation: back-fab-in 320ms var(--ease-out);
 }
 
 .backFab:hover {
-  background: rgba(31, 80, 114, 0.75);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-dorado-suave);
 }
 
 .backFab:active {
@@ -88,6 +92,13 @@
   flex-direction: column;
   min-height: 0;
   animation: step-fade-in 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Cuando NO estamos en camera el back FAB se muestra a top-left, y
+   necesitamos que el LargeTitle (eyebrow + título) no quede pisado.
+   Sumamos padding-top suficiente para clear del FAB (40px + margen). */
+.main:not([data-step="camera"]) .step {
+  padding-top: var(--space-6);
 }
 
 @keyframes step-fade-in {

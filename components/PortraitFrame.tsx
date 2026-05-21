@@ -73,6 +73,15 @@ export function PortraitFrame({
             </span>
           )}
         </figcaption>
+        {/*
+          Aviso requerido: este retrato fue generado con IA. Visual
+          discreto pero presente, en sepia sobre el marco. Cuando el
+          usuario descargue o comparta, la inscripción también se
+          renderea sobre el JPEG (ver AppFlow.handleDownload).
+        */}
+        <p className={styles.aiNotice} aria-label="Aviso: retrato generado con inteligencia artificial">
+          Imagen generada con inteligencia artificial
+        </p>
       </figure>
 
       <div className={styles.actions}>
