@@ -84,7 +84,19 @@ export async function transformPortrait(
     // Errores de red, autenticación, cuota, etc. Pasamos el mensaje
     // original como cause para loguear, pero mostramos uno amigable.
     const message = (err as Error)?.message ?? "";
-    if (/quota|rate/i.test(message)) {
+
+    // "limit: 0" en la cuota indica que el modelo de imágenes no tiene
+    // tier gratuito asignado al proyecto — hay que habilitar billing.
+    // Es distinto de un rate limit transitorio (que sí tiene cuota > 0
+    // y se resuelve esperando).
+    if (/limit:\s*0/i.test(message) || /billing/i.test(message)) {
+      throw new GeminiError(
+        "El modelo de retratos no tiene cuota gratuita. Hay que habilitar billing en el proyecto de Google AI Studio para usarlo.",
+        402,
+        err,
+      );
+    }
+    if (/quota|rate|RESOURCE_EXHAUSTED/i.test(message)) {
       throw new GeminiError(
         "Estamos pintando muchos retratos al mismo tiempo. Probá en un minuto.",
         429,
