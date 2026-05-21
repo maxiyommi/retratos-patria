@@ -1,12 +1,11 @@
 .main {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-7);
   max-width: var(--max-width-content);
   margin: 0 auto;
-  padding: var(--space-7) var(--space-5);
+  padding: var(--space-7) var(--space-5) var(--space-9);
   min-height: 100dvh;
-  justify-content: center;
 }
 
 .hero {
@@ -27,7 +26,6 @@
 }
 
 .title {
-  /* h1 ya viene del globals; acá afinamos el peso y agregamos un acento. */
   font-weight: 500;
   font-style: italic;
   text-shadow: 0 1px 2px rgba(31, 80, 114, 0.25);
@@ -73,29 +71,44 @@
   letter-spacing: var(--letter-spacing-wide);
 }
 
-.card {
-  background: var(--color-superficie);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-5);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--color-crema);
+/* ── Vista previa de variantes del PortraitFrame (sólo durante Bloque 4) ── */
+
+.preview {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  color: var(--color-texto);
-  /*
-   * Textura cremita sutil — refuerza el sentido de "lienzo de papel" en la
-   * tarjeta, sin entrar al mundo pergamino reservado al retrato.
-   */
-  background-image: linear-gradient(
-      rgba(243, 236, 217, 0.45),
-      rgba(243, 236, 217, 0.45)
-    ),
-    url("/paper-texture.svg");
-  background-blend-mode: multiply;
+  gap: var(--space-4);
+  align-items: center;
 }
 
-.cardTitle {
-  font-size: var(--font-size-xl);
-  color: var(--color-celeste-profundo);
+.previewHeader {
+  text-align: center;
+  color: var(--color-texto-claro);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.previewTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--color-blanco-calido);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.previewTitle em {
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  text-transform: none;
+  color: var(--color-dorado-suave);
+  letter-spacing: 0;
+  font-size: 1.15em;
+  font-weight: 500;
+}
+
+.previewNote {
+  font-style: italic;
+  font-size: var(--font-size-sm);
+  color: var(--color-blanco-calido);
+  opacity: 0.75;
 }

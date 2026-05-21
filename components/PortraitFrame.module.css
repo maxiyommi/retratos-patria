@@ -1,0 +1,332 @@
+/*
+ * PortraitFrame.module.css
+ *
+ * El único archivo del proyecto que vive en el "mundo 1810" (dorado, sepia,
+ * pergamino). Todo lo demás en la app usa el chrome celeste.
+ *
+ * Las variantes "cabildo" (austera) y "recoleta" (ornamentada) se diferencian
+ * por anchos, ornamentos y la presencia del pinstripe interior y la cartela
+ * extendida. Comparten la arquitectura.
+ */
+
+/* ── Contenedor raíz ─────────────────────────────────────────────────── */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 22rem; /* ~352px — entra cómodo en viewport mobile de 390px */
+  margin: 0 auto;
+  /* La animación de "objeto recién colgado" empieza acá y se aplica al
+     marco; los botones del chrome aparecen un toque después. */
+}
+
+/* ── Marco ───────────────────────────────────────────────────────────── */
+
+.frame {
+  position: relative;
+  margin: 0;
+  padding: var(--frame-pad, var(--space-4));
+  border-radius: 6px;
+  /*
+   * Dorado con sutil iluminación diagonal — imita un bisel de pan de oro
+   * sobre madera. Sin ser chillón: el rango va de dorado-suave a un
+   * dorado-oscuro un toque más quemado que el token base.
+   */
+  background:
+    linear-gradient(
+      135deg,
+      var(--color-dorado-suave) 0%,
+      var(--color-dorado) 38%,
+      #a87f37 62%,
+      var(--color-dorado) 100%
+    );
+  box-shadow:
+    var(--shadow-marco),
+    inset 0 0 0 1px rgba(58, 38, 24, 0.35); /* hilo interior oscuro */
+  isolation: isolate;
+  animation: hang 720ms var(--ease-out) backwards;
+}
+
+.root[data-variant="recoleta"] .frame {
+  --frame-pad: calc(var(--space-4) + 4px); /* marco un poco más grueso */
+  box-shadow:
+    var(--shadow-marco),
+    inset 0 0 0 1px rgba(58, 38, 24, 0.45),
+    inset 0 0 0 4px var(--color-dorado-suave),
+    inset 0 0 0 5px rgba(58, 38, 24, 0.35);
+}
+
+/* Bisel exterior: línea más oscura al borde del marco. */
+.bevelOuter {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(58, 38, 24, 0.55);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ── Esquinas ornamentales ───────────────────────────────────────────── */
+
+.corner {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  color: var(--color-dorado-suave);
+  filter: drop-shadow(0 1px 1px rgba(58, 38, 24, 0.6));
+}
+
+.cornerSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.root[data-variant="cabildo"] .corner {
+  width: 26px;
+  height: 26px;
+}
+
+.root[data-variant="recoleta"] .corner {
+  width: 36px;
+  height: 36px;
+  color: var(--color-pergamino);
+  filter: drop-shadow(0 1px 2px rgba(58, 38, 24, 0.75));
+}
+
+.corner-tl {
+  top: 4px;
+  left: 4px;
+}
+.corner-tr {
+  top: 4px;
+  right: 4px;
+}
+.corner-bl {
+  bottom: 4px;
+  left: 4px;
+}
+.corner-br {
+  bottom: 4px;
+  right: 4px;
+}
+
+/* ── Mata (matte) — el "passe-partout" sepia/pergamino ──────────────── */
+
+.mat {
+  position: relative;
+  padding: 8px;
+  background: var(--color-sepia);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4),
+    inset 0 2px 8px rgba(0, 0, 0, 0.45); /* sombra interna donde "se hunde" la imagen */
+  z-index: 2;
+}
+
+.root[data-variant="recoleta"] .mat {
+  padding: 10px;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 30%),
+    var(--color-sepia);
+}
+
+/* Pinstripe dorado interior (sólo Recoleta) — un filete entre mata e imagen. */
+.matPinstripe {
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--color-dorado-suave);
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Contenedor de la imagen ─────────────────────────────────────────── */
+
+.imageWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--color-tinta-vieja); /* fallback mientras carga */
+  aspect-ratio: 1 / 1;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Sutil reflejo de "vidrio" sobre el retrato — gradiente diagonal muy tenue. */
+.glassSheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0) 35%,
+    rgba(255, 255, 255, 0) 65%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* ── Cartela del personaje ───────────────────────────────────────────── */
+
+.cartela {
+  margin: 0;
+  position: relative;
+  align-self: center;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  margin-top: calc(var(--space-3) * -0.5); /* monta un poco sobre el marco */
+  background:
+    linear-gradient(180deg, rgba(58, 38, 24, 0.08), rgba(0, 0, 0, 0) 60%),
+    var(--color-pergamino);
+  border: 1px solid var(--color-sepia);
+  border-radius: 2px;
+  box-shadow:
+    0 6px 16px rgba(58, 38, 24, 0.4),
+    inset 0 0 0 1px rgba(231, 206, 142, 0.6); /* hilo dorado suave por dentro */
+  color: var(--color-tinta-vieja);
+  font-family: var(--font-stack-display);
+  text-align: center;
+  /* La cartela se "pinta" un poco más tarde que el marco. */
+  animation: cartela-in 720ms var(--ease-out) 220ms backwards;
+}
+
+.cartelaName {
+  font-style: italic;
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.cartelaBadge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--color-sepia);
+  border-radius: 999px;
+  font-family: var(--font-stack-body);
+  font-size: var(--font-size-xs);
+  font-style: normal;
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-sepia);
+}
+
+.cartelaBadge em {
+  font-style: italic;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.02em;
+  color: var(--color-tinta-vieja);
+}
+
+/* ── Botones de acción (vuelven al chrome celeste) ──────────────────── */
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  animation: cartela-in 600ms var(--ease-out) 360ms backwards;
+}
+
+.actionButton {
+  /*
+   * Estos botones son del chrome moderno: celeste, blanco, sin textura de
+   * época. La frontera entre los dos mundos es justamente esta — el marco
+   * arriba es 1810, los botones acá son 2026.
+   */
+  min-height: var(--target-min-tap);
+  padding: var(--space-3) var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-accion-primaria);
+  color: var(--color-blanco-calido);
+  font-family: var(--font-stack-body);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.actionButton:hover {
+  background: var(--color-accion-primaria-hover);
+}
+
+.actionButton:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+.actionPrimary {
+  /* "Descargar" es el camino feliz: lo llevamos a celeste tinta para que
+     se sienta el peso, y le agregamos un hilo dorado por debajo (referencia
+     al marco). */
+  background: var(--color-celeste-tinta);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 -2px 0 var(--color-dorado);
+}
+
+.actionPrimary:hover {
+  background: #16415e;
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────── */
+
+@keyframes hang {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.94) rotate(-0.6deg);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(3px) scale(1.005) rotate(0.2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes cartela-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame,
+  .cartela,
+  .actions {
+    animation: none;
+  }
+  .actionButton:active {
+    transform: none;
+  }
+}
