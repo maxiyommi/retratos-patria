@@ -149,6 +149,39 @@
   animation: msg-in 600ms var(--ease-out);
 }
 
+/* Botón Cancelar — opcional, presente sólo si el padre da onCancel. */
+
+.cancelButton {
+  align-self: center;
+  padding: var(--space-3) var(--space-5);
+  background: transparent;
+  border: 1px solid rgba(231, 206, 142, 0.6);
+  border-radius: var(--radius-pill);
+  color: var(--color-blanco-calido);
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  min-height: var(--target-min-tap);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.cancelButton:hover {
+  background: rgba(231, 206, 142, 0.18);
+}
+
+.cancelButton:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cancelButton:active {
+    transform: none;
+  }
+}
+
 /* ── Accesibilidad: texto sólo para screen readers ──────────────────── */
 
 .srOnly {

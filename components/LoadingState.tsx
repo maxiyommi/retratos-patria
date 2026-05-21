@@ -25,6 +25,8 @@ import styles from "./LoadingState.module.css";
 
 export interface LoadingStateProps {
   characterName: string;
+  /** Si está definido, se muestra un botón "Cancelar" debajo de los mensajes. */
+  onCancel?: () => void;
 }
 
 const MESSAGES = [
@@ -48,7 +50,7 @@ for (let i = 0; i < 8; i++) {
 
 const RAY_STAGGER_S = 0.42;
 
-export function LoadingState({ characterName }: LoadingStateProps) {
+export function LoadingState({ characterName, onCancel }: LoadingStateProps) {
   const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
@@ -111,6 +113,16 @@ export function LoadingState({ characterName }: LoadingStateProps) {
           {MESSAGES[messageIndex]}
         </p>
       </div>
+
+      {onCancel && (
+        <button
+          type="button"
+          className={styles.cancelButton}
+          onClick={onCancel}
+        >
+          Cancelar
+        </button>
+      )}
 
       {/* Texto sólo para lectores de pantalla: estado completo. */}
       <span className={styles.srOnly}>

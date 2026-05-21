@@ -13,6 +13,9 @@
 
 const DEFAULT_MAX_SIDE = 1024;
 const DEFAULT_JPEG_QUALITY = 0.85;
+// Cota dura del resultado: si el dataURL post-resize supera este tamaño,
+// rechazamos. Protege a /api/transform de payloads desproporcionados.
+const MAX_OUTPUT_BYTES = 5 * 1024 * 1024; // 5 MB
 
 export class ImageProcessingError extends Error {
   constructor(message: string, public cause?: unknown) {
@@ -59,7 +62,15 @@ export async function resizeImage(
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(img, 0, 0, targetW, targetH);
 
-  return canvas.toDataURL("image/jpeg", quality);
+  const output = canvas.toDataURL("image/jpeg", quality);
+  // El dataURL base64 pesa ~33% más que los bytes reales. Aún así, si supera
+  // la cota dura, abortamos antes de mandarlo al backend.
+  if (output.length > MAX_OUTPUT_BYTES) {
+    throw new ImageProcessingError(
+      "La foto resultó demasiado grande aún después de comprimirla. Probá con una foto más chica.",
+    );
+  }
+  return output;
 }
 
 /** Convierte un dataURL en Blob, útil para descargar o compartir. */

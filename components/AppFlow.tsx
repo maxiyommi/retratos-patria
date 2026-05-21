@@ -19,7 +19,7 @@
  *                   compartir y "probar otro".
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./AppFlow.module.css";
 import { Camera } from "@/components/Camera";
 import {
@@ -44,12 +44,37 @@ import type {
 
 type Step = "camera" | "choose" | "painting" | "result";
 
+// Tiempo máximo de espera antes de abortar la request. Gemini suele tardar
+// 8-15s; le damos margen amplio pero finito para que el spinner no quede
+// infinito si el modelo se cuelga o la red se cae mid-request.
+const PAINT_TIMEOUT_MS = 90_000;
+
 // Heurística: si el mensaje del backend menciona billing/cuota gratuita,
 // ofrecemos un fallback de modo demo (placeholder sepia) para que el
 // usuario pueda recorrer toda la UI sin necesidad de habilitar el pago.
 function isBillingError(message: string | null): boolean {
   if (!message) return false;
   return /billing|cuota gratuita|tier pago/i.test(message);
+}
+
+/** Convierte un error crudo del fetch en un mensaje legible en es-AR. */
+function describeFetchError(err: unknown): string {
+  if (err instanceof DOMException && err.name === "AbortError") {
+    // Distinguimos abort por timeout vs abort por usuario en el contexto
+    // donde llamamos. Acá devolvemos el mensaje "neutro" — el llamador
+    // decide si lo muestra o lo descarta.
+    return "La generación se canceló.";
+  }
+  // "Failed to fetch" es el mensaje que tira el browser cuando no hay red,
+  // CORS bloqueado, o el server local cayó.
+  if (
+    err instanceof TypeError &&
+    /failed to fetch|networkerror|load failed/i.test(err.message)
+  ) {
+    return "No pudimos contactar al servidor. Revisá tu conexión a internet y probá de nuevo.";
+  }
+  if (err instanceof Error && err.message) return err.message;
+  return "No pudimos generar el retrato. Probá de nuevo.";
 }
 
 export function AppFlow() {
@@ -60,6 +85,10 @@ export function AppFlow() {
   const [portrait, setPortrait] = useState<string | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [transformError, setTransformError] = useState<string | null>(null);
+  // Ref del controller activo para que el botón Cancelar pueda abortarlo.
+  // Lo distinguimos de un abort por timeout con userCancelledRef.
+  const abortRef = useRef<AbortController | null>(null);
+  const userCancelledRef = useRef(false);
 
   const selected = characterId ? getCharacterById(characterId) : null;
   const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
@@ -92,6 +121,17 @@ export function AppFlow() {
     setIsDemoMode(false);
     setStep("painting");
 
+    // AbortController fresco por request. Timeout duro a PAINT_TIMEOUT_MS;
+    // adicionalmente, el botón Cancelar de LoadingState aborta este mismo
+    // controller (vía handleCancelPaint).
+    const controller = new AbortController();
+    abortRef.current = controller;
+    userCancelledRef.current = false;
+    const timeoutId = window.setTimeout(
+      () => controller.abort(),
+      PAINT_TIMEOUT_MS,
+    );
+
     const requestBody: TransformRequest = {
       image: photo,
       characterId,
@@ -103,8 +143,8 @@ export function AppFlow() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
+        signal: controller.signal,
       });
-      // Parseamos siempre — la API devuelve JSON en ok y en error.
       const data = (await res.json()) as TransformResponse;
 
       if (!res.ok || "error" in data) {
@@ -118,15 +158,36 @@ export function AppFlow() {
       setPortrait(data.image);
       setStep("result");
     } catch (err) {
-      const message =
-        err instanceof Error && err.message
-          ? err.message
-          : "No pudimos generar el retrato. Probá de nuevo.";
-      setTransformError(message);
-      // Volvemos a "choose" para que el usuario pueda cambiar opciones o
-      // reintentar sin perder la foto que ya sacó.
+      // Cancelación intencional del usuario: no mostramos error, sólo
+      // volvemos al paso de choose.
+      if (
+        err instanceof DOMException &&
+        err.name === "AbortError" &&
+        userCancelledRef.current
+      ) {
+        setStep("choose");
+        return;
+      }
+      // Abort por timeout: mensaje específico distinto al de cancelación.
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setTransformError(
+          "El retrato tardó más de lo esperado. Probá con otra foto o esperá un momento y reintentá.",
+        );
+        setStep("choose");
+        return;
+      }
+      setTransformError(describeFetchError(err));
       setStep("choose");
+    } finally {
+      window.clearTimeout(timeoutId);
+      if (abortRef.current === controller) abortRef.current = null;
     }
+  }
+
+  function handleCancelPaint() {
+    if (!abortRef.current) return;
+    userCancelledRef.current = true;
+    abortRef.current.abort();
   }
 
   async function handleDownload() {
@@ -212,7 +273,10 @@ export function AppFlow() {
           )}
 
           {step === "painting" && (
-            <LoadingState characterName={fullName} />
+            <LoadingState
+              characterName={fullName}
+              onCancel={handleCancelPaint}
+            />
           )}
 
           {step === "result" && portrait && (
