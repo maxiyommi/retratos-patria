@@ -1,32 +1,40 @@
 "use client";
 
 /*
- * Splash — pantalla de boot estilo app nativa con identidad argentina.
+ * Splash — pantalla de bienvenida con identidad argentina + CTA Ingresar.
  *
- * Composición:
- *  - Bandera argentina (3 franjas celeste/blanco/celeste) cubriendo todo
- *    el viewport, con efecto de "viento" perpetuo (feTurbulence +
- *    feDisplacementMap).
- *  - Vignette radial sutil que oscurece los bordes y enfoca el centro,
- *    con un halo dorado donde estará el Sol.
- *  - Sol de Mayo en dorado fuerte, centrado, con doble glow.
- *  - Título "Retratos de la Patria" en Cormorant italic.
+ * Ya no se auto-cierra con timer: el usuario controla cuándo entrar a la
+ * app tocando "Ingresar". Eso le da el respiro para apreciar la
+ * coreografía completa (5s de animaciones escalonadas) sin presión.
  *
- * Coreografía (2.8s total + 800ms fade):
- *  1. La bandera "se despliega" desde el centro (scaleX 0 → 1) en 1100ms.
- *     A la vez, comienza el drift perpetuo de 14s que da sensación de
- *     viento sostenido.
- *  2. El Sol de Mayo emerge a los 500ms con scale + rotación + blur-out
- *     durante 1100ms. Después entra en pulse suave perpetuo de 3.2s.
- *  3. El título emerge a los 1500ms con blur-out + translateY durante 1000ms.
- *  4. A los 2800ms empieza el fade out (800ms) hacia el contenido real.
+ * Composición edge-to-edge:
+ *  - El root es position: fixed inset: 0 — cubre debajo del status bar
+ *    (en PWA standalone con apple-mobile-web-app-status-bar-style
+ *    "black-translucent" el contenido pasa por debajo del status bar).
+ *  - La bandera es el fondo (3 franjas celeste/blanco/celeste). Sus
+ *    franjas SUPERIOR e INFERIOR son celeste (#5b9ece), matching el
+ *    theme-color del meta de Next que controla el color de la URL bar
+ *    en Chrome/Safari. Resultado: no hay borde visible entre app y
+ *    browser chrome.
+ *  - safe-area-inset-top/bottom respetados sólo por el contenido
+ *    (Sol/título/botón) y el footer, no por el fondo.
+ *
+ * Coreografía total: 5 segundos antes de quedar idle.
+ *  - 0-1800ms: bandera unfurl + drift perpetuo de 18s.
+ *  - 800-2300ms: Sol de Mayo emerge.
+ *  - 2200-3600ms: "Retratos" emerge con gradient dorado.
+ *  - 2900-3900ms: "de la Patria" emerge.
+ *  - 3700-4400ms: botón Ingresar emerge.
+ *  - 4300-5000ms: footer emerge.
+ *  - 3800ms en adelante: shimmer dorado perpetuo sobre "Retratos".
+ *  - Idle: queda como está hasta que el usuario toca Ingresar.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SolDeMayo } from "@/components/SolDeMayo";
+import { haptic } from "@/lib/haptic";
 import styles from "./Splash.module.css";
 
-const SHOW_MS = 2800;
 const FADE_MS = 800;
 
 export function Splash() {
@@ -34,25 +42,17 @@ export function Splash() {
     "showing",
   );
 
-  useEffect(() => {
-    const startFade = window.setTimeout(
-      () => setPhase("fading"),
-      SHOW_MS,
-    );
-    const done = window.setTimeout(
-      () => setPhase("done"),
-      SHOW_MS + FADE_MS,
-    );
-    return () => {
-      window.clearTimeout(startFade);
-      window.clearTimeout(done);
-    };
-  }, []);
+  function handleIngresar() {
+    if (phase !== "showing") return;
+    haptic("success");
+    setPhase("fading");
+    window.setTimeout(() => setPhase("done"), FADE_MS);
+  }
 
   if (phase === "done") return null;
 
   return (
-    <div className={styles.root} data-phase={phase} aria-hidden>
+    <div className={styles.root} data-phase={phase}>
       <svg
         className={styles.flag}
         viewBox="0 0 1200 800"
@@ -76,7 +76,6 @@ export function Splash() {
             <feDisplacementMap in="SourceGraphic" scale="26" />
           </filter>
         </defs>
-        {/* Outer group: unfurl en X. Inner group: drift horizontal perpetuo. */}
         <g className={styles.flagUnfurl}>
           <g className={styles.flagDrift} filter="url(#splash-wave)">
             <rect
@@ -112,7 +111,30 @@ export function Splash() {
           <span className={styles.titleMain}>Retratos</span>
           <span className={styles.titleSub}>de la Patria</span>
         </h1>
+
+        <button
+          type="button"
+          className={styles.cta}
+          onClick={handleIngresar}
+          aria-label="Ingresar a la app"
+        >
+          Ingresar
+        </button>
       </div>
+
+      <footer className={styles.footer}>
+        <p className={styles.footerText}>
+          Un proyecto educativo de código abierto
+        </p>
+        <a
+          href="https://github.com/maxiyommi/retratos-patria"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.footerLink}
+        >
+          Ver en GitHub
+        </a>
+      </footer>
     </div>
   );
 }
