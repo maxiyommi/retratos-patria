@@ -35,7 +35,7 @@ Necesitás Node.js 20+ y una clave de Gemini.
 
 ```bash
 # 1. Cloná el repo
-git clone <URL-del-repo>
+git clone https://github.com/maxiyommi/retratos-patria.git
 cd retratos-patria
 
 # 2. Instalá dependencias
