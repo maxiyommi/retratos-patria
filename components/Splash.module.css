@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 600ms var(--ease-out);
+  transition: opacity 800ms var(--ease-out);
 }
 
 .root[data-phase="showing"] {
@@ -35,7 +35,7 @@
  */
 .flagUnfurl {
   transform-origin: 50% 50%;
-  animation: flag-unfurl 700ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: flag-unfurl 1100ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes flag-unfurl {
@@ -57,7 +57,7 @@
  * displacement (feTurbulence) para dar feel "viento que pasa".
  */
 .flagDrift {
-  animation: flag-drift 10s linear infinite;
+  animation: flag-drift 14s linear infinite;
 }
 
 @keyframes flag-drift {
@@ -65,7 +65,7 @@
     transform: translateX(0);
   }
   to {
-    transform: translateX(-40px);
+    transform: translateX(-56px);
   }
 }
 
@@ -89,7 +89,7 @@
     );
   z-index: 1;
   pointer-events: none;
-  animation: vignette-in 700ms var(--ease-out) backwards;
+  animation: vignette-in 1000ms var(--ease-out) backwards;
 }
 
 @keyframes vignette-in {
@@ -121,8 +121,8 @@
     drop-shadow(0 10px 36px rgba(231, 206, 142, 0.55))
     drop-shadow(0 0 18px rgba(231, 206, 142, 0.35));
   animation:
-    sun-emerge 800ms cubic-bezier(0.16, 1, 0.3, 1) 180ms backwards,
-    sun-pulse 2.6s var(--ease-in-out) 1000ms infinite;
+    sun-emerge 1100ms cubic-bezier(0.16, 1, 0.3, 1) 500ms backwards,
+    sun-pulse 3.2s var(--ease-in-out) 1700ms infinite;
 }
 
 @keyframes sun-emerge {
@@ -169,7 +169,7 @@
   text-shadow:
     0 4px 24px rgba(31, 80, 114, 0.55),
     0 1px 0 rgba(0, 0, 0, 0.2);
-  animation: title-emerge 800ms var(--ease-out) 700ms backwards;
+  animation: title-emerge 1000ms var(--ease-out) 1500ms backwards;
 }
 
 @keyframes title-emerge {

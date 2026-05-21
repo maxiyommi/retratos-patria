@@ -12,21 +12,22 @@
  *  - Sol de Mayo en dorado fuerte, centrado, con doble glow.
  *  - Título "Retratos de la Patria" en Cormorant italic.
  *
- * Coreografía (1.6s total + 600ms fade):
- *  1. La bandera "se despliega" desde el centro (scaleX 0 → 1) en 700ms.
- *     A la vez, comienza el drift perpetuo que da sensación de viento.
- *  2. El Sol de Mayo emerge a los 180ms con scale + rotación + blur-out.
- *     Después entra en pulse suave perpetuo.
- *  3. El título emerge a los 700ms con blur-out + translateY.
- *  4. A los 1600ms empieza el fade out (600ms) hacia el contenido real.
+ * Coreografía (2.8s total + 800ms fade):
+ *  1. La bandera "se despliega" desde el centro (scaleX 0 → 1) en 1100ms.
+ *     A la vez, comienza el drift perpetuo de 14s que da sensación de
+ *     viento sostenido.
+ *  2. El Sol de Mayo emerge a los 500ms con scale + rotación + blur-out
+ *     durante 1100ms. Después entra en pulse suave perpetuo de 3.2s.
+ *  3. El título emerge a los 1500ms con blur-out + translateY durante 1000ms.
+ *  4. A los 2800ms empieza el fade out (800ms) hacia el contenido real.
  */
 
 import { useEffect, useState } from "react";
 import { SolDeMayo } from "@/components/SolDeMayo";
 import styles from "./Splash.module.css";
 
-const SHOW_MS = 1600;
-const FADE_MS = 600;
+const SHOW_MS = 2800;
+const FADE_MS = 800;
 
 export function Splash() {
   const [phase, setPhase] = useState<"showing" | "fading" | "done">(
