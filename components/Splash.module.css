@@ -157,31 +157,123 @@
   }
 }
 
+/*
+ * Título en dos líneas con jerarquía clara:
+ *   "Retratos"      → hero, gigante, dorado con shimmer perpetuo
+ *   "de la Patria"  → subtítulo italic, blanco, más chico, debajo
+ *
+ * Detrás de cada línea hay un halo oscuro pronunciado (text-shadow
+ * apilado) que separa el texto de la bandera ondulante — sin necesidad
+ * de un plaque/card que rompería la composición.
+ */
+
 .title {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  text-align: center;
+  line-height: 1;
+}
+
+.titleMain {
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(3rem, 13vw, 4.4rem);
+  letter-spacing: -0.025em;
+  /*
+   * Gradient metálico dorado + blanco-cálido que recorre las letras —
+   * background-clip text, animado en X para shimmer perpetuo. Tipo
+   * letras grabadas en pan de oro con luz pasando por encima.
+   */
+  background: linear-gradient(
+    100deg,
+    var(--color-dorado) 0%,
+    var(--color-dorado-suave) 18%,
+    var(--color-blanco-calido) 32%,
+    var(--color-dorado-suave) 48%,
+    var(--color-dorado) 65%,
+    var(--color-dorado-suave) 82%,
+    var(--color-blanco-calido) 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  /*
+   * Halo oscuro detrás del texto + brillo dorado externo. Como text-shadow
+   * sobre texto transparente no se ve, usamos drop-shadow en filter.
+   */
+  filter:
+    drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35))
+    drop-shadow(0 6px 28px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 24px rgba(231, 206, 142, 0.4));
+  animation:
+    title-main-emerge 1100ms cubic-bezier(0.16, 1, 0.3, 1) 1500ms backwards,
+    title-shimmer 4.5s linear 2600ms infinite;
+}
+
+.titleSub {
   font-family: var(--font-stack-display);
   font-style: italic;
   font-weight: 500;
-  font-size: clamp(1.7rem, 6.5vw, 2.3rem);
-  letter-spacing: -0.01em;
+  font-size: clamp(1.15rem, 4.8vw, 1.65rem);
+  letter-spacing: 0.04em;
   color: var(--color-blanco-calido);
-  text-align: center;
+  margin-top: -0.05em;
   text-shadow:
-    0 4px 24px rgba(31, 80, 114, 0.55),
-    0 1px 0 rgba(0, 0, 0, 0.2);
-  animation: title-emerge 1000ms var(--ease-out) 1500ms backwards;
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 4px 18px rgba(0, 0, 0, 0.5);
+  animation: title-sub-emerge 900ms var(--ease-out) 1950ms backwards;
 }
 
-@keyframes title-emerge {
+@keyframes title-main-emerge {
   from {
     opacity: 0;
-    transform: translateY(14px);
-    filter: blur(10px);
+    transform: translateY(20px) scale(0.94);
+    filter:
+      drop-shadow(0 0 0 transparent)
+      drop-shadow(0 0 0 transparent)
+      drop-shadow(0 0 0 transparent)
+      blur(14px);
+    letter-spacing: 0.05em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter:
+      drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35))
+      drop-shadow(0 6px 28px rgba(0, 0, 0, 0.55))
+      drop-shadow(0 0 24px rgba(231, 206, 142, 0.4))
+      blur(0);
+    letter-spacing: -0.025em;
+  }
+}
+
+@keyframes title-sub-emerge {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(6px);
+    letter-spacing: 0.15em;
   }
   to {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
+    letter-spacing: 0.04em;
+  }
+}
+
+@keyframes title-shimmer {
+  from {
+    background-position: 220% 0;
+  }
+  to {
+    background-position: -220% 0;
   }
 }
 
@@ -190,10 +282,17 @@
   .flagDrift,
   .vignette,
   .sun,
-  .title {
+  .titleMain,
+  .titleSub {
     animation: none;
   }
   .sun {
     transform: scale(1);
+  }
+  .titleMain {
+    /* Sin shimmer: fijamos el background en una posición legible y
+       garantizamos que el gradient se renderee. */
+    background-position: 50% 0;
+    letter-spacing: -0.025em;
   }
 }

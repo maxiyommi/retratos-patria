@@ -108,7 +108,10 @@ export function Splash() {
 
       <div className={styles.content}>
         <SolDeMayo className={styles.sun} />
-        <p className={styles.title}>Retratos de la Patria</p>
+        <h1 className={styles.title}>
+          <span className={styles.titleMain}>Retratos</span>
+          <span className={styles.titleSub}>de la Patria</span>
+        </h1>
       </div>
     </div>
   );
