@@ -26,6 +26,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageProcessingError, resizeImage } from "@/lib/image";
 import { haptic } from "@/lib/haptic";
+import { PhotoEditor } from "@/components/PhotoEditor";
 import styles from "./Camera.module.css";
 
 export interface CameraProps {
@@ -45,6 +46,13 @@ export function Camera({ onPhotoReady }: CameraProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  /*
+   * editingImageUrl: cuando el usuario sube una foto (no snapshot de la
+   * cámara en vivo), la cargamos cruda y abrimos PhotoEditor para que la
+   * encuadre dentro del óvalo. Al confirmar, el dataURL recortado pasa
+   * a preview. Si cancela, vuelve al estado anterior (cámara o fallback).
+   */
+  const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
 
   const stopStream = useCallback(() => {
     if (streamRef.current) {
@@ -197,20 +205,31 @@ export function Camera({ onPhotoReady }: CameraProps) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    setBusy(true);
     setError(null);
+    if (!file.type.startsWith("image/")) {
+      setError("El archivo no parece ser una imagen.");
+      return;
+    }
+    setBusy(true);
     try {
-      const dataUrl = await resizeImage(file);
-      setPreview(dataUrl);
-    } catch (err) {
-      if (err instanceof ImageProcessingError) {
-        setError(err.message);
-      } else {
-        setError("Algo salió mal al procesar la foto. Probá de nuevo.");
-      }
+      const rawDataUrl = await readFileAsDataURL(file);
+      // En vez de pasar directo a preview, abrimos el editor para que
+      // el usuario encuadre el rostro dentro del óvalo.
+      setEditingImageUrl(rawDataUrl);
+    } catch {
+      setError("No pudimos leer la imagen. Probá con otra.");
     } finally {
       setBusy(false);
     }
+  }
+
+  function handleEditorConfirm(croppedDataUrl: string) {
+    setEditingImageUrl(null);
+    setPreview(croppedDataUrl);
+  }
+
+  function handleEditorCancel() {
+    setEditingImageUrl(null);
   }
 
   function handleRetake() {
@@ -230,9 +249,23 @@ export function Camera({ onPhotoReady }: CameraProps) {
     setFacing((f) => (f === "user" ? "environment" : "user"));
   }
 
-  const showLiveCamera = !preview && status === "active";
-  const showFallback = !preview && status !== "active";
+  const showLiveCamera = !preview && !editingImageUrl && status === "active";
+  const showFallback = !preview && !editingImageUrl && status !== "active";
   const liveMirrored = facing === "user";
+
+  // Cuando el usuario está editando una foto subida, mostramos sólo el
+  // PhotoEditor en lugar del viewport + acciones de cámara.
+  if (editingImageUrl) {
+    return (
+      <div className={styles.root}>
+        <PhotoEditor
+          imageDataUrl={editingImageUrl}
+          onConfirm={handleEditorConfirm}
+          onCancel={handleEditorCancel}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.root}>
@@ -485,4 +518,16 @@ function RetakeIcon() {
       <path d="M3 21v-5h5" />
     </svg>
   );
+}
+
+/** Lee un File a dataURL crudo (sin resize). El editor necesita la
+ *  resolución original para que el usuario pueda hacer zoom y ver
+ *  detalle. El recorte final pasa por resize en cropToDataURL. */
+function readFileAsDataURL(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error ?? new Error("read failed"));
+    reader.readAsDataURL(file);
+  });
 }
