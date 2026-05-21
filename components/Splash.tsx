@@ -69,11 +69,11 @@ export function Splash() {
           >
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.012 0.045"
-              numOctaves="2"
+              baseFrequency="0.008 0.018"
+              numOctaves="1"
               seed="7"
             />
-            <feDisplacementMap in="SourceGraphic" scale="26" />
+            <feDisplacementMap in="SourceGraphic" scale="14" />
           </filter>
         </defs>
         <g className={styles.flagUnfurl}>
