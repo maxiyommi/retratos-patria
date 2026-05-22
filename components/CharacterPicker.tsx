@@ -177,16 +177,16 @@ function CanastoIcon() {
 }
 
 function MorrionIcon() {
-  // Shako del Regimiento de Patricios: cilindro NEGRO LISO de arriba a
-  // abajo (sin copa roja). La PLUMA blanca y la ESCARAPELA roja van al
-  // COSTADO IZQUIERDO de la copa — no centradas al frente. Esa es la
-  // silueta de identidad correcta del uniforme de gala.
+  // Galera negra del Regimiento de Patricios: cilindro NEGRO LISO de
+  // arriba a abajo. La PLUMA blanca y la ESCARAPELA roja van al COSTADO
+  // IZQUIERDO de la copa — no centradas al frente. Esa es la silueta de
+  // identidad correcta del uniforme de gala.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
-      {/* Cuerpo del shako — cilindro vertical negro liso. */}
+      {/* Cuerpo de la galera — cilindro vertical negro liso. */}
       <rect x="22" y="20" width="20" height="26" fill="currentColor" rx="1.5" />
 
-      {/* Banda más oscura al pie del shako. */}
+      {/* Banda más oscura al pie de la galera. */}
       <rect x="22" y="42" width="20" height="4" fill="#1f1108" opacity="0.75" />
 
       {/* Pluma blanca alta saliendo del COSTADO IZQUIERDO de la copa,
@@ -208,7 +208,7 @@ function MorrionIcon() {
       <circle cx="22" cy="29" r="3" fill="#c8412c" />
       <circle cx="22" cy="29" r="1.4" fill="#fbf7ec" />
 
-      {/* Ala mínima abajo del shako. */}
+      {/* Ala mínima abajo de la galera. */}
       <ellipse cx="32" cy="47" rx="13" ry="2" fill="currentColor" />
 
       {/* Barbiquejo dorado cayendo del costado derecho (lado opuesto a la pluma). */}

@@ -171,14 +171,14 @@ ELEMENTOS DEL UNIFORME (todos obligatorios — no omitir ninguno, no reemplazar 
 6. PANTALÓN BLANCO crudo hasta la rodilla o más largo según versión ceremonial.
 7. BOTAS ALTAS NEGRAS hasta debajo de la rodilla, o polainas negras.
 8. GUANTES BLANCOS de gala.
-9. SHAKO/MORRIÓN NEGRO ALTO CILÍNDRICO en la cabeza, derecho como un cilindro, ÍNTEGRAMENTE NEGRO de arriba a abajo (NO copa roja, NO cinta colorada, NO bordes vivos: todo negro). NO es galera baja, NO es bicornio, NO es tricornio: es un sombrero militar alto cilíndrico negro liso.
-10. PLUMA/PENACHO BLANCO ALTO y vertical, saliendo del COSTADO IZQUIERDO del shako (no del frente centrado), casi tan alto como el shako mismo. La pluma se prende sobre el costado izquierdo de la copa, no en el centro frontal.
-10b. ESCARAPELA al pie de la pluma, prendida también AL COSTADO IZQUIERDO del shako, no al frente. Disco pequeño rojo/celeste y blanco que ancla la base de la pluma al sombrero.
+9. GALERA NEGRA en la cabeza — galera histórica del Regimiento de Patricios, de copa cilíndrica derecha y alta, ÍNTEGRAMENTE NEGRA de arriba a abajo (NO copa roja, NO cinta colorada, NO bordes vivos: toda negra). Es una GALERA, no un shako militar moderno, no un bicornio, no un tricornio, no un sombrero de copa civil.
+10. PLUMA/PENACHO BLANCO ALTO y vertical, saliendo del COSTADO IZQUIERDO de la galera (NO del frente centrado), casi tan alta como la galera misma. La pluma se prende sobre el lateral izquierdo de la copa, no en el centro frontal.
+10b. ESCARAPELA al pie de la pluma, prendida también AL COSTADO IZQUIERDO de la galera, no al frente. Disco pequeño rojo/celeste y blanco que ancla la base de la pluma a la galera.
 11. ESCUDO O BADGE DORADO circular sobre el hombro izquierdo (Sol de Mayo o emblema del cuerpo).
 
-Cabello recogido bajo el shako. Si entra naturalmente, sostiene un fusil con bayoneta apoyado en posición de presentar armas, o un sable. Postura militar firme y digna.
+Cabello recogido bajo la galera. Si entra naturalmente, sostiene un fusil con bayoneta apoyado en posición de presentar armas, o un sable. Postura militar firme y digna.
 
-PROHIBIDO ABSOLUTAMENTE: vestido civil de cualquier tipo, traje de salón, mantilla de encaje, peinetón porteño, túnica, sotana, pluma o escarapela CENTRADAS al frente del shako (van al costado izquierdo, NO en el centro frontal), shako con copa roja o cinta colorada (es íntegramente NEGRO), uniforme de granaderos de San Martín (azul-rojo de 1812+, casaca distinta), uniforme de la Confederación, ejército moderno, traje de fines del XIX, galera baja, tricornio. Si el modelo dudara, ELEGIR SIEMPRE el uniforme histórico del Regimiento descripto arriba.`
+PROHIBIDO ABSOLUTAMENTE: vestido civil de cualquier tipo, traje de salón, mantilla de encaje, peinetón porteño, túnica, sotana, pluma o escarapela CENTRADAS al frente de la galera (van al costado izquierdo, NO en el centro frontal), galera con copa roja o cinta colorada (es íntegramente NEGRA), shako militar moderno, uniforme de granaderos de San Martín (azul-rojo de 1812+, casaca distinta), uniforme de la Confederación, ejército moderno, traje de fines del XIX, galera baja, tricornio. Si el modelo dudara, ELEGIR SIEMPRE el uniforme histórico del Regimiento descripto arriba.`
     ),
     promptCaballero: buildPrompt(
       `UNIFORME OBLIGATORIO E INVARIABLE — REGIMIENTO DE PATRICIOS DE BUENOS AIRES, uniforme de gala/ceremonia tipo Guardia Histórica (la versión que hoy luce la guardia patricia que custodia el Cabildo y la Casa de Gobierno). Este personaje SIEMPRE viste este uniforme, sin excepciones. NO ropa civil, NO casaca de salón, NO jabot, NO frac, NO sotana, NO traje de calle. SÓLO el uniforme militar descripto abajo. El cuerpo fue fundado en 1806 durante las Invasiones Inglesas y fue eje de la Revolución de Mayo (Cornelio Saavedra fue su comandante).
@@ -192,14 +192,14 @@ ELEMENTOS DEL UNIFORME (todos obligatorios — no omitir ninguno, no reemplazar 
 6. PANTALÓN BLANCO crudo hasta la rodilla o más largo según versión ceremonial.
 7. BOTAS ALTAS NEGRAS hasta debajo de la rodilla, o polainas negras.
 8. GUANTES BLANCOS de gala.
-9. SHAKO/MORRIÓN NEGRO ALTO CILÍNDRICO en la cabeza, derecho como un cilindro, ÍNTEGRAMENTE NEGRO de arriba a abajo (NO copa roja, NO cinta colorada, NO bordes vivos: todo negro). NO es galera baja, NO es bicornio, NO es tricornio: es un sombrero militar alto cilíndrico negro liso.
-10. PLUMA/PENACHO BLANCO ALTO y vertical, saliendo del COSTADO IZQUIERDO del shako (no del frente centrado), casi tan alto como el shako mismo. La pluma se prende sobre el costado izquierdo de la copa, no en el centro frontal.
-10b. ESCARAPELA al pie de la pluma, prendida también AL COSTADO IZQUIERDO del shako, no al frente. Disco pequeño rojo/celeste y blanco que ancla la base de la pluma al sombrero.
+9. GALERA NEGRA en la cabeza — galera histórica del Regimiento de Patricios, de copa cilíndrica derecha y alta, ÍNTEGRAMENTE NEGRA de arriba a abajo (NO copa roja, NO cinta colorada, NO bordes vivos: toda negra). Es una GALERA, no un shako militar moderno, no un bicornio, no un tricornio, no un sombrero de copa civil.
+10. PLUMA/PENACHO BLANCO ALTO y vertical, saliendo del COSTADO IZQUIERDO de la galera (NO del frente centrado), casi tan alta como la galera misma. La pluma se prende sobre el lateral izquierdo de la copa, no en el centro frontal.
+10b. ESCARAPELA al pie de la pluma, prendida también AL COSTADO IZQUIERDO de la galera, no al frente. Disco pequeño rojo/celeste y blanco que ancla la base de la pluma a la galera.
 11. ESCUDO O BADGE DORADO circular sobre el hombro izquierdo (Sol de Mayo o emblema del cuerpo).
 
 Si entra naturalmente, fusil con bayoneta apoyado en posición de presentar armas, sable al cinto o ambos. Postura militar firme, mirada decidida.
 
-PROHIBIDO ABSOLUTAMENTE: traje civil de cualquier tipo, casaca de salón con jabot/chorrera, frac, sotana, sombrero tricornio, pluma o escarapela CENTRADAS al frente del shako (van al costado izquierdo, NO en el centro frontal), shako con copa roja o cinta colorada (es íntegramente NEGRO), uniforme de granaderos de San Martín (azul-rojo de 1812+, casaca distinta), uniforme de la Confederación, ejército moderno, traje de fines del XIX, galera baja, bicornio. Si el modelo dudara, ELEGIR SIEMPRE el uniforme histórico del Regimiento descripto arriba.`
+PROHIBIDO ABSOLUTAMENTE: traje civil de cualquier tipo, casaca de salón con jabot/chorrera, frac, sotana, sombrero tricornio, pluma o escarapela CENTRADAS al frente de la galera (van al costado izquierdo, NO en el centro frontal), galera con copa roja o cinta colorada (es íntegramente NEGRA), shako militar moderno, uniforme de granaderos de San Martín (azul-rojo de 1812+, casaca distinta), uniforme de la Confederación, ejército moderno, traje de fines del XIX, galera baja, bicornio. Si el modelo dudara, ELEGIR SIEMPRE el uniforme histórico del Regimiento descripto arriba.`
     ),
   },
   {
