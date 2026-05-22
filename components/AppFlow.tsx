@@ -306,36 +306,9 @@ function composeFramedPortrait(
         // Centrado vertical sobre la franja blanca del medio.
         const brandBaselineY = brandStripY + bandH + bandH / 2;
 
-        // Sol de Mayo: disco dorado + 8 rayos cortos.
-        const sunCx = startX + sunR;
-        const sunCy = brandBaselineY;
-        const rayLen = Math.round(sunR * 0.85);
-        ctx.strokeStyle = "#c9a14a";
-        ctx.lineWidth = Math.max(1.6, sunR * 0.18);
-        ctx.lineCap = "round";
-        for (let i = 0; i < 8; i++) {
-          const angle = (i * Math.PI) / 4;
-          const startR = sunR + 2;
-          const endR = sunR + 2 + rayLen;
-          ctx.beginPath();
-          ctx.moveTo(
-            sunCx + Math.cos(angle) * startR,
-            sunCy + Math.sin(angle) * startR,
-          );
-          ctx.lineTo(
-            sunCx + Math.cos(angle) * endR,
-            sunCy + Math.sin(angle) * endR,
-          );
-          ctx.stroke();
-        }
-        ctx.fillStyle = "#c9a14a";
-        ctx.beginPath();
-        ctx.arc(sunCx, sunCy, sunR, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#e7ce8e";
-        ctx.beginPath();
-        ctx.arc(sunCx, sunCy, sunR * 0.6, 0, Math.PI * 2);
-        ctx.fill();
+        // Sol de Mayo — réplica del SVG /public/sol-de-mayo.svg:
+        // 16 rayos alternando recto y ondulado/flamígero + disco central.
+        drawSolDeMayo(ctx, startX + sunR, brandBaselineY, sunR);
 
         // Wordmark: ambas partes en CELESTE-TINTA (#1f5072), navy
         // oscuro sobre el blanco de la franja del medio. Máximo
@@ -356,6 +329,81 @@ function composeFramedPortrait(
     img.onerror = () => reject(new Error("img load failed"));
     img.src = portraitDataUrl;
   });
+}
+
+/**
+ * Dibuja el Sol de Mayo en canvas — réplica exacta del SVG en
+ * /public/sol-de-mayo.svg: 16 rayos alternando recto y ondulado
+ * + disco central + anillo sutil. Mismas proporciones que el SVG
+ * (disc r=38, base de rayos a r=50, tip a r=95), escaladas vía
+ * factor `discR / 38` para el tamaño pedido.
+ */
+function drawSolDeMayo(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  discR: number,
+) {
+  // Factor de escala: el SVG original usa disc r=38; todo lo demás
+  // se escala proporcionalmente.
+  const s = discR / 38;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // ── 8 rayos rectos (triángulos isósceles) ──
+  // Original SVG: polygon points="-6,-50 6,-50 0,-95"
+  ctx.fillStyle = "#c9a14a";
+  for (let i = 0; i < 8; i++) {
+    const angle = (i * Math.PI) / 4;
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(-6 * s, -50 * s);
+    ctx.lineTo(6 * s, -50 * s);
+    ctx.lineTo(0, -95 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // ── 8 rayos ondulados/flamígeros ──
+  // Original SVG: path "M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z"
+  // Intercalados a 22.5° entre los rectos.
+  for (let i = 0; i < 8; i++) {
+    const angle = (i * Math.PI) / 4 + Math.PI / 8;
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(-4 * s, -50 * s);
+    ctx.quadraticCurveTo(0, -65 * s, -3 * s, -78 * s);
+    ctx.quadraticCurveTo(0, -90 * s, 4 * s, -50 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // ── Disco central ──
+  ctx.fillStyle = "#c9a14a";
+  ctx.beginPath();
+  ctx.arc(0, 0, discR, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Highlight interior un toque más claro
+  ctx.fillStyle = "#e7ce8e";
+  ctx.beginPath();
+  ctx.arc(0, 0, discR * 0.78, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Anillo de contraste oscuro al borde del disco — replica el
+  // stroke del SVG (rgba(0,0,0,0.18) stroke-width 2)
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.22)";
+  ctx.lineWidth = Math.max(1, discR * 0.06);
+  ctx.beginPath();
+  ctx.arc(0, 0, discR, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.restore();
 }
 
 /**
