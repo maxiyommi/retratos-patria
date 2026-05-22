@@ -144,29 +144,47 @@ function composeFramedPortrait(
         ctx.fillStyle = goldGrad;
         ctx.fillRect(0, 0, canvasW, frameInnerH);
 
-        // Bisel oscuro perimetral del marco
-        ctx.strokeStyle = "rgba(58, 38, 24, 0.55)";
+        // Bisel del marco — TRES líneas concéntricas para dar profundidad
+        // tipo tallado: exterior oscura gruesa, intermedia clara, interior
+        // oscura. Replica el look del marco DOM con shadow-marco + insets.
+        // 1) Hilo exterior oscuro grueso (el borde tallado)
+        ctx.strokeStyle = "rgba(40, 24, 14, 0.85)";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(1.5, 1.5, canvasW - 3, frameInnerH - 3);
+        // 2) Filete intermedio en dorado claro a 6px de adentro (highlight)
+        ctx.strokeStyle = "rgba(231, 206, 142, 0.55)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(6, 6, canvasW - 12, frameInnerH - 12);
+        // 3) Hilo interior oscuro al borde de la mata (donde se hunde la imagen)
+        ctx.strokeStyle = "rgba(40, 24, 14, 0.7)";
         ctx.lineWidth = 2;
-        ctx.strokeRect(1, 1, canvasW - 2, frameInnerH - 2);
-        // Hilo interior oscuro
-        ctx.strokeRect(goldPad - 2, goldPad - 2, innerSize + matPad * 2 + 4, innerSize + matPad * 2 + 4);
+        ctx.strokeRect(
+          goldPad - 1,
+          goldPad - 1,
+          innerSize + matPad * 2 + 2,
+          innerSize + matPad * 2 + 2,
+        );
+        // 4) Sombra interna sutil sobre el dorado adyacente a la mata
+        //    (imita la profundidad del bisel hacia adentro)
+        const innerShadow = ctx.createLinearGradient(0, goldPad - 8, 0, goldPad + 8);
+        innerShadow.addColorStop(0, "rgba(0, 0, 0, 0)");
+        innerShadow.addColorStop(1, "rgba(40, 24, 14, 0.35)");
+        ctx.fillStyle = innerShadow;
+        ctx.fillRect(goldPad - 8, goldPad - 8, innerSize + matPad * 2 + 16, 8);
 
-        // Ornamentos discretos en las cuatro esquinas (punto dorado claro)
+        // ── Ornamentos en las cuatro esquinas — flor de 4 pétalos al ──
+        //    estilo de los SVG del DOM. Reemplaza los "tornillos" que
+        //    parecían remaches de pared.
         const cornerInset = Math.round(goldPad * 0.45);
-        const cornerR = Math.round(goldPad * 0.18);
-        ctx.fillStyle = "#e7ce8e";
-        [
+        const cornerSize = Math.round(goldPad * 0.42);
+        const corners: Array<[number, number]> = [
           [cornerInset, cornerInset],
           [canvasW - cornerInset, cornerInset],
           [cornerInset, frameInnerH - cornerInset],
           [canvasW - cornerInset, frameInnerH - cornerInset],
-        ].forEach(([cx, cy]) => {
-          ctx.beginPath();
-          ctx.arc(cx, cy, cornerR, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = "rgba(58, 38, 24, 0.45)";
-          ctx.lineWidth = 1;
-          ctx.stroke();
+        ];
+        corners.forEach(([cx, cy]) => {
+          drawCornerFlourish(ctx, cx, cy, cornerSize);
         });
 
         // ── Mata sepia (passe-partout) ────────────────────────────
@@ -249,23 +267,66 @@ function composeFramedPortrait(
         ctx.fillStyle = "#143b5a";
         ctx.fillRect(0, brandStripY, canvasW, brandStripH);
 
+        // Filete dorado fino al tope del strip — separa la banda del cuadro.
+        ctx.fillStyle = "rgba(231, 206, 142, 0.55)";
+        ctx.fillRect(0, brandStripY, canvasW, 1);
+        ctx.fillStyle = "rgba(231, 206, 142, 0.28)";
+        ctx.fillRect(0, brandStripY + 1, canvasW, 1);
+
+        // Sol de Mayo chiquito a la izquierda del wordmark
+        const sunR = Math.round(brandStripH * 0.18);
         const brandFont = Math.round(brandStripH * 0.4);
-        // "Retratos" en blanco cálido + "de la Patria" en dorado, separados.
+        const sunGap = Math.round(brandFont * 0.5);
         const part1 = "Retratos";
         const part2 = "de la Patria";
         ctx.font = `italic 600 ${brandFont}px "Cormorant Garamond", Georgia, serif`;
         const w1 = ctx.measureText(part1).width;
-        const gap = Math.round(brandFont * 0.4);
+        const innerGap = Math.round(brandFont * 0.4);
         const w2 = ctx.measureText(part2).width;
-        const totalW = w1 + gap + w2;
+        const totalW = sunR * 2 + sunGap + w1 + innerGap + w2;
         const startX = (canvasW - totalW) / 2;
         const brandBaselineY = brandStripY + brandStripH / 2;
+
+        // Sol: disco dorado + 8 rayos cortos alternados.
+        const sunCx = startX + sunR;
+        const sunCy = brandBaselineY;
+        const rayLen = Math.round(sunR * 0.85);
+        ctx.strokeStyle = "#e7ce8e";
+        ctx.lineWidth = Math.max(1.5, sunR * 0.15);
+        ctx.lineCap = "round";
+        for (let i = 0; i < 8; i++) {
+          const angle = (i * Math.PI) / 4;
+          const startR = sunR + 2;
+          const endR = sunR + 2 + rayLen;
+          ctx.beginPath();
+          ctx.moveTo(
+            sunCx + Math.cos(angle) * startR,
+            sunCy + Math.sin(angle) * startR,
+          );
+          ctx.lineTo(
+            sunCx + Math.cos(angle) * endR,
+            sunCy + Math.sin(angle) * endR,
+          );
+          ctx.stroke();
+        }
+        ctx.fillStyle = "#c9a14a";
+        ctx.beginPath();
+        ctx.arc(sunCx, sunCy, sunR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#e7ce8e";
+        ctx.beginPath();
+        ctx.arc(sunCx, sunCy, sunR * 0.65, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Wordmark: "Retratos" blanco cálido + "de la Patria" dorado suave.
+        const wordmarkX = startX + sunR * 2 + sunGap;
+        ctx.font = `italic 600 ${brandFont}px "Cormorant Garamond", Georgia, serif`;
         ctx.textBaseline = "middle";
         ctx.textAlign = "left";
         ctx.fillStyle = "#fbf7ec";
-        ctx.fillText(part1, startX, brandBaselineY);
+        ctx.fillText(part1, wordmarkX, brandBaselineY);
         ctx.fillStyle = "#e7ce8e";
-        ctx.fillText(part2, startX + w1 + gap, brandBaselineY);
+        ctx.fillText(part2, wordmarkX + w1 + innerGap, brandBaselineY);
 
         resolve(canvas.toDataURL("image/jpeg", 0.92));
       } catch (e) {
@@ -275,6 +336,58 @@ function composeFramedPortrait(
     img.onerror = () => reject(new Error("img load failed"));
     img.src = portraitDataUrl;
   });
+}
+
+/**
+ * Dibuja un ornamento de "flor de 4 pétalos" en una esquina del marco,
+ * matcheando la silueta de los SVG decorativos del PortraitFrame del DOM.
+ * Reemplaza los "tornillos" anteriores que parecían remaches.
+ */
+function drawCornerFlourish(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+) {
+  const r = size / 2;
+  const petalLen = r * 0.95;
+  const petalWidth = r * 0.42;
+
+  // 4 pétalos en forma de gota apuntando a cada eje cardinal.
+  ctx.fillStyle = "#e7ce8e";
+  for (let i = 0; i < 4; i++) {
+    const angle = (i * Math.PI) / 2; // 0, 90, 180, 270
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(
+      petalWidth, -petalLen * 0.2,
+      petalWidth * 0.4, -petalLen,
+      0, -petalLen,
+    );
+    ctx.bezierCurveTo(
+      -petalWidth * 0.4, -petalLen,
+      -petalWidth, -petalLen * 0.2,
+      0, 0,
+    );
+    ctx.closePath();
+    ctx.fill();
+    // Sombra interior sutil al pétalo (sentido del relieve)
+    ctx.strokeStyle = "rgba(58, 38, 24, 0.35)";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    ctx.restore();
+  }
+  // Disco central que cubre el cruce de los pétalos
+  ctx.fillStyle = "#c9a14a";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.28, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(58, 38, 24, 0.55)";
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
 }
 
 export function AppFlow() {
