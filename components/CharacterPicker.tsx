@@ -189,24 +189,22 @@ function MorrionIcon() {
       {/* Banda más oscura al pie de la galera. */}
       <rect x="22" y="42" width="20" height="4" fill="#1f1108" opacity="0.75" />
 
-      {/* Pluma blanca alta saliendo del COSTADO IZQUIERDO de la copa,
-          ligeramente inclinada hacia afuera (no centrada al frente). */}
+      {/* Pluma blanca CORTA Y CHICA al costado izquierdo de la copa
+          — sobresale apenas un tercio del alto de la galera. */}
       <path
         fill="#fbf7ec"
-        d="M 22 4 Q 18 12 19 22 Q 20 27 23 30 Q 25 26 25 21 Q 27 11 22 4 Z"
+        d="M 22 14 Q 19 19 20 24 Q 21 27 22 28 Q 23 26 24 24 Q 25 19 22 14 Z"
       />
-      <g stroke="#d9c98f" strokeWidth="0.5" strokeLinecap="round" fill="none" opacity="0.7">
-        <path d="M 22 8 L 19 11" />
-        <path d="M 22 13 L 19 16" />
-        <path d="M 22 18 L 20 21" />
-        <path d="M 22 8 L 25 11" />
-        <path d="M 22 13 L 25 16" />
-        <path d="M 22 18 L 24 21" />
+      <g stroke="#d9c98f" strokeWidth="0.4" strokeLinecap="round" fill="none" opacity="0.7">
+        <path d="M 22 17 L 20 19" />
+        <path d="M 22 20 L 20 22" />
+        <path d="M 22 17 L 24 19" />
+        <path d="M 22 20 L 24 22" />
       </g>
 
       {/* Escarapela roja al pie de la pluma, también al costado izquierdo. */}
-      <circle cx="22" cy="29" r="3" fill="#c8412c" />
-      <circle cx="22" cy="29" r="1.4" fill="#fbf7ec" />
+      <circle cx="22" cy="30" r="2.6" fill="#c8412c" />
+      <circle cx="22" cy="30" r="1.2" fill="#fbf7ec" />
 
       {/* Ala mínima abajo de la galera. */}
       <ellipse cx="32" cy="47" rx="13" ry="2" fill="currentColor" />
