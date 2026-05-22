@@ -85,45 +85,187 @@ function describeFetchError(err: unknown): string {
 }
 
 /**
- * Estampa el retrato con la inscripción "Imagen generada con IA" en la
- * esquina inf. derecha (banda gradient oscura + texto italic blanco).
- * Devuelve un nuevo dataURL JPEG. Se llama en useEffect apenas llega el
- * retrato, así el resultado queda cacheado y los handlers download/share
- * son síncronos respecto al click.
+ * Compone el "cuadro completo" listo para descargar o compartir: el
+ * retrato del usuario dentro de un marco dorado tipo museo, una cartela
+ * de pergamino con el nombre del personaje, la inscripción "Imagen
+ * generada con IA" en la esquina del retrato, y la marca "Retratos de
+ * la Patria" al pie. Replica visualmente al PortraitFrame del DOM en
+ * un solo canvas para que el archivo descargado se sienta como una
+ * obra exhibida, no como un screenshot del rostro.
+ *
+ * Se llama en useEffect apenas llega el retrato, así el resultado queda
+ * cacheado y los handlers download/share son síncronos respecto al click
+ * (importante para preservar la "user activation" que requiere
+ * navigator.share en Safari/Chrome mobile).
  */
-function stampWithAiNotice(dataUrl: string): Promise<string> {
+function composeFramedPortrait(
+  portraitDataUrl: string,
+  characterName: string,
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       try {
-        const w = img.naturalWidth;
-        const h = img.naturalHeight;
+        // Recorte cuadrado del retrato original (Gemini suele devolver
+        // imágenes ya cuadradas pero nos protegemos).
+        const srcSide = Math.min(img.naturalWidth, img.naturalHeight);
+        const srcX = (img.naturalWidth - srcSide) / 2;
+        const srcY = (img.naturalHeight - srcSide) / 2;
+        const innerSize = srcSide; // tamaño final del retrato dentro del marco
+
+        // Geometría del cuadro compuesto
+        const goldPad = Math.round(innerSize * 0.06); // ancho del marco dorado
+        const matPad = Math.round(innerSize * 0.015); // mata sepia entre marco e imagen
+        const cartelaH = Math.round(innerSize * 0.11);
+        const brandStripH = Math.round(innerSize * 0.13);
+
+        const canvasW = innerSize + (goldPad + matPad) * 2;
+        const frameInnerH = innerSize + (goldPad + matPad) * 2;
+        const canvasH = frameInnerH + cartelaH + brandStripH;
+
         const canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = canvasW;
+        canvas.height = canvasH;
         const ctx = canvas.getContext("2d");
         if (!ctx) return reject(new Error("no canvas"));
-        ctx.drawImage(img, 0, 0, w, h);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
 
-        const fontSize = Math.round(h * 0.024);
-        const padY = Math.round(h * 0.015);
-        const padX = Math.round(w * 0.025);
+        // Fondo: pared de museo (celeste profundo del chrome).
+        ctx.fillStyle = "#143b5a";
+        ctx.fillRect(0, 0, canvasW, canvasH);
 
-        // Banda gradient del 88% al 100% del alto.
-        const gradient = ctx.createLinearGradient(0, h * 0.88, 0, h);
-        gradient.addColorStop(0, "rgba(0,0,0,0)");
-        gradient.addColorStop(1, "rgba(0,0,0,0.45)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, h * 0.88, w, h * 0.12);
+        // ── Marco dorado ──────────────────────────────────────────
+        const goldGrad = ctx.createLinearGradient(0, 0, canvasW, frameInnerH);
+        goldGrad.addColorStop(0, "#e7ce8e");
+        goldGrad.addColorStop(0.38, "#c9a14a");
+        goldGrad.addColorStop(0.62, "#a87f37");
+        goldGrad.addColorStop(1, "#c9a14a");
+        ctx.fillStyle = goldGrad;
+        ctx.fillRect(0, 0, canvasW, frameInnerH);
 
+        // Bisel oscuro perimetral del marco
+        ctx.strokeStyle = "rgba(58, 38, 24, 0.55)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, canvasW - 2, frameInnerH - 2);
+        // Hilo interior oscuro
+        ctx.strokeRect(goldPad - 2, goldPad - 2, innerSize + matPad * 2 + 4, innerSize + matPad * 2 + 4);
+
+        // Ornamentos discretos en las cuatro esquinas (punto dorado claro)
+        const cornerInset = Math.round(goldPad * 0.45);
+        const cornerR = Math.round(goldPad * 0.18);
+        ctx.fillStyle = "#e7ce8e";
+        [
+          [cornerInset, cornerInset],
+          [canvasW - cornerInset, cornerInset],
+          [cornerInset, frameInnerH - cornerInset],
+          [canvasW - cornerInset, frameInnerH - cornerInset],
+        ].forEach(([cx, cy]) => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, cornerR, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "rgba(58, 38, 24, 0.45)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        });
+
+        // ── Mata sepia (passe-partout) ────────────────────────────
+        const matX = goldPad;
+        const matY = goldPad;
+        const matW = innerSize + matPad * 2;
+        const matH = innerSize + matPad * 2;
+        ctx.fillStyle = "#6b4a2b";
+        ctx.fillRect(matX, matY, matW, matH);
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(matX + 0.5, matY + 0.5, matW - 1, matH - 1);
+
+        // ── Retrato del usuario ───────────────────────────────────
+        const imgX = goldPad + matPad;
+        const imgY = goldPad + matPad;
+        ctx.drawImage(img, srcX, srcY, srcSide, srcSide, imgX, imgY, innerSize, innerSize);
+
+        // Banda gradient + "Imagen generada con IA" sobre el ángulo inf. der.
+        const noticeBandY = imgY + innerSize * 0.88;
+        const noticeBandH = innerSize * 0.12;
+        const noticeBandGrad = ctx.createLinearGradient(0, noticeBandY, 0, noticeBandY + noticeBandH);
+        noticeBandGrad.addColorStop(0, "rgba(0,0,0,0)");
+        noticeBandGrad.addColorStop(1, "rgba(0,0,0,0.45)");
+        ctx.fillStyle = noticeBandGrad;
+        ctx.fillRect(imgX, noticeBandY, innerSize, noticeBandH);
+        const noticeFont = Math.round(innerSize * 0.022);
         ctx.fillStyle = "rgba(251, 247, 236, 0.95)";
-        ctx.font = `italic ${fontSize}px "EB Garamond", Georgia, serif`;
+        ctx.font = `italic ${noticeFont}px "EB Garamond", Georgia, serif`;
         ctx.textBaseline = "alphabetic";
         ctx.textAlign = "right";
         ctx.shadowColor = "rgba(0,0,0,0.7)";
         ctx.shadowBlur = 4;
-        ctx.fillText("Imagen generada con IA", w - padX, h - padY);
+        ctx.fillText(
+          "Imagen generada con IA",
+          imgX + innerSize - Math.round(innerSize * 0.025),
+          imgY + innerSize - Math.round(innerSize * 0.015),
+        );
         ctx.shadowBlur = 0;
+
+        // ── Cartela pergamino con el nombre del personaje ────────
+        // La cartela "monta" un poco sobre el marco como en el DOM —
+        // empieza dentro del frame inferior y se extiende por debajo.
+        const cartelaInsetX = Math.round(canvasW * 0.08);
+        const cartelaX = cartelaInsetX;
+        const cartelaY = frameInnerH - Math.round(cartelaH * 0.35);
+        const cartelaW = canvasW - cartelaInsetX * 2;
+        const cartelaActualH = cartelaH;
+
+        // Sombra cálida de la cartela
+        ctx.fillStyle = "rgba(58, 38, 24, 0.45)";
+        ctx.fillRect(cartelaX + 4, cartelaY + 6, cartelaW, cartelaActualH);
+
+        // Cuerpo pergamino
+        ctx.fillStyle = "#efe1bf";
+        ctx.fillRect(cartelaX, cartelaY, cartelaW, cartelaActualH);
+        // Hilo dorado interior
+        ctx.strokeStyle = "rgba(231, 206, 142, 0.85)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(cartelaX + 2, cartelaY + 2, cartelaW - 4, cartelaActualH - 4);
+        // Borde sepia
+        ctx.strokeStyle = "#6b4a2b";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cartelaX, cartelaY, cartelaW, cartelaActualH);
+
+        // Nombre del personaje (Cormorant italic)
+        const nameFont = Math.round(cartelaActualH * 0.42);
+        ctx.fillStyle = "#3a2618";
+        ctx.font = `italic 500 ${nameFont}px "Cormorant Garamond", Georgia, serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+          characterName,
+          cartelaX + cartelaW / 2,
+          cartelaY + cartelaActualH / 2,
+        );
+
+        // ── Strip inferior con la marca "Retratos de la Patria" ──
+        const brandStripY = frameInnerH + cartelaH;
+        ctx.fillStyle = "#143b5a";
+        ctx.fillRect(0, brandStripY, canvasW, brandStripH);
+
+        const brandFont = Math.round(brandStripH * 0.4);
+        // "Retratos" en blanco cálido + "de la Patria" en dorado, separados.
+        const part1 = "Retratos";
+        const part2 = "de la Patria";
+        ctx.font = `italic 600 ${brandFont}px "Cormorant Garamond", Georgia, serif`;
+        const w1 = ctx.measureText(part1).width;
+        const gap = Math.round(brandFont * 0.4);
+        const w2 = ctx.measureText(part2).width;
+        const totalW = w1 + gap + w2;
+        const startX = (canvasW - totalW) / 2;
+        const brandBaselineY = brandStripY + brandStripH / 2;
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#fbf7ec";
+        ctx.fillText(part1, startX, brandBaselineY);
+        ctx.fillStyle = "#e7ce8e";
+        ctx.fillText(part2, startX + w1 + gap, brandBaselineY);
 
         resolve(canvas.toDataURL("image/jpeg", 0.92));
       } catch (e) {
@@ -131,7 +273,7 @@ function stampWithAiNotice(dataUrl: string): Promise<string> {
       }
     };
     img.onerror = () => reject(new Error("img load failed"));
-    img.src = dataUrl;
+    img.src = portraitDataUrl;
   });
 }
 
@@ -302,44 +444,41 @@ export function AppFlow() {
   }
 
   /*
-   * stampedPortrait: versión del retrato con la inscripción 'Imagen
-   * generada con IA' renderizada encima. Se pre-computa apenas llega el
-   * retrato (effect siguiente) y se cachea, así cuando el usuario toca
-   * Compartir el click handler es prácticamente síncrono y el browser
-   * conserva el 'user activation' para abrir el panel nativo.
-   *
-   * Sin esta cache, el await del canvas drawing borraba la activation
-   * y navigator.share era rechazado en Safari/Chrome mobile.
+   * framedPortrait: versión del retrato compuesta dentro del cuadro
+   * dorado completo (marco + mata sepia + cartela con el nombre +
+   * inscripción IA + marca "Retratos de la Patria" al pie). Se
+   * pre-computa apenas llega el retrato y se cachea, así cuando el
+   * usuario toca Descargar/Compartir el handler es prácticamente
+   * síncrono y el browser conserva el 'user activation' que pide
+   * navigator.share en Safari/Chrome mobile.
    */
-  const [stampedPortrait, setStampedPortrait] = useState<string | null>(
-    null,
-  );
+  const [framedPortrait, setFramedPortrait] = useState<string | null>(null);
 
   useEffect(() => {
     if (!portrait) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setStampedPortrait(null);
+      setFramedPortrait(null);
       return;
     }
     let cancelled = false;
     (async () => {
       try {
-        const stamped = await stampWithAiNotice(portrait);
-        if (!cancelled) setStampedPortrait(stamped);
+        const framed = await composeFramedPortrait(portrait, fullName);
+        if (!cancelled) setFramedPortrait(framed);
       } catch {
-        if (!cancelled) setStampedPortrait(null);
+        if (!cancelled) setFramedPortrait(null);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [portrait]);
+  }, [portrait, fullName]);
 
   function handleDownload() {
     if (!portrait) return;
     try {
-      const dataUrl = stampedPortrait ?? portrait;
-      const file = dataUrlToFile(dataUrl, `retrato-${characterId}.jpg`);
+      const dataUrl = framedPortrait ?? portrait;
+      const file = dataUrlToFile(dataUrl, `retratos-de-la-patria-${characterId}.jpg`);
       const url = URL.createObjectURL(file);
       const a = document.createElement("a");
       a.href = url;
@@ -379,11 +518,11 @@ export function AppFlow() {
       return;
     }
 
-    const dataUrl = stampedPortrait ?? portrait;
-    const file = dataUrlToFile(dataUrl, `retrato-${characterId}.jpg`);
+    const dataUrl = framedPortrait ?? portrait;
+    const file = dataUrlToFile(dataUrl, `retratos-de-la-patria-${characterId}.jpg`);
     const shareData: ShareData = {
-      title: "Mi Retrato de la Patria",
-      text: `Me retraté como ${fullName} de 1810. Imagen generada con IA.`,
+      title: "Retratos de la Patria",
+      text: `Me retraté como ${fullName} con Retratos de la Patria. Imagen generada con IA.`,
       files: [file],
     };
 
