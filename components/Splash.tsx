@@ -38,7 +38,17 @@ import styles from "./Splash.module.css";
 
 const FADE_MS = 800;
 
-export function Splash() {
+export interface SplashProps {
+  /**
+   * Se llama una sola vez cuando el Splash termina su fade-out y se
+   * va a desmontar. AppShell usa este callback para recién entonces
+   * montar TermsGate + AppFlow — así la Camera no pide permiso de
+   * cámara mientras el usuario todavía está viendo el Splash.
+   */
+  onDismissed?: () => void;
+}
+
+export function Splash({ onDismissed }: SplashProps = {}) {
   const [phase, setPhase] = useState<"showing" | "fading" | "done">(
     "showing",
   );
@@ -47,7 +57,10 @@ export function Splash() {
     if (phase !== "showing") return;
     haptic("success");
     setPhase("fading");
-    window.setTimeout(() => setPhase("done"), FADE_MS);
+    window.setTimeout(() => {
+      setPhase("done");
+      onDismissed?.();
+    }, FADE_MS);
   }
 
   if (phase === "done") return null;
