@@ -170,60 +170,86 @@ export const CHARACTERS: Character[] = [
     genderRestriction: "caballero",
     promptDama: "",
     promptCaballero: buildPrompt(
-      `UNIFORME OBLIGATORIO E INVARIABLE — REGIMIENTO DE PATRICIOS DE BUENOS AIRES, uniforme histórico de gala (versión que hoy luce la Guardia Histórica del cuerpo, custodia ceremonial del Cabildo y Casa de Gobierno). Este personaje SIEMPRE viste este uniforme COMPLETO, sin excepciones. SÓLO el uniforme militar descripto abajo. El cuerpo fue fundado en 1806 durante las Invasiones Inglesas y fue eje de la Revolución de Mayo (Cornelio Saavedra fue su comandante).
+      `Uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES (versión actual de la Guardia Histórica, custodia ceremonial del Cabildo). Reproducir EXACTAMENTE este uniforme — todos los elementos, sin variantes.
 
-ELEMENTOS DEL UNIFORME — DESCRIPCIÓN EXHAUSTIVA siguiendo fotos de referencia. Reproducir TODOS exactamente:
+═══════════════════════════════════════════════════════
+RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de dos hileras de botones plateados, CUELLO Y PUÑOS ROJOS, FAJA ROJA, dos correas blancas cruzadas en X sobre el pecho, y una GALERA NEGRA ALTA tipo SOMBRERO DE COPA con un adorno rojo y blanco al costado izquierdo del que sale una PLUMA BLANCA vertical.
+═══════════════════════════════════════════════════════
+
+╔═══════════════════════════════════════════════════════╗
+║  ⚠️ ELEMENTO MÁS DIFÍCIL — LA GALERA (leer primero)  ║
+╚═══════════════════════════════════════════════════════╝
+
+LA GALERA del Patricio es lo que el modelo SUELE EQUIVOCAR. Reproducir EXACTAMENTE así:
+
+FORMA Y TIPO:
+- Es un SOMBRERO DE COPA / TOP HAT de fieltro negro, estilo civil de principios del siglo XIX — igual silueta que el sombrero de copa de Abraham Lincoln pero un toque más bajo y con el ala curvada hacia arriba en los costados.
+- En inglés se llamaría "stovepipe top hat" o "tall felt top hat with rolled brim".
+- ALTURA de la copa: claramente más alta que ancha, alta y angosta, NO baja.
+- TOP / CORONA: redondeada, levemente domada o plana suave. NO un cilindro hueco con boca arriba, NO una boca abierta tipo shako.
+- LADOS de la copa: rectos o levemente cónicos (un poco más anchos en la base que en la cima), pero NO un cilindro rígido de shako militar.
+- ALA: media, curvada HACIA ARRIBA en los costados como un sombrero gauchesco pero más angosta. NO plana de gentleman top-hat, NO ancha de cowboy.
+- COLOR: ÍNTEGRAMENTE NEGRO de fieltro mate, de arriba a abajo, sin ninguna parte de otro color, sin cinta colorada, sin galones, sin bordes vivos. Sólo negro.
+
+ADORNO LATERAL DE LA GALERA (al costado izquierdo del wearer, lado derecho del observador en foto frontal):
+- ROSETA / ESCUDETE rectangular vertical de tela ROJA (aprox. 4×2 cm), prendida sobre el costado de la copa.
+- Sobre ese rectángulo rojo, una CINTA / LAZO BLANCO en forma de LOOP / LAZADA / GOTA INVERTIDA que envuelve y enmarca el rectángulo rojo. El loop blanco rodea el rojo de manera que se ve el rojo adentro y el blanco alrededor.
+- De la parte ALTA del loop blanco SALE LA PLUMA BLANCA: una pluma vertical, larga (del orden del alto de la copa de la galera, o un poco menos), inclinada apenas hacia atrás. Es UNA sola pluma blanca clara, no un penacho. Color blanco puro.
+- TODO el adorno (rectángulo rojo + loop blanco + pluma blanca) va AL COSTADO IZQUIERDO de la galera, NO en el centro frontal.
+
+LO QUE NO ES LA GALERA — anti-patrones específicos a evitar:
+- NO es un shako militar (cilindro hueco con boca arriba).
+- NO es un morrión con visera.
+- NO es un bicornio ni tricornio.
+- NO es un sombrero de copa civil moderno (esos tienen ala plana horizontal).
+- NO es un bowler / sombrero bombín (bajo y squat).
+- NO es un sombrero gauchesco de ala muy ancha.
+- NO tiene visera adelante.
+- NO tiene copa roja arriba (la copa es NEGRA — el rojo es sólo el escudete del adorno lateral).
+- NO tiene la pluma centrada al frente (va al costado izquierdo).
+
+═══════════════════════════════════════════════════════
+RESTO DEL UNIFORME (elementos secundarios — todos obligatorios)
+═══════════════════════════════════════════════════════
 
 A) CHAQUETA / CASACA
-- Color: AZUL MARINO oscuro (navy), paño grueso o pana fina.
-- Largo: hasta la cadera/cintura, sin faldones largos.
-- Frente: estilo doble pechera con DOS COLUMNAS PARALELAS VERTICALES de aproximadamente 7-8 BOTONES PLATEADOS / DE PELTRE cada una. Las dos columnas son simétricas y van desde el cuello hasta la cintura.
-- ENTRE las dos columnas de botones NO hay solapa blanca, NO hay jabot, NO hay chaleco visible. Es el azul de la chaqueta directamente, con los botones plateados a ambos lados.
-- Cuello: ROJO SANGRE / GRANATE, alto y parado, llegando hasta debajo de la mandíbula. NO blanco, NO dorado: rojo.
-- Puños / vueltas en los extremos de las mangas: ROJOS también, con un par de botones plateados rematándolos.
-- Hombros: planos, sin charreteras grandes ni galones dorados grandes.
+- Color: AZUL MARINO oscuro (navy), paño grueso.
+- Largo: hasta la cadera/cintura.
+- Frente: estilo DOBLE PECHERA — DOS COLUMNAS PARALELAS VERTICALES de 7-8 BOTONES PLATEADOS / DE PELTRE cada una. Las columnas van paralelas desde el cuello hasta la cintura.
+- ENTRE las dos columnas de botones NO hay solapa blanca ni jabot — es el azul de la chaqueta directamente.
+- CUELLO: ROJO ALTO Y PARADO (granate), llegando hasta la mandíbula. NO blanco, NO dorado.
+- PUÑOS / vueltas en los extremos de las mangas: ROJOS también, con un par de botones plateados.
+- Hombros planos, sin charreteras grandes ni galones llamativos.
 
-B) FAJA EN LA CINTURA
-- Banda de tela ROJA ANCHA cruzando la cintura por encima de la chaqueta, anudada al COSTADO IZQUIERDO del wearer dejando caer las puntas hacia abajo.
+B) FAJA
+- Banda de tela ROJA ANCHA en la cintura, por encima de la chaqueta, anudada al costado.
 
-C) BANDOLERAS EN X (correas cruzadas en el pecho)
-- DOS correas blancas (cuero o tela) cruzadas en X sobre el pecho: una baja del hombro izquierdo al costado derecho de la cintura, la otra del hombro derecho al costado izquierdo. Forman una X clara sobre el azul de la chaqueta.
-- Ancho de cada correa: ~4-5 cm, parejo de extremo a extremo.
-- ⚠️ EN EL PUNTO EXACTO DONDE SE CRUZAN LAS DOS CORREAS: completamente liso. Sólo las dos correas blancas superpuestas, una encima de la otra. NUNCA, BAJO NINGÚN CONCEPTO, va un BOTÓN, HEBILLA, PLACA METÁLICA, CHAPA, MEDALLA, ROSETA, ESCUDO, BROCHE, PRESILLA, NUDO, MOÑO ni ningún ornamento metálico, textil o de cuero sobre la intersección. La X es plana y limpia.
+C) BANDOLERAS EN X
+- DOS correas blancas cruzadas en X sobre el pecho. Una baja del hombro izquierdo a la cadera derecha; la otra del hombro derecho a la cadera izquierda. Forman una X clara.
+- Ancho de cada correa: ~4-5 cm, parejo.
+- ⚠️ INTERSECCIÓN DE LA X: completamente LISA. Sólo las dos correas blancas superpuestas. NUNCA, BAJO NINGÚN CONCEPTO, va un BOTÓN, HEBILLA, PLACA, CHAPA, MEDALLA, ROSETA, ESCUDO, BROCHE, NUDO, MOÑO, INSIGNIA, EMBLEMA ni ningún ornamento sobre el cruce. Cero metales o textiles en el centro de la X.
 
 D) PANTALÓN Y CALZADO
-- Pantalón BLANCO crudo entallado hasta debajo de la rodilla, o largo blanco según versión.
-- Polainas o botas NEGRAS altas hasta debajo de la rodilla.
+- Pantalón BLANCO crudo entallado hasta debajo de la rodilla, o más largo según versión.
+- Botas o polainas NEGRAS altas hasta debajo de la rodilla.
 - Guantes BLANCOS de gala.
 
-E) GALERA — DESCRIPCIÓN EXHAUSTIVA (es el rasgo más distintivo):
-- Tipo: GALERA ESTILO SOMBRERO DE COPA / TOP HAT, de fieltro NEGRO. NO es un shako militar cilíndrico moderno, NO es bicornio, NO es tricornio, NO es chapeau.
-- Forma: copa ALTA con CORONA REDONDEADA / DOMADA arriba (no plana), levemente cónica desde la base hacia arriba, dome top. El perfil es el de un sombrero de copa civil de principios del siglo XIX.
-- Color: ÍNTEGRAMENTE NEGRA de arriba a abajo. Sin copa de otro color, sin cinta colorada, sin bordes vivos.
-- Ala: media, curvada HACIA ARRIBA en los costados (no plana horizontal). El ala adopta una leve curvatura que abraza la cabeza.
-- Banda al pie de la copa: cinta negra ligeramente más oscura que el fieltro del cuerpo, apenas marcada.
+═══════════════════════════════════════════════════════
 
-F) ADORNO LATERAL DE LA GALERA (al costado izquierdo del wearer = lado derecho del observador en una foto frontal):
-- ESCUDETE ROJO / ESCARAPELA RECTANGULAR ROJA: un pedazo de paño rojo en forma RECTANGULAR vertical (aprox. 4×2 cm), prendido al costado izquierdo de la copa.
-- LAZO DE CINTA BLANCA: una cinta blanca formando un BUCLE / LAZADA cerrada en forma de gota/lágrima invertida que envuelve el escudete rojo. La cinta blanca rodea visiblemente el rectángulo rojo y se cierra arriba dejando ver el rojo enmarcado dentro del bucle blanco.
-- PLUMA BLANCA larga y vertical, sale desde la PARTE SUPERIOR del bucle/lazada blanca, hacia arriba y un poquito hacia atrás. La pluma puede ser bastante alta — del orden del alto de la copa — y es claramente visible, blanca, de plumón fino. NO un penacho gigante teatral, pero sí una pluma vertical clara.
-- IMPORTANTE: TODO este conjunto (escudete rojo + lazo blanco + pluma blanca) va AL COSTADO IZQUIERDO de la galera, NO al frente centrado.
+Postura: militar firme y digna, hombros rectos, mirada al frente. Si entra naturalmente, sostiene un fusil con bayoneta o un sable. NO sostener objetos modernos, NO sostener nada anacrónico.
 
-Postura: militar firme y digna, mirada al frente o ligeramente al costado, hombros derechos. Si entra naturalmente, sostiene un fusil con bayoneta en posición de presentar armas o un sable.
+PROHIBIDO ABSOLUTAMENTE (lista exhaustiva de anti-patrones):
+- Cualquier tipo de TRAJE CIVIL: casaca de salón, jabot/chorrera, frac, smoking, sotana, túnica, sobrecasaca larga, camisa sin chaqueta encima.
+- SOMBREROS distintos a la galera descripta: tricornio, bicornio, shako cilíndrico militar moderno, morrión con visera, sombrero de copa civil con ala plana, sombrero bombín, sombrero gauchesco aludo, sombrero de paja, gorra con visera. La galera es UNA sola forma, la de top-hat alto angosto con ala curvada arriba descripta más arriba.
+- Galera con COPA ROJA u otra cinta colorada. La galera es íntegramente NEGRA; el rojo está en el ESCUDETE del adorno lateral, NO en la galera misma.
+- Pluma o escarapela CENTRADAS al frente de la galera (van al COSTADO IZQUIERDO).
+- BOTÓN/HEBILLA/PLACA/MEDALLA/ROSETA/ESCUDO/MOÑO en el centro de la X de bandoleras (intersección LISA).
+- Solapas blancas en V sobre el pecho (la chaqueta NO tiene solapas blancas; el blanco está sólo en las bandoleras en X).
+- Charreteras grandes doradas o galones dorados llamativos en los hombros.
+- Cuello blanco o dorado en lugar de ROJO.
+- Uniforme de granaderos de San Martín (1812+ — casaca con plastrón rojo distinto), Confederación, ejército argentino moderno, traje militar de fines del XIX.
 
-PROHIBIDO ABSOLUTAMENTE (anti-patrones explícitos):
-- Traje civil de cualquier tipo (casaca de salón, jabot/chorrera, frac, sotana, túnica).
-- Sombrero tricornio o bicornio.
-- Shako militar moderno (cilindro plano arriba), shako con copa roja o cinta colorada.
-- Galera con copa de color diferente al negro o con cintas/vivos rojos sobre la propia galera.
-- Pluma o escarapela CENTRADAS al frente de la galera (todo el adorno va al costado izquierdo).
-- BOTÓN, HEBILLA, PLACA, MEDALLA, ROSETA, ESCUDO, MOÑO o cualquier ornamento en el CENTRO de la X de bandoleras (la intersección es LISA).
-- Solapas blancas en V sobre el pecho (la chaqueta no tiene; sólo doble columna de botones plateados directamente sobre el azul).
-- Charreteras grandes doradas o galones dorados llamativos.
-- Cuello blanco o dorado (es ROJO).
-- Uniforme de granaderos de San Martín (azul-rojo de 1812+ con casaca distinta), Confederación, ejército moderno, traje de fines del XIX.
-
-Si el modelo dudara entre civilianos y este uniforme, o entre versión simplificada y la descripta, ELEGIR SIEMPRE el uniforme histórico completo del Regimiento de Patricios tal como está descripto arriba.`
+Si el modelo dudara entre versiones simplificadas o entre civilianos y este uniforme, ELEGIR SIEMPRE la reconstrucción completa exacta del uniforme del Regimiento de Patricios tal como está descripto arriba — galera incluida con su forma de top-hat alto y adorno al costado.`
     ),
   },
   {
