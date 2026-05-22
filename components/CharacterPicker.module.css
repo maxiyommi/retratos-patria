@@ -107,6 +107,24 @@
   opacity: 0.75;
 }
 
+/* Restringido por género (ej: Patricio cuando se eligió dama). No se
+   puede seleccionar — la card queda muy atenuada y sin feedback de tap.
+   El texto descripcionCorta se reemplaza por "Sólo en caballero" desde TSX. */
+.row[data-state="restricted"] {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+.row[data-state="restricted"]:active {
+  transform: none;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.row[data-state="restricted"] .description {
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
 /* ── Ícono — sin "ventanita" pergamino, directo sobre la tile ────── */
 
 .iconWindow {

@@ -26,6 +26,13 @@ export interface CharacterPickerProps {
   selectedId: CharacterId | null;
   onSelect: (id: CharacterId) => void;
   labelFor: (c: Character) => string;
+  /**
+   * Si está definido, las cards cuyo genderRestriction NO coincida con
+   * este género se renderizan deshabilitadas (no se pueden seleccionar).
+   * Usado para bloquear "Patricio" en variante dama — históricamente
+   * no existieron patricias en el Regimiento.
+   */
+  currentGender?: "dama" | "caballero";
 }
 
 export function CharacterPicker({
@@ -33,6 +40,7 @@ export function CharacterPicker({
   selectedId,
   onSelect,
   labelFor,
+  currentGender,
 }: CharacterPickerProps) {
   return (
     <ul
@@ -41,17 +49,30 @@ export function CharacterPicker({
       aria-label="Elegí tu rol de 1810"
     >
       {characters.map((c) => {
-        const isSelected = selectedId === c.id;
-        const state = !selectedId ? "idle" : isSelected ? "selected" : "dim";
+        const isRestricted =
+          c.genderRestriction !== undefined &&
+          currentGender !== undefined &&
+          c.genderRestriction !== currentGender;
+        const isSelected = !isRestricted && selectedId === c.id;
+        const state = isRestricted
+          ? "restricted"
+          : !selectedId
+            ? "idle"
+            : isSelected
+              ? "selected"
+              : "dim";
         return (
           <li key={c.id} className={styles.item}>
             <button
               type="button"
               role="radio"
               aria-checked={isSelected}
+              aria-disabled={isRestricted}
               data-state={state}
               className={styles.row}
+              disabled={isRestricted}
               onClick={() => {
+                if (isRestricted) return;
                 haptic("select");
                 onSelect(c.id);
               }}
@@ -62,7 +83,9 @@ export function CharacterPicker({
               <span className={styles.label}>
                 <span className={styles.name}>{labelFor(c)}</span>
                 <span className={styles.description}>
-                  {c.descripcionCorta}
+                  {isRestricted
+                    ? "Sólo en caballero"
+                    : c.descripcionCorta}
                 </span>
               </span>
               <span className={styles.indicator} aria-hidden>
@@ -177,45 +200,57 @@ function CanastoIcon() {
 }
 
 function MorrionIcon() {
-  // Galera negra del Regimiento de Patricios: cilindro NEGRO LISO de
-  // arriba a abajo. La PLUMA blanca y la ESCARAPELA roja van al COSTADO
-  // IZQUIERDO de la copa — no centradas al frente. Esa es la silueta de
-  // identidad correcta del uniforme de gala.
+  // Galera del Regimiento de Patricios: TOP-HAT NEGRO con dome top y
+  // ala curvada hacia arriba. Al costado izquierdo de la copa: escudete
+  // ROJO RECTANGULAR envuelto en cinta BLANCA en forma de loop, con la
+  // PLUMA BLANCA alta saliendo de la parte superior del loop. Esa es
+  // la silueta identidad: galera negra + adorno lateral blanco-rojo +
+  // pluma alta al costado.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
-      {/* Cuerpo de la galera — cilindro vertical negro liso. */}
-      <rect x="22" y="20" width="20" height="26" fill="currentColor" rx="1.5" />
-
-      {/* Banda más oscura al pie de la galera. */}
-      <rect x="22" y="42" width="20" height="4" fill="#1f1108" opacity="0.75" />
-
-      {/* Pluma blanca CORTA Y CHICA al costado izquierdo de la copa
-          — sobresale apenas un tercio del alto de la galera. */}
+      {/* Pluma blanca alta vertical saliendo del costado izquierdo. */}
       <path
         fill="#fbf7ec"
-        d="M 22 14 Q 19 19 20 24 Q 21 27 22 28 Q 23 26 24 24 Q 25 19 22 14 Z"
+        d="M 22 4 Q 19 12 20 22 Q 21 27 23 29 Q 25 25 24 20 Q 25 12 22 4 Z"
       />
-      <g stroke="#d9c98f" strokeWidth="0.4" strokeLinecap="round" fill="none" opacity="0.7">
-        <path d="M 22 17 L 20 19" />
-        <path d="M 22 20 L 20 22" />
-        <path d="M 22 17 L 24 19" />
-        <path d="M 22 20 L 24 22" />
+      <g stroke="#d9c98f" strokeWidth="0.45" strokeLinecap="round" fill="none" opacity="0.65">
+        <path d="M 22 8 L 20 11" />
+        <path d="M 22 13 L 20 16" />
+        <path d="M 22 18 L 21 21" />
+        <path d="M 22 8 L 24 11" />
+        <path d="M 22 13 L 24 16" />
       </g>
 
-      {/* Escarapela roja al pie de la pluma, también al costado izquierdo. */}
-      <circle cx="22" cy="30" r="2.6" fill="#c8412c" />
-      <circle cx="22" cy="30" r="1.2" fill="#fbf7ec" />
-
-      {/* Ala mínima abajo de la galera. */}
-      <ellipse cx="32" cy="47" rx="13" ry="2" fill="currentColor" />
-
-      {/* Barbiquejo dorado cayendo del costado derecho (lado opuesto a la pluma). */}
+      {/* Cuerpo de la galera — top-hat con copa domada y leve cono.
+          Path: arranca abajo izquierda, sube ligeramente angosta, dome top,
+          baja por el lado derecho. */}
       <path
-        stroke="#e7ce8e"
-        strokeWidth="1.2"
+        fill="currentColor"
+        d="M 24 44 Q 23 30 24 22 Q 26 16 32 16 Q 38 16 40 22 Q 41 30 40 44 Z"
+      />
+
+      {/* Ala curvada (más ancha que la copa) en la base. */}
+      <path
+        fill="currentColor"
+        d="M 14 46 Q 32 50 50 46 Q 48 49 32 49 Q 16 49 14 46 Z"
+      />
+
+      {/* Cinta negra apenas marcada al pie de la copa. */}
+      <ellipse cx="32" cy="44" rx="8" ry="1.5" fill="#1f1108" opacity="0.5" />
+
+      {/* Adorno lateral izquierdo: rectángulo ROJO envuelto en cinta BLANCA
+          en forma de loop. El rojo va por dentro, la cinta blanca lo
+          enmarca por arriba (sale hacia la pluma) y por abajo. */}
+      {/* Escudete rojo rectangular */}
+      <rect x="20" y="26" width="4" height="7" fill="#c8412c" rx="0.5" />
+      {/* Cinta blanca en loop — borde superior, lateral, inferior alrededor
+          del rectángulo rojo, formando una gota cerrada. */}
+      <path
+        d="M 22 24 Q 19 24 19 28 L 19 32 Q 19 35 22 35 Q 25 35 25 32 L 25 28 Q 25 24 22 24 Z"
         fill="none"
+        stroke="#fbf7ec"
+        strokeWidth="1.2"
         strokeLinecap="round"
-        d="M 40 28 Q 42 36 38 44"
       />
     </svg>
   );

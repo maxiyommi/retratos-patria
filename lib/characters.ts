@@ -43,6 +43,12 @@ export interface Character {
   nombreCaballero: string;
   /** Frase corta que se muestra debajo del nombre en la card del picker. */
   descripcionCorta: string;
+  /**
+   * Si está definido, el personaje sólo está disponible en ese género — la
+   * card aparece deshabilitada en el picker para el otro. Usado por
+   * Patricio (no existieron patricias históricas en el cuerpo militar).
+   */
+  genderRestriction?: Gender;
   /** Prompt para Gemini cuando se elige dama. */
   promptDama: string;
   /** Prompt para Gemini cuando se elige caballero. */
@@ -156,50 +162,68 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "patricio",
-    nombreDama: "Patricia de Buenos Aires",
+    nombreDama: "Patricio de Buenos Aires",
     nombreCaballero: "Patricio de Buenos Aires",
     descripcionCorta: "Regimiento de Patricios",
-    promptDama: buildPrompt(
-      `UNIFORME OBLIGATORIO E INVARIABLE — REGIMIENTO DE PATRICIOS DE BUENOS AIRES, uniforme de gala/ceremonia tipo Guardia Histórica (la versión que hoy luce la guardia patricia que custodia el Cabildo y la Casa de Gobierno). Este personaje SIEMPRE viste este uniforme, sin excepciones. NO ropa civil, NO vestido de salón, NO mantilla, NO peinetón, NO sotana, NO traje de calle. SÓLO el uniforme militar descripto abajo. El cuerpo fue fundado en 1806 durante las Invasiones Inglesas y fue eje de la Revolución de Mayo (Cornelio Saavedra fue su comandante). Vestido por una mujer en honor a las patricias que apoyaron la causa.
-
-ELEMENTOS DEL UNIFORME (todos obligatorios — no omitir ninguno, no reemplazar por equivalente civil):
-1. CASACA AZUL OSCURO / AZUL MARINO hasta la cadera, de doble pechera. El frente forma una V donde se ven dos hileras paralelas de botones plateados/metálicos.
-2. CUELLO ROJO ALTO y vueltas/PUÑOS ROJOS bien marcados en las mangas. El rojo del cuello y los puños es el color de identidad del cuerpo — NO blanco, NO dorado, ROJO sangre.
-3. SOLAPAS BLANCAS amplias formando la V del pecho, con los botones plateados corriéndoles por ambos lados.
-4. FAJA ROJA ANCHA cruzando la cintura por encima de la casaca, anudada al costado.
-5. DOS BANDOLERAS BLANCAS cruzadas en X sobre el pecho (NO una sola diagonal): una va del hombro derecho a la cadera izquierda, la otra del hombro izquierdo a la cadera derecha, formando una equis blanca lisa sobre el azul. **NUNCA, BAJO NINGUNA CIRCUNSTANCIA, va un botón / hebilla / placa metálica / chapa / medalla / roseta / escudo en el punto donde se cruzan las dos correas**. La intersección de la X es lisa — sólo dos correas blancas superpuestas, sin ningún ornamento metálico ni textil en el centro.
-6. PANTALÓN BLANCO crudo hasta la rodilla o más largo según versión ceremonial.
-7. BOTAS ALTAS NEGRAS hasta debajo de la rodilla, o polainas negras.
-8. GUANTES BLANCOS de gala.
-9. GALERA NEGRA en la cabeza — galera histórica del Regimiento de Patricios, de copa cilíndrica derecha y alta, ÍNTEGRAMENTE NEGRA de arriba a abajo (NO copa roja, NO cinta colorada, NO bordes vivos: toda negra). Es una GALERA, no un shako militar moderno, no un bicornio, no un tricornio, no un sombrero de copa civil.
-10. PLUMA BLANCA CORTA Y PEQUEÑA, saliendo del COSTADO IZQUIERDO de la galera (NO del frente centrado). La pluma es modesta y discreta — sobresale apenas un tercio o menos del alto de la galera, NO un penacho gigante ni una pluma teatral. Es un accesorio chico al costado izquierdo, no un emblema vertical alto.
-10b. ESCARAPELA al pie de la pluma, prendida también AL COSTADO IZQUIERDO de la galera, no al frente. Disco pequeño rojo/celeste y blanco que ancla la base de la pluma a la galera.
-11. ESCUDO O BADGE DORADO circular sobre el hombro izquierdo (Sol de Mayo o emblema del cuerpo).
-
-Cabello recogido bajo la galera. Si entra naturalmente, sostiene un fusil con bayoneta apoyado en posición de presentar armas, o un sable. Postura militar firme y digna.
-
-PROHIBIDO ABSOLUTAMENTE: vestido civil de cualquier tipo, traje de salón, mantilla de encaje, peinetón porteño, túnica, sotana, pluma o escarapela CENTRADAS al frente de la galera (van al costado izquierdo, NO en el centro frontal), pluma alta tipo penacho gigante (es CHICA y modesta), galera con copa roja o cinta colorada (es íntegramente NEGRA), shako militar moderno, botón / hebilla / placa / medalla / roseta / escudo en el centro de la X de bandoleras (la intersección es LISA, sin ornamento alguno), uniforme de granaderos de San Martín (azul-rojo de 1812+, casaca distinta), uniforme de la Confederación, ejército moderno, traje de fines del XIX, galera baja, tricornio. Si el modelo dudara, ELEGIR SIEMPRE el uniforme histórico del Regimiento descripto arriba.`
-    ),
+    // Históricamente no existieron patricias en el Regimiento — la UI
+    // bloquea la card cuando el género es "dama".
+    genderRestriction: "caballero",
+    promptDama: "",
     promptCaballero: buildPrompt(
-      `UNIFORME OBLIGATORIO E INVARIABLE — REGIMIENTO DE PATRICIOS DE BUENOS AIRES, uniforme de gala/ceremonia tipo Guardia Histórica (la versión que hoy luce la guardia patricia que custodia el Cabildo y la Casa de Gobierno). Este personaje SIEMPRE viste este uniforme, sin excepciones. NO ropa civil, NO casaca de salón, NO jabot, NO frac, NO sotana, NO traje de calle. SÓLO el uniforme militar descripto abajo. El cuerpo fue fundado en 1806 durante las Invasiones Inglesas y fue eje de la Revolución de Mayo (Cornelio Saavedra fue su comandante).
+      `UNIFORME OBLIGATORIO E INVARIABLE — REGIMIENTO DE PATRICIOS DE BUENOS AIRES, uniforme histórico de gala (versión que hoy luce la Guardia Histórica del cuerpo, custodia ceremonial del Cabildo y Casa de Gobierno). Este personaje SIEMPRE viste este uniforme COMPLETO, sin excepciones. SÓLO el uniforme militar descripto abajo. El cuerpo fue fundado en 1806 durante las Invasiones Inglesas y fue eje de la Revolución de Mayo (Cornelio Saavedra fue su comandante).
 
-ELEMENTOS DEL UNIFORME (todos obligatorios — no omitir ninguno, no reemplazar por equivalente civil):
-1. CASACA AZUL OSCURO / AZUL MARINO hasta la cadera, de doble pechera. El frente forma una V donde se ven dos hileras paralelas de botones plateados/metálicos.
-2. CUELLO ROJO ALTO y vueltas/PUÑOS ROJOS bien marcados en las mangas. El rojo del cuello y los puños es el color de identidad del cuerpo — NO blanco, NO dorado, ROJO sangre.
-3. SOLAPAS BLANCAS amplias formando la V del pecho, con los botones plateados corriéndoles por ambos lados.
-4. FAJA ROJA ANCHA cruzando la cintura por encima de la casaca, anudada al costado.
-5. DOS BANDOLERAS BLANCAS cruzadas en X sobre el pecho (NO una sola diagonal): una va del hombro derecho a la cadera izquierda, la otra del hombro izquierdo a la cadera derecha, formando una equis blanca lisa sobre el azul. **NUNCA, BAJO NINGUNA CIRCUNSTANCIA, va un botón / hebilla / placa metálica / chapa / medalla / roseta / escudo en el punto donde se cruzan las dos correas**. La intersección de la X es lisa — sólo dos correas blancas superpuestas, sin ningún ornamento metálico ni textil en el centro.
-6. PANTALÓN BLANCO crudo hasta la rodilla o más largo según versión ceremonial.
-7. BOTAS ALTAS NEGRAS hasta debajo de la rodilla, o polainas negras.
-8. GUANTES BLANCOS de gala.
-9. GALERA NEGRA en la cabeza — galera histórica del Regimiento de Patricios, de copa cilíndrica derecha y alta, ÍNTEGRAMENTE NEGRA de arriba a abajo (NO copa roja, NO cinta colorada, NO bordes vivos: toda negra). Es una GALERA, no un shako militar moderno, no un bicornio, no un tricornio, no un sombrero de copa civil.
-10. PLUMA BLANCA CORTA Y PEQUEÑA, saliendo del COSTADO IZQUIERDO de la galera (NO del frente centrado). La pluma es modesta y discreta — sobresale apenas un tercio o menos del alto de la galera, NO un penacho gigante ni una pluma teatral. Es un accesorio chico al costado izquierdo, no un emblema vertical alto.
-10b. ESCARAPELA al pie de la pluma, prendida también AL COSTADO IZQUIERDO de la galera, no al frente. Disco pequeño rojo/celeste y blanco que ancla la base de la pluma a la galera.
-11. ESCUDO O BADGE DORADO circular sobre el hombro izquierdo (Sol de Mayo o emblema del cuerpo).
+ELEMENTOS DEL UNIFORME — DESCRIPCIÓN EXHAUSTIVA siguiendo fotos de referencia. Reproducir TODOS exactamente:
 
-Si entra naturalmente, fusil con bayoneta apoyado en posición de presentar armas, sable al cinto o ambos. Postura militar firme, mirada decidida.
+A) CHAQUETA / CASACA
+- Color: AZUL MARINO oscuro (navy), paño grueso o pana fina.
+- Largo: hasta la cadera/cintura, sin faldones largos.
+- Frente: estilo doble pechera con DOS COLUMNAS PARALELAS VERTICALES de aproximadamente 7-8 BOTONES PLATEADOS / DE PELTRE cada una. Las dos columnas son simétricas y van desde el cuello hasta la cintura.
+- ENTRE las dos columnas de botones NO hay solapa blanca, NO hay jabot, NO hay chaleco visible. Es el azul de la chaqueta directamente, con los botones plateados a ambos lados.
+- Cuello: ROJO SANGRE / GRANATE, alto y parado, llegando hasta debajo de la mandíbula. NO blanco, NO dorado: rojo.
+- Puños / vueltas en los extremos de las mangas: ROJOS también, con un par de botones plateados rematándolos.
+- Hombros: planos, sin charreteras grandes ni galones dorados grandes.
 
-PROHIBIDO ABSOLUTAMENTE: traje civil de cualquier tipo, casaca de salón con jabot/chorrera, frac, sotana, sombrero tricornio, pluma o escarapela CENTRADAS al frente de la galera (van al costado izquierdo, NO en el centro frontal), pluma alta tipo penacho gigante (es CHICA y modesta), galera con copa roja o cinta colorada (es íntegramente NEGRA), shako militar moderno, botón / hebilla / placa / medalla / roseta / escudo en el centro de la X de bandoleras (la intersección es LISA, sin ornamento alguno), uniforme de granaderos de San Martín (azul-rojo de 1812+, casaca distinta), uniforme de la Confederación, ejército moderno, traje de fines del XIX, galera baja, bicornio. Si el modelo dudara, ELEGIR SIEMPRE el uniforme histórico del Regimiento descripto arriba.`
+B) FAJA EN LA CINTURA
+- Banda de tela ROJA ANCHA cruzando la cintura por encima de la chaqueta, anudada al COSTADO IZQUIERDO del wearer dejando caer las puntas hacia abajo.
+
+C) BANDOLERAS EN X (correas cruzadas en el pecho)
+- DOS correas blancas (cuero o tela) cruzadas en X sobre el pecho: una baja del hombro izquierdo al costado derecho de la cintura, la otra del hombro derecho al costado izquierdo. Forman una X clara sobre el azul de la chaqueta.
+- Ancho de cada correa: ~4-5 cm, parejo de extremo a extremo.
+- ⚠️ EN EL PUNTO EXACTO DONDE SE CRUZAN LAS DOS CORREAS: completamente liso. Sólo las dos correas blancas superpuestas, una encima de la otra. NUNCA, BAJO NINGÚN CONCEPTO, va un BOTÓN, HEBILLA, PLACA METÁLICA, CHAPA, MEDALLA, ROSETA, ESCUDO, BROCHE, PRESILLA, NUDO, MOÑO ni ningún ornamento metálico, textil o de cuero sobre la intersección. La X es plana y limpia.
+
+D) PANTALÓN Y CALZADO
+- Pantalón BLANCO crudo entallado hasta debajo de la rodilla, o largo blanco según versión.
+- Polainas o botas NEGRAS altas hasta debajo de la rodilla.
+- Guantes BLANCOS de gala.
+
+E) GALERA — DESCRIPCIÓN EXHAUSTIVA (es el rasgo más distintivo):
+- Tipo: GALERA ESTILO SOMBRERO DE COPA / TOP HAT, de fieltro NEGRO. NO es un shako militar cilíndrico moderno, NO es bicornio, NO es tricornio, NO es chapeau.
+- Forma: copa ALTA con CORONA REDONDEADA / DOMADA arriba (no plana), levemente cónica desde la base hacia arriba, dome top. El perfil es el de un sombrero de copa civil de principios del siglo XIX.
+- Color: ÍNTEGRAMENTE NEGRA de arriba a abajo. Sin copa de otro color, sin cinta colorada, sin bordes vivos.
+- Ala: media, curvada HACIA ARRIBA en los costados (no plana horizontal). El ala adopta una leve curvatura que abraza la cabeza.
+- Banda al pie de la copa: cinta negra ligeramente más oscura que el fieltro del cuerpo, apenas marcada.
+
+F) ADORNO LATERAL DE LA GALERA (al costado izquierdo del wearer = lado derecho del observador en una foto frontal):
+- ESCUDETE ROJO / ESCARAPELA RECTANGULAR ROJA: un pedazo de paño rojo en forma RECTANGULAR vertical (aprox. 4×2 cm), prendido al costado izquierdo de la copa.
+- LAZO DE CINTA BLANCA: una cinta blanca formando un BUCLE / LAZADA cerrada en forma de gota/lágrima invertida que envuelve el escudete rojo. La cinta blanca rodea visiblemente el rectángulo rojo y se cierra arriba dejando ver el rojo enmarcado dentro del bucle blanco.
+- PLUMA BLANCA larga y vertical, sale desde la PARTE SUPERIOR del bucle/lazada blanca, hacia arriba y un poquito hacia atrás. La pluma puede ser bastante alta — del orden del alto de la copa — y es claramente visible, blanca, de plumón fino. NO un penacho gigante teatral, pero sí una pluma vertical clara.
+- IMPORTANTE: TODO este conjunto (escudete rojo + lazo blanco + pluma blanca) va AL COSTADO IZQUIERDO de la galera, NO al frente centrado.
+
+Postura: militar firme y digna, mirada al frente o ligeramente al costado, hombros derechos. Si entra naturalmente, sostiene un fusil con bayoneta en posición de presentar armas o un sable.
+
+PROHIBIDO ABSOLUTAMENTE (anti-patrones explícitos):
+- Traje civil de cualquier tipo (casaca de salón, jabot/chorrera, frac, sotana, túnica).
+- Sombrero tricornio o bicornio.
+- Shako militar moderno (cilindro plano arriba), shako con copa roja o cinta colorada.
+- Galera con copa de color diferente al negro o con cintas/vivos rojos sobre la propia galera.
+- Pluma o escarapela CENTRADAS al frente de la galera (todo el adorno va al costado izquierdo).
+- BOTÓN, HEBILLA, PLACA, MEDALLA, ROSETA, ESCUDO, MOÑO o cualquier ornamento en el CENTRO de la X de bandoleras (la intersección es LISA).
+- Solapas blancas en V sobre el pecho (la chaqueta no tiene; sólo doble columna de botones plateados directamente sobre el azul).
+- Charreteras grandes doradas o galones dorados llamativos.
+- Cuello blanco o dorado (es ROJO).
+- Uniforme de granaderos de San Martín (azul-rojo de 1812+ con casaca distinta), Confederación, ejército moderno, traje de fines del XIX.
+
+Si el modelo dudara entre civilianos y este uniforme, o entre versión simplificada y la descripta, ELEGIR SIEMPRE el uniforme histórico completo del Regimiento de Patricios tal como está descripto arriba.`
     ),
   },
   {
@@ -250,7 +274,7 @@ const SHORT_LABELS: Record<CharacterId, { dama: string; caballero: string }> = {
   porteno: { dama: "Porteña", caballero: "Porteño" },
   patriota: { dama: "Patriota", caballero: "Patriota" },
   vendedor: { dama: "Vendedora", caballero: "Vendedor" },
-  patricio: { dama: "Patricia", caballero: "Patricio" },
+  patricio: { dama: "Patricio", caballero: "Patricio" },
   gaucho: { dama: "Gaucha", caballero: "Gaucho" },
   aguatero: { dama: "Aguatera", caballero: "Aguatero" },
 };

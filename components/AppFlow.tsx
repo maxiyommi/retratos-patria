@@ -432,7 +432,18 @@ export function AppFlow() {
               </div>
               <ChooseScreen
                 gender={gender}
-                onGenderChange={setGender}
+                onGenderChange={(g) => {
+                  setGender(g);
+                  // Si la selección actual está restringida al otro género,
+                  // limpiarla. Caso: tenías Patricio (caballero) seleccionado
+                  // y cambiás a dama → el rol no aplica, deseleccionamos.
+                  if (characterId) {
+                    const c = getCharacterById(characterId);
+                    if (c?.genderRestriction && c.genderRestriction !== g) {
+                      setCharacterId(null);
+                    }
+                  }
+                }}
                 characterId={characterId}
                 onCharacterChange={setCharacterId}
                 onBack={goCamera}
@@ -567,6 +578,7 @@ function ChooseScreen({
           selectedId={characterId}
           onSelect={onCharacterChange}
           labelFor={(c) => getShortLabel(c, gender)}
+          currentGender={gender}
         />
       </div>
 
