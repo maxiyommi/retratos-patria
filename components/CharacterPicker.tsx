@@ -177,54 +177,47 @@ function CanastoIcon() {
 }
 
 function MorrionIcon() {
-  // Shako/morrión alto del Regimiento de Patricios (uniforme de gala
-  // tipo Guardia Histórica): cilindro negro derecho con COPA SUPERIOR
-  // ROJA, banda negra al pie, ala mínima, y una PLUMA/PENACHO BLANCO
-  // alto y vertical al frente, casi tan alto como el shako. Sin
-  // escarapela frontal — la silueta de identidad es la copa roja +
-  // pluma blanca.
+  // Shako del Regimiento de Patricios: cilindro NEGRO LISO de arriba a
+  // abajo (sin copa roja). La PLUMA blanca y la ESCARAPELA roja van al
+  // COSTADO IZQUIERDO de la copa — no centradas al frente. Esa es la
+  // silueta de identidad correcta del uniforme de gala.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
-      {/* Pluma blanca alta y vertical al frente, casi del alto del shako. */}
-      <path
-        fill="#fbf7ec"
-        d="M 33 4 Q 30 12 31 22 Q 31 28 33 31 Q 35 28 35 22 Q 36 12 33 4 Z"
-      />
-      <g stroke="#d9c98f" strokeWidth="0.5" strokeLinecap="round" fill="none" opacity="0.7">
-        <path d="M 33 8 L 30 11" />
-        <path d="M 33 13 L 30 16" />
-        <path d="M 33 18 L 30 21" />
-        <path d="M 33 23 L 31 26" />
-        <path d="M 33 8 L 36 11" />
-        <path d="M 33 13 L 36 16" />
-        <path d="M 33 18 L 36 21" />
-        <path d="M 33 23 L 35 26" />
-      </g>
-
-      {/* Cuerpo del shako — cilindro vertical derecho, casi sin curvatura. */}
+      {/* Cuerpo del shako — cilindro vertical negro liso. */}
       <rect x="22" y="20" width="20" height="26" fill="currentColor" rx="1.5" />
 
-      {/* Copa superior ROJA — el rasgo de identidad. */}
-      <path
-        fill="#c8412c"
-        d="M 22 22 Q 22 19 25 19 L 39 19 Q 42 19 42 22 L 42 24 L 22 24 Z"
-      />
-      {/* Borde fino oscuro entre la copa roja y el cilindro negro. */}
-      <rect x="22" y="24" width="20" height="1" fill="#1f1108" opacity="0.55" />
-
-      {/* Banda negra de remate al pie del shako. */}
+      {/* Banda más oscura al pie del shako. */}
       <rect x="22" y="42" width="20" height="4" fill="#1f1108" opacity="0.75" />
 
-      {/* Ala mínima abajo del shako — apenas un reborde para apoyar la cabeza. */}
+      {/* Pluma blanca alta saliendo del COSTADO IZQUIERDO de la copa,
+          ligeramente inclinada hacia afuera (no centrada al frente). */}
+      <path
+        fill="#fbf7ec"
+        d="M 22 4 Q 18 12 19 22 Q 20 27 23 30 Q 25 26 25 21 Q 27 11 22 4 Z"
+      />
+      <g stroke="#d9c98f" strokeWidth="0.5" strokeLinecap="round" fill="none" opacity="0.7">
+        <path d="M 22 8 L 19 11" />
+        <path d="M 22 13 L 19 16" />
+        <path d="M 22 18 L 20 21" />
+        <path d="M 22 8 L 25 11" />
+        <path d="M 22 13 L 25 16" />
+        <path d="M 22 18 L 24 21" />
+      </g>
+
+      {/* Escarapela roja al pie de la pluma, también al costado izquierdo. */}
+      <circle cx="22" cy="29" r="3" fill="#c8412c" />
+      <circle cx="22" cy="29" r="1.4" fill="#fbf7ec" />
+
+      {/* Ala mínima abajo del shako. */}
       <ellipse cx="32" cy="47" rx="13" ry="2" fill="currentColor" />
 
-      {/* Barbiquejo dorado cayendo del costado del shako (detalle militar). */}
+      {/* Barbiquejo dorado cayendo del costado derecho (lado opuesto a la pluma). */}
       <path
         stroke="#e7ce8e"
         strokeWidth="1.2"
         fill="none"
         strokeLinecap="round"
-        d="M 24 28 Q 22 36 26 44"
+        d="M 40 28 Q 42 36 38 44"
       />
     </svg>
   );
