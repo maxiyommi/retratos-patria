@@ -160,10 +160,40 @@ export const CHARACTERS: Character[] = [
     nombreCaballero: "Patricio de Buenos Aires",
     descripcionCorta: "Regimiento de Patricios",
     promptDama: buildPrompt(
-      `Vestir con el uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES de 1810 — el cuerpo militar fundado en 1806 durante las Invasiones Inglesas y eje de la Revolución de Mayo (cuerpo del que Cornelio Saavedra fue comandante). El uniforme es el del cuerpo, vestido por una mujer en honor a quienes apoyaron la causa patriota: casaca azul oscuro hasta la cintura con cuello, solapas y vueltas blancas y botones dorados; chaleco blanco debajo; pantalón blanco hasta la rodilla con botines o polainas negras; bandolera blanca cruzada sobre el pecho. GALERA NEGRA de copa moderada (no shako alto), con ala ligeramente recogida, una PLUMA BLANCA alta saliendo del frente, una ESCARAPELA ROJA con detalle blanco al pie de la pluma y una pequeña lágrima/gota blanca de adorno bajando hacia el ala. Cabello recogido bajo la galera. Si entra naturalmente, sostiene un sable al cinto o un fusil de chispa apoyado en la culata. Postura militar firme y digna. NO usar uniformes de épocas posteriores (granaderos de San Martín, Confederación, ejército moderno).`
+      `UNIFORME OBLIGATORIO E INVARIABLE — REGIMIENTO DE PATRICIOS DE BUENOS AIRES, 1810. Este personaje SIEMPRE viste el uniforme histórico del cuerpo, sin excepciones. NO ropa civil, NO vestido de salón, NO mantilla, NO peinetón, NO sotana, NO traje de calle. SÓLO el uniforme militar descripto abajo. El cuerpo fue fundado en 1806 durante las Invasiones Inglesas y fue eje de la Revolución de Mayo (Cornelio Saavedra fue su comandante). Vestido por una mujer en honor a las patricias que apoyaron la causa.
+
+ELEMENTOS DEL UNIFORME (todos obligatorios — no omitir ninguno, no reemplazar por equivalente civil):
+1. CASACA azul oscuro hasta la cintura, con cuello alto, solapas y vueltas BLANCAS, hilera de botones dorados al frente.
+2. CHALECO blanco debajo de la casaca, asomando en el cuello y los puños.
+3. PANTALÓN blanco hasta la rodilla.
+4. POLAINAS o botines NEGROS desde la rodilla hasta el pie.
+5. BANDOLERA blanca cruzada en diagonal sobre el pecho.
+6. GALERA NEGRA en la cabeza — copa moderada y achatada, NO shako alto cilíndrico, NO morrión, NO bicornio, NO tricornio. Ala curvada hacia arriba en los costados.
+7. PLUMA BLANCA larga y vertical saliendo del frente de la galera, alta.
+8. ESCARAPELA ROJA con detalle blanco prendida al frente de la galera, al pie de la pluma.
+9. GOTA BLANCA pequeña de adorno cayendo desde la escarapela hacia el ala.
+
+Cabello recogido bajo la galera. Si entra naturalmente, sostiene un sable al cinto o un fusil de chispa apoyado en la culata. Postura militar firme y digna.
+
+PROHIBIDO ABSOLUTAMENTE: vestido civil de cualquier tipo, traje de salón, mantilla de encaje, peinetón porteño, túnica, sotana, escarapela celeste/blanca (esa es del patriota civil, NO de los Patricios), uniforme de granaderos de San Martín (azul-rojo de 1812+), uniforme de la Confederación, ejército moderno, traje de fines del XIX. Si el modelo dudara entre uniforme y civil, ELEGIR SIEMPRE el uniforme militar del Regimiento descripto arriba.`
     ),
     promptCaballero: buildPrompt(
-      `Vestir con el uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES de 1810 — el cuerpo militar fundado en 1806 durante las Invasiones Inglesas y eje de la Revolución de Mayo (cuerpo del que Cornelio Saavedra fue comandante). Casaca azul oscuro hasta la cintura con cuello, solapas y vueltas blancas y botones dorados; chaleco blanco debajo; pantalón blanco hasta la rodilla con botines o polainas negras; bandolera blanca cruzada sobre el pecho. GALERA NEGRA de copa moderada (no shako alto), con ala ligeramente recogida, una PLUMA BLANCA alta saliendo del frente, una ESCARAPELA ROJA con detalle blanco al pie de la pluma y una pequeña lágrima/gota blanca de adorno bajando hacia el ala. Si entra naturalmente, fusil de chispa al hombro, sable al cinto o ambos. Postura militar firme, mirada decidida. NO usar uniformes de épocas posteriores (granaderos de San Martín, Confederación, ejército moderno).`
+      `UNIFORME OBLIGATORIO E INVARIABLE — REGIMIENTO DE PATRICIOS DE BUENOS AIRES, 1810. Este personaje SIEMPRE viste el uniforme histórico del cuerpo, sin excepciones. NO ropa civil, NO casaca de salón, NO jabot, NO frac, NO sotana, NO traje de calle. SÓLO el uniforme militar descripto abajo. El cuerpo fue fundado en 1806 durante las Invasiones Inglesas y fue eje de la Revolución de Mayo (Cornelio Saavedra fue su comandante).
+
+ELEMENTOS DEL UNIFORME (todos obligatorios — no omitir ninguno, no reemplazar por equivalente civil):
+1. CASACA azul oscuro hasta la cintura, con cuello alto, solapas y vueltas BLANCAS, hilera de botones dorados al frente.
+2. CHALECO blanco debajo de la casaca, asomando en el cuello y los puños.
+3. PANTALÓN blanco hasta la rodilla.
+4. POLAINAS o botines NEGROS desde la rodilla hasta el pie.
+5. BANDOLERA blanca cruzada en diagonal sobre el pecho.
+6. GALERA NEGRA en la cabeza — copa moderada y achatada, NO shako alto cilíndrico, NO morrión, NO bicornio, NO tricornio. Ala curvada hacia arriba en los costados.
+7. PLUMA BLANCA larga y vertical saliendo del frente de la galera, alta.
+8. ESCARAPELA ROJA con detalle blanco prendida al frente de la galera, al pie de la pluma.
+9. GOTA BLANCA pequeña de adorno cayendo desde la escarapela hacia el ala.
+
+Si entra naturalmente, fusil de chispa al hombro, sable al cinto o ambos. Postura militar firme, mirada decidida.
+
+PROHIBIDO ABSOLUTAMENTE: traje civil de cualquier tipo, casaca de salón con jabot/chorrera, frac, sotana, sombrero tricornio, escarapela celeste/blanca (esa es del patriota civil, NO de los Patricios), uniforme de granaderos de San Martín (azul-rojo de 1812+), uniforme de la Confederación, ejército moderno, traje de fines del XIX. Si el modelo dudara entre uniforme y civil, ELEGIR SIEMPRE el uniforme militar del Regimiento descripto arriba.`
     ),
   },
   {
