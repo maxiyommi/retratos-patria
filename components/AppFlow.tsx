@@ -186,8 +186,16 @@ export function AppFlow() {
    * Volver a la galería de personajes preservando la foto. Útil desde
    * el resultado: el usuario ya hizo el esfuerzo de sacarse la foto y
    * sólo quiere probar otro rol con la misma imagen.
+   *
+   * Confirma antes de navegar — el retrato generado se pierde (no
+   * persistimos nada en memoria del navegador). Si el usuario quería
+   * conservarlo, debería haberlo descargado o compartido antes.
    */
   function goChooseFromResult() {
+    const ok = window.confirm(
+      "Si volvés atrás vas a perder este retrato. ¿Querés continuar?",
+    );
+    if (!ok) return;
     transitionState(() => {
       setStep("choose");
       // Limpiar lo del resultado pero NO la foto ni el rol elegido —
