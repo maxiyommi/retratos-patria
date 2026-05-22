@@ -262,20 +262,38 @@ function composeFramedPortrait(
           cartelaY + cartelaActualH / 2,
         );
 
-        // ── Strip inferior con la marca "Retratos de la Patria" ──
+        // ── Strip inferior: BANDERA ARGENTINA (celeste/blanco/celeste) ──
+        // Tres franjas horizontales que ocupan el strip al pie del cuadro.
+        // El wordmark + Sol de Mayo se montan centrados sobre la franja
+        // blanca del medio, en navy oscuro para máximo contraste.
         const brandStripY = frameInnerH + cartelaH;
-        ctx.fillStyle = "#143b5a";
-        ctx.fillRect(0, brandStripY, canvasW, brandStripH);
+        const bandH = brandStripH / 3;
+        // Franja superior — celeste
+        ctx.fillStyle = "#5b9ece";
+        ctx.fillRect(0, brandStripY, canvasW, bandH);
+        // Franja del medio — blanco cálido
+        ctx.fillStyle = "#fbf7ec";
+        ctx.fillRect(0, brandStripY + bandH, canvasW, bandH);
+        // Franja inferior — celeste
+        ctx.fillStyle = "#5b9ece";
+        ctx.fillRect(0, brandStripY + bandH * 2, canvasW, bandH);
 
-        // Filete dorado fino al tope del strip — separa la banda del cuadro.
-        ctx.fillStyle = "rgba(231, 206, 142, 0.55)";
+        // Hilos sepia muy finos entre franjas — definen los bordes
+        // sin ser una línea dura.
+        ctx.fillStyle = "rgba(58, 38, 24, 0.18)";
+        ctx.fillRect(0, brandStripY + bandH - 0.5, canvasW, 1);
+        ctx.fillRect(0, brandStripY + bandH * 2 - 0.5, canvasW, 1);
+
+        // Filete dorado fino al tope del strip — separa la bandera del cuadro.
+        ctx.fillStyle = "rgba(201, 161, 74, 0.6)";
         ctx.fillRect(0, brandStripY, canvasW, 1);
-        ctx.fillStyle = "rgba(231, 206, 142, 0.28)";
-        ctx.fillRect(0, brandStripY + 1, canvasW, 1);
 
-        // Sol de Mayo chiquito a la izquierda del wordmark
-        const sunR = Math.round(brandStripH * 0.18);
-        const brandFont = Math.round(brandStripH * 0.4);
+        // Sol de Mayo chiquito a la izquierda del wordmark — emblema
+        // central de la bandera nacional. El wordmark va sobre la
+        // franja BLANCA (banda del medio) en celeste-tinta para que
+        // se lea fuerte sin pelearse con los celestes.
+        const sunR = Math.round(brandStripH * 0.16);
+        const brandFont = Math.round(brandStripH * 0.36);
         const sunGap = Math.round(brandFont * 0.5);
         const part1 = "Retratos";
         const part2 = "de la Patria";
@@ -285,14 +303,15 @@ function composeFramedPortrait(
         const w2 = ctx.measureText(part2).width;
         const totalW = sunR * 2 + sunGap + w1 + innerGap + w2;
         const startX = (canvasW - totalW) / 2;
-        const brandBaselineY = brandStripY + brandStripH / 2;
+        // Centrado vertical sobre la franja blanca del medio.
+        const brandBaselineY = brandStripY + bandH + bandH / 2;
 
-        // Sol: disco dorado + 8 rayos cortos alternados.
+        // Sol de Mayo: disco dorado + 8 rayos cortos.
         const sunCx = startX + sunR;
         const sunCy = brandBaselineY;
         const rayLen = Math.round(sunR * 0.85);
-        ctx.strokeStyle = "#e7ce8e";
-        ctx.lineWidth = Math.max(1.5, sunR * 0.15);
+        ctx.strokeStyle = "#c9a14a";
+        ctx.lineWidth = Math.max(1.6, sunR * 0.18);
         ctx.lineCap = "round";
         for (let i = 0; i < 8; i++) {
           const angle = (i * Math.PI) / 4;
@@ -315,17 +334,18 @@ function composeFramedPortrait(
         ctx.fill();
         ctx.fillStyle = "#e7ce8e";
         ctx.beginPath();
-        ctx.arc(sunCx, sunCy, sunR * 0.65, 0, Math.PI * 2);
+        ctx.arc(sunCx, sunCy, sunR * 0.6, 0, Math.PI * 2);
         ctx.fill();
 
-        // Wordmark: "Retratos" blanco cálido + "de la Patria" dorado suave.
+        // Wordmark: ambas partes en CELESTE-TINTA (#1f5072), navy
+        // oscuro sobre el blanco de la franja del medio. Máximo
+        // contraste, alta legibilidad.
         const wordmarkX = startX + sunR * 2 + sunGap;
         ctx.font = `italic 600 ${brandFont}px "Cormorant Garamond", Georgia, serif`;
         ctx.textBaseline = "middle";
         ctx.textAlign = "left";
-        ctx.fillStyle = "#fbf7ec";
+        ctx.fillStyle = "#1f5072";
         ctx.fillText(part1, wordmarkX, brandBaselineY);
-        ctx.fillStyle = "#e7ce8e";
         ctx.fillText(part2, wordmarkX + w1 + innerGap, brandBaselineY);
 
         resolve(canvas.toDataURL("image/jpeg", 0.92));
