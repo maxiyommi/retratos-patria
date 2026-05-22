@@ -29,7 +29,15 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: SITE_TITLE,
   description: SITE_DESCRIPTION,
-  manifest: "/manifest.webmanifest",
+  /*
+   * PWA install deshabilitado deliberadamente:
+   * - sin `manifest` → Chrome no muestra el prompt "Instalar app".
+   * - sin `appleWebApp` → Safari iOS no ofrece "Añadir a pantalla
+   *   principal" como app standalone.
+   * - sin `apple-mobile-web-app-capable` en `other` (mismo motivo).
+   * La app vive como sitio web normal; no queremos pedirle al usuario
+   * que la instale.
+   */
   applicationName: SITE_TITLE,
   authors: [{ name: "Maximiliano Yommi", url: "https://www.linkedin.com/in/maximilianoyommi/" }],
   creator: "Maximiliano Yommi",
@@ -44,11 +52,6 @@ export const metadata: Metadata = {
     "Argentina",
     "código abierto",
   ],
-  appleWebApp: {
-    capable: true,
-    title: "Retratos 1810",
-    statusBarStyle: "black-translucent",
-  },
   formatDetection: {
     telephone: false,
     email: false,
@@ -77,12 +80,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-  },
-  // Next 16 sólo emite `mobile-web-app-capable`, pero iOS Safari históricamente
-  // requiere `apple-mobile-web-app-capable` para abrir en modo standalone
-  // (sin la barra del navegador) desde el ícono de pantalla principal.
-  other: {
-    "apple-mobile-web-app-capable": "yes",
   },
 };
 
