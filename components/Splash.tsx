@@ -110,7 +110,7 @@ export function Splash() {
         </h1>
 
         <p className={styles.tagline}>
-          Descubrí tu <em>retrato patrio</em>.
+          Descubrí tu <em>retrato patrio</em>
         </p>
 
         <button
