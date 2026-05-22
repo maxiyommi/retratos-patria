@@ -34,7 +34,6 @@ import { BottomActionBar } from "@/components/BottomActionBar";
 import { RayBurst } from "@/components/RayBurst";
 import { LargeTitle } from "@/components/LargeTitle";
 import { SolFlash } from "@/components/SolFlash";
-import { Footer } from "@/components/Footer";
 import {
   CHARACTERS,
   getCharacterById,
@@ -669,13 +668,11 @@ function ResultScreen({
           characterName={characterName}
           variant="cabildo"
         />
+        {/* Pedestal / piso de galería: sombra elíptica sutil bajo el marco
+            que sugiere apoyo físico, como si el cuadro estuviera sobre un
+            atril en un museo. */}
+        <div className={styles.galleryPedestal} aria-hidden />
       </div>
-      {/*
-        Recordatorio de identidad al cierre del flujo — momento "salí
-        con tu retrato listo y enterate quién hizo esto". Mismo Footer
-        que aparece en el Splash y el TermsGate; consistente.
-      */}
-      <Footer />
 
       <BottomActionBar>
         <button

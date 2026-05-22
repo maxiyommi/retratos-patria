@@ -433,15 +433,9 @@
 .result {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
   align-items: center;
-  /* Sin justify-content center: queremos que el Footer (con
-     margin-top: auto propio) sea empujado al pie del result screen,
-     mientras el PortraitFrame + restart quedan agrupados arriba/centro. */
   flex: 1;
   min-height: 0;
-  /* Padding-bottom respeta la barra de gestos / home indicator de iOS para
-     que el Footer no quede tapado. */
   padding: var(--space-3) 0 env(safe-area-inset-bottom, 0px);
   /* Red de seguridad: si en algún device pequeño (iPhone SE, iPhone con
      toolbars visibles) el contenido del result no entra en 100dvh, scrollea
@@ -451,14 +445,46 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/*
+ * Stage de galería: ocupa TODO el espacio vertical disponible entre el
+ * título y la BottomActionBar y centra el marco verticalmente dentro.
+ * El cuadro se siente "expuesto" sobre la pared celeste tinta, con
+ * aire arriba y abajo, como en un museo.
+ */
 .resultStage {
   position: relative;
+  flex: 1;
+  width: 100%;
   /* overflow: visible para que los rayos del RayBurst se salgan del marco. */
   overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  /* Espacio mínimo para que el pedestal no quede pegado al pie del stage. */
+  padding: var(--space-4) 0;
+}
+
+/*
+ * Pedestal de galería: sombra elíptica difusa al pie del cuadro que
+ * sugiere apoyo físico/atril. NO es una sombra de drop del marco (esa la
+ * tiene el frame con su shadow-marco); es la "mancha de luz" sobre el
+ * piso imaginario del museo, que da sensación de objeto exhibido.
+ */
+.galleryPedestal {
+  position: absolute;
+  bottom: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 28px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.18) 45%,
+    rgba(0, 0, 0, 0) 80%
+  );
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* ── Botones de acción del Result (Compartir + Descargar) ──────────── */
