@@ -465,55 +465,13 @@
 }
 
 /*
- * Spotlight de museo: cono cálido dorado descendiendo desde arriba del
- * stage hacia el marco. Pseudo-elemento ::before, gradient radial
- * elíptico alto y angosto. mix-blend: screen para no pisar los colores
- * del fondo, sólo agregar luz. No bloquea clicks.
+ * Spotlight removido: con width 130% se extendía fuera del shell en
+ * desktop y creaba una franja horizontal visible (doble-fondo). El
+ * body ya tiene su propio halo dorado al tope para el step "result"
+ * (--bg-halo en globals.css), así que el efecto de "luz desde arriba"
+ * lo cubre el background del documento. Las shadows del frame y del
+ * galleryPedestal dan el resto del feel exhibición.
  */
-.resultStage::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 130%;
-  height: 100%;
-  background: radial-gradient(
-    ellipse 55% 80% at 50% 0%,
-    rgba(231, 206, 142, 0.32) 0%,
-    rgba(231, 206, 142, 0.16) 30%,
-    rgba(231, 206, 142, 0.06) 55%,
-    rgba(231, 206, 142, 0) 78%
-  );
-  pointer-events: none;
-  z-index: 0;
-  mix-blend-mode: screen;
-  /* Soft pulse — la luz "respira" sutilmente. */
-  animation: spotlight-breathe 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/*
- * El intento previo con .resultStage::after creaba una sombra que envolvía
- * un rectángulo invisible — se veía como un "segundo fondo" detrás del
- * marco porque su tamaño no calzaba exacto. El PortraitFrame ya tiene su
- * propia shadow-marco para el drop-shadow; el spotlight (::before) y el
- * galleryPedestal alcanzan para el efecto "objeto exhibido".
- */
-
-@keyframes spotlight-breathe {
-  0%, 100% {
-    opacity: 0.92;
-  }
-  50% {
-    opacity: 1.05;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .resultStage::before {
-    animation: none;
-  }
-}
 
 /*
  * Pedestal de galería: sombra elíptica difusa al pie del cuadro que
