@@ -183,12 +183,12 @@ RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de dos hileras de bo
 LA GALERA del Patricio es lo que el modelo SUELE EQUIVOCAR. Reproducir EXACTAMENTE así:
 
 FORMA Y TIPO:
-- Es un SOMBRERO DE COPA / TOP HAT de fieltro negro, estilo civil de principios del siglo XIX — igual silueta que el sombrero de copa de Abraham Lincoln pero un toque más bajo y con el ala curvada hacia arriba en los costados.
-- En inglés se llamaría "stovepipe top hat" o "tall felt top hat with rolled brim".
+- Es un SOMBRERO DE COPA / TOP HAT de fieltro negro, estilo civil de principios del siglo XIX — silueta de sombrero de copa clásico.
+- En inglés se llamaría "stovepipe top hat" o "tall felt top hat".
 - ALTURA de la copa: claramente más alta que ancha, alta y angosta, NO baja.
 - TOP / CORONA: redondeada, levemente domada o plana suave. NO un cilindro hueco con boca arriba, NO una boca abierta tipo shako.
-- LADOS de la copa: rectos o levemente cónicos (un poco más anchos en la base que en la cima), pero NO un cilindro rígido de shako militar.
-- ALA: media, curvada HACIA ARRIBA en los costados como un sombrero gauchesco pero más angosta. NO plana de gentleman top-hat, NO ancha de cowboy.
+- LADOS de la copa: rectos verticales — NO un cilindro rígido de shako militar.
+- ALA: media, plana al borde. NO ancha de cowboy, NO aludo gauchesco.
 - COLOR: ÍNTEGRAMENTE NEGRO de fieltro mate, de arriba a abajo, sin ninguna parte de otro color, sin cinta colorada, sin galones, sin bordes vivos. Sólo negro.
 
 ADORNO LATERAL DE LA GALERA (al costado izquierdo del wearer, lado derecho del observador en foto frontal):
