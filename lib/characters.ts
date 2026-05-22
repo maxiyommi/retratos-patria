@@ -173,7 +173,7 @@ export const CHARACTERS: Character[] = [
       `Uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES (versión actual de la Guardia Histórica, custodia ceremonial del Cabildo). Reproducir EXACTAMENTE este uniforme — todos los elementos, sin variantes.
 
 ═══════════════════════════════════════════════════════
-RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de DOS hileras de botones plateados BIEN SEPARADAS sobre el pecho, CUELLO ROJO con 4 botones plateados, PUÑOS ROJOS, FAJA ROJA, dos correas blancas cruzadas en X sobre el pecho, y una GALERA NEGRA ALTA tipo SOMBRERO DE COPA con UN LADO DEL ALA LEVANTADO (el izquierdo), adorno rojo y blanco en ese mismo costado, y una PLUMA BLANCA vertical alta saliendo del adorno.
+RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de DOS hileras de botones plateados BIEN SEPARADAS sobre el pecho, HOMBROS LISOS SIN HOMBRERAS, CUELLO ROJO con 4 botones plateados, PUÑOS ROJOS, FAJA ROJA, dos correas blancas cruzadas en X sobre el pecho, y una GALERA NEGRA de COPA MODERADA (no muy alta) tipo SOMBRERO DE COPA con UN LADO DEL ALA LEVANTADO (el izquierdo), adorno rojo y blanco en ese mismo costado, y una PLUMA BLANCA vertical alta saliendo del adorno.
 ═══════════════════════════════════════════════════════
 
 ╔═══════════════════════════════════════════════════════╗
@@ -185,7 +185,7 @@ LA GALERA del Patricio es lo que el modelo SUELE EQUIVOCAR. Reproducir EXACTAMEN
 FORMA Y TIPO:
 - Es un SOMBRERO DE COPA / TOP HAT de fieltro negro, estilo civil de principios del siglo XIX — silueta de sombrero de copa clásico.
 - En inglés se llamaría "stovepipe top hat" o "tall felt top hat".
-- ALTURA de la copa: claramente más alta que ancha, alta y angosta, NO baja.
+- ALTURA de la copa: MODERADA — un poco más alta que ancha, pero NO un sombrero de copa muy alto tipo Lincoln. La copa es contenida, modesta en alto, aproximadamente entre 14-18 cm de alto (la mitad o un poco más del ancho de la cabeza). NO es la copa altísima del top-hat victoriano; es más corta y compacta.
 - TOP / CORONA: redondeada, levemente domada o plana suave. NO un cilindro hueco con boca arriba, NO una boca abierta tipo shako.
 - LADOS de la copa: rectos verticales — NO un cilindro rígido de shako militar.
 - ALA: media. UN SOLO LADO DEL ALA SE LEVANTA / "COCKED UP" — específicamente el lado IZQUIERDO del wearer (el mismo costado donde está el adorno de escudete + pluma), que se prende hacia arriba contra la copa creando una silueta de "looped-up brim" típica de uniformes ceremoniales del siglo XIX. El otro lado (derecho del wearer) y el frente y la parte de atrás del ala se mantienen PLANOS al horizonte. NO es un ala plana entera, NO es un ala completamente curvada hacia arriba en los dos lados, NO es un sombrero "cowboy": es UN solo lado izquierdo del ala levantado contra la copa, el resto plano.
@@ -220,7 +220,7 @@ A) CHAQUETA / CASACA
 - CUELLO: ROJO ALTO Y PARADO (granate), llegando hasta la mandíbula. NO blanco, NO dorado.
 - **EN EL CUELLO ROJO van CUATRO (4) BOTONES PLATEADOS pequeños, dos a cada lado, en línea horizontal sobre la tela roja del cuello**, simulando un cierre frontal del cuello.
 - PUÑOS / vueltas en los extremos de las mangas: ROJOS también, con un par de botones plateados.
-- Hombros planos, sin charreteras grandes ni galones llamativos.
+- Hombros: PLANOS, completamente lisos. **NUNCA hombreras rojas, charreteras rojas, sobrehombros de tela roja, fleco rojo en los hombros, ni cualquier ornamento rojo sobre el hombro**. Tampoco charreteras grandes doradas ni galones llamativos. Los hombros son sólo el azul navy de la chaqueta, sin agregados.
 
 B) FAJA
 - Banda de tela ROJA ANCHA en la cintura, por encima de la chaqueta, anudada al costado.
@@ -249,7 +249,9 @@ PROHIBIDO ABSOLUTAMENTE (lista exhaustiva de anti-patrones):
 - Pluma o escarapela CENTRADAS al frente de la galera (van al COSTADO IZQUIERDO).
 - BOTÓN/HEBILLA/PLACA/MEDALLA/ROSETA/ESCUDO/MOÑO en el centro de la X de bandoleras (intersección LISA).
 - Solapas blancas en V sobre el pecho (la chaqueta NO tiene solapas blancas; el blanco está sólo en las bandoleras en X).
+- HOMBRERAS ROJAS, charreteras rojas, fleco rojo, sobrehombros rojos, o cualquier ornamento rojo en los hombros — NUNCA. Los hombros son sólo azul navy liso de la chaqueta.
 - Charreteras grandes doradas o galones dorados llamativos en los hombros.
+- Galera muy alta tipo top-hat victoriano de Lincoln — es de copa MODERADA, no extremadamente alta.
 - Cuello blanco o dorado en lugar de ROJO.
 - Uniforme de granaderos de San Martín (1812+ — casaca con plastrón rojo distinto), Confederación, ejército argentino moderno, traje militar de fines del XIX.
 
