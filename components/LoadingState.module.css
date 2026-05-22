@@ -113,7 +113,8 @@
   transform: scaleX(0);
   transform-origin: -100px 0;
   transform-box: view-box;
-  animation: reveal-grow 1.4s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  /* Cada franja se pinta en 1.7s — brochazo deliberado y pausado. */
+  animation: reveal-grow 1.7s cubic-bezier(0.4, 0, 0.6, 1) forwards;
 }
 
 /*

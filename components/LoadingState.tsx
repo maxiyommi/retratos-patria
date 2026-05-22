@@ -59,86 +59,30 @@ type StrokeDef = {
 
 const STROKES: StrokeDef[] = [
   {
-    d: "M -78 -55 Q -50 -68, -20 -64 Q 20 -60, 50 -54 Q 62 -50, 60 -45 Q 50 -42, 30 -46 Q 0 -52, -30 -55 Q -60 -56, -78 -55 Z",
+    // Franja superior — CELESTE, cubre de y≈-92 a y≈-34
+    d: "M -94 -90 Q -50 -95, 0 -92 Q 50 -94, 94 -88 Q 96 -75, 92 -50 Q 94 -42, 90 -36 Q 50 -33, 0 -34 Q -50 -36, -90 -34 Q -94 -42, -92 -55 Q -96 -75, -94 -90 Z",
     color: "celeste",
     delay: 0,
     maskId: "reveal-0",
   },
   {
-    d: "M -75 -15 Q -45 -28, -10 -22 Q 30 -16, 60 -8 Q 72 -4, 68 0 Q 55 4, 30 -1 Q -5 -7, -40 -10 Q -65 -12, -75 -15 Z",
+    // Franja del medio — BLANCO, cubre de y≈-30 a y≈30
+    d: "M -94 -28 Q -50 -32, 0 -30 Q 50 -32, 94 -26 Q 96 -10, 92 0 Q 94 12, 92 24 Q 94 28, 90 30 Q 50 32, 0 30 Q -50 32, -90 30 Q -94 24, -92 10 Q -96 -10, -94 -28 Z",
     color: "blanco",
-    delay: 0.65,
+    delay: 1.1,
     maskId: "reveal-1",
   },
   {
-    d: "M -72 28 Q -38 18, 0 26 Q 35 33, 65 30 Q 75 32, 72 38 Q 58 42, 30 38 Q -5 32, -40 35 Q -65 35, -72 28 Z",
+    // Franja inferior — CELESTE, cubre de y≈34 a y≈92
+    d: "M -94 36 Q -50 32, 0 34 Q 50 32, 94 38 Q 96 50, 92 75 Q 94 85, 90 90 Q 50 95, 0 92 Q -50 94, -90 90 Q -94 80, -92 60 Q -96 45, -94 36 Z",
     color: "celeste",
-    delay: 1.3,
+    delay: 2.2,
     maskId: "reveal-2",
   },
-  {
-    d: "M -58 62 Q -28 56, 0 60 Q 30 66, 50 64 Q 60 65, 56 70 Q 42 72, 22 70 Q -8 66, -32 67 Q -54 69, -58 62 Z",
-    color: "blanco",
-    delay: 2.0,
-    maskId: "reveal-3",
-  },
 ];
 
-/*
- * Salpicaduras: blobs irregulares (paths) en vez de círculos perfectos,
- * para que parezcan gotas de pintura caídas, no burbujas. Cada uno con
- * su propia forma única generada con makeBlob.
- */
-function makeBlob(r: number, seed: number): string {
-  // 6 vértices con radios variables (función pseudo-aleatoria con seed),
-  // conectados con curvas Bézier cuadráticas también con offset random
-  // para que la silueta no sea simétrica.
-  const points: Array<[number, number]> = [];
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI * 2) / 6;
-    const variance = 0.65 + ((Math.sin(seed * 7.13 + i * 2.31) + 1) / 2) * 0.5;
-    const rr = r * variance;
-    points.push([Math.cos(angle) * rr, Math.sin(angle) * rr]);
-  }
-  let d = `M ${points[0][0].toFixed(2)} ${points[0][1].toFixed(2)}`;
-  for (let i = 0; i < points.length; i++) {
-    const next = points[(i + 1) % points.length];
-    const cur = points[i];
-    const cx = (cur[0] + next[0]) / 2 + Math.sin(seed * 3.7 + i) * r * 0.15;
-    const cy = (cur[1] + next[1]) / 2 + Math.cos(seed * 3.7 + i) * r * 0.15;
-    d += ` Q ${cx.toFixed(2)} ${cy.toFixed(2)}, ${next[0].toFixed(2)} ${next[1].toFixed(2)}`;
-  }
-  d += " Z";
-  return d;
-}
-
-type SplashDef = {
-  cx: number;
-  cy: number;
-  d: string;
-  color: "celeste" | "blanco";
-  delay: number;
-};
-
-const SPLASHES: SplashDef[] = [
-  { cx: -82, cy: -78, d: makeBlob(7, 1), color: "celeste", delay: 0.15 },
-  { cx: 70, cy: -82, d: makeBlob(8, 2), color: "blanco", delay: 0.45 },
-  { cx: -45, cy: -32, d: makeBlob(4, 3), color: "blanco", delay: 0.75 },
-  { cx: 80, cy: 8, d: makeBlob(5, 4), color: "celeste", delay: 1.15 },
-  { cx: -85, cy: 52, d: makeBlob(6, 5), color: "blanco", delay: 1.55 },
-  { cx: 82, cy: 70, d: makeBlob(5, 6), color: "celeste", delay: 2.05 },
-  { cx: -28, cy: 88, d: makeBlob(4, 7), color: "celeste", delay: 2.45 },
-  { cx: 40, cy: 90, d: makeBlob(6, 8), color: "blanco", delay: 2.75 },
-];
-
-// Gotas satélite chiquitas alrededor de las salpicaduras grandes —
-// refuerzan la idea de pintura saltada al pincelar.
-const SATELLITES: SplashDef[] = [
-  { cx: -70, cy: -88, d: makeBlob(1.4, 11), color: "celeste", delay: 0.3 },
-  { cx: 60, cy: -68, d: makeBlob(1.6, 12), color: "blanco", delay: 0.55 },
-  { cx: -92, cy: 42, d: makeBlob(1.5, 13), color: "celeste", delay: 1.7 },
-  { cx: 72, cy: 82, d: makeBlob(1.3, 14), color: "blanco", delay: 2.2 },
-];
+// Sin salpicaduras: las tres franjas cubren casi todo el lienzo y
+// cualquier mancha al medio quedaría tapada. El foco es la bandera.
 
 export function LoadingState({ characterName }: LoadingStateProps) {
   const [messageIndex, setMessageIndex] = useState(0);
@@ -206,33 +150,10 @@ export function LoadingState({ characterName }: LoadingStateProps) {
             ))}
           </defs>
 
-          {/* Salpicaduras + satélites: van por debajo de las pinceladas */}
-          <g filter="url(#paint-rough)">
-            {SPLASHES.map((s, i) => (
-              <path
-                key={`splash-${i}`}
-                className={`${styles.splash} ${
-                  s.color === "celeste" ? styles.colCeleste : styles.colBlanco
-                }`}
-                d={s.d}
-                transform={`translate(${s.cx} ${s.cy})`}
-                style={{ animationDelay: `${s.delay}s` }}
-              />
-            ))}
-            {SATELLITES.map((s, i) => (
-              <path
-                key={`sat-${i}`}
-                className={`${styles.splash} ${
-                  s.color === "celeste" ? styles.colCeleste : styles.colBlanco
-                }`}
-                d={s.d}
-                transform={`translate(${s.cx} ${s.cy})`}
-                style={{ animationDelay: `${s.delay}s` }}
-              />
-            ))}
-          </g>
-
-          {/* Pinceladas — paths con tapered ends, reveladas con mask. */}
+          {/* Tres franjas de la bandera — celeste / blanco / celeste —
+              pintadas a brochazo ancho de izq a der, una detrás de
+              otra. El filtro paint-rough rompe los bordes para feel
+              óleo sobre lienzo. */}
           <g filter="url(#paint-rough)">
             {STROKES.map((s, i) => (
               <path
@@ -245,16 +166,6 @@ export function LoadingState({ characterName }: LoadingStateProps) {
               />
             ))}
           </g>
-
-          {/* Cabeza del pincel: punto dorado-suave que aparece al final
-              en la última pincelada, como si el pincel se hubiera
-              quedado apoyado. */}
-          <circle
-            className={styles.brushHead}
-            cx="50"
-            cy="66"
-            r="5"
-          />
         </svg>
 
         <div className={styles.shimmer} aria-hidden />
