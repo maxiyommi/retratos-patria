@@ -757,7 +757,10 @@ export function AppFlow() {
 
           {step === "result" && portrait && (
             <>
-              <LargeTitle eyebrow="Paso 4 · La galería">
+              <LargeTitle
+                eyebrow="Paso 4 · La galería"
+                subtitle="Una obra al óleo de la Argentina colonial. Descargá tu retrato o compartilo."
+              >
                 Vos en <em>1810</em>
               </LargeTitle>
               <ResultScreen
