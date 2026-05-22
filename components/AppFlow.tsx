@@ -672,6 +672,11 @@ function ResultScreen({
             que sugiere apoyo físico, como si el cuadro estuviera sobre un
             atril en un museo. */}
         <div className={styles.galleryPedestal} aria-hidden />
+        {/* Cortinas de terciopelo que se abren al entrar al step,
+            revelando el cuadro como en una inauguración de museo. Animan
+            una vez al mount; después quedan off-screen (forwards). */}
+        <div className={`${styles.curtain} ${styles.curtainLeft}`} aria-hidden />
+        <div className={`${styles.curtain} ${styles.curtainRight}`} aria-hidden />
       </div>
 
       <BottomActionBar>

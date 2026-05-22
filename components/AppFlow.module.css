@@ -487,6 +487,97 @@
   z-index: -1;
 }
 
+/* ── Cortinas de terciopelo (inauguración del cuadro) ─────────────── */
+
+/*
+ * Dos paneles de "terciopelo" rojo bordó con borde dorado al centro,
+ * que cubren el stage al montarse y se separan abriendo hacia los
+ * costados para revelar el cuadro. Animan UNA VEZ al entrar al step
+ * (animation-fill-mode: forwards) y después quedan fuera de pantalla
+ * sin bloquear clicks (pointer-events: none).
+ *
+ * Coreografía: 200ms de delay (que el frame haga su hang detrás), después
+ * 1400ms de apertura con curva tipo iOS. Total ~1.6s antes de quedar
+ * idle revelando el cuadro.
+ */
+.curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 52%;
+  z-index: 5;
+  pointer-events: none;
+  /* Terciopelo bordó: capa de viñeta (sombra a los pliegues del fondo) +
+     pliegues verticales repetitivos como las arrugas de la tela + el
+     color base bordó. */
+  background:
+    /* Sombras de los pliegues verticales — más oscuro en los huecos */
+    repeating-linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.35) 0px,
+      rgba(0, 0, 0, 0) 12px,
+      rgba(0, 0, 0, 0) 22px,
+      rgba(0, 0, 0, 0.35) 34px
+    ),
+    /* Color base del terciopelo */
+    linear-gradient(180deg, #5a1f2a 0%, #4a1a23 50%, #5a1f2a 100%),
+    #5a1f2a;
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 2px rgba(231, 206, 142, 0.15);
+  will-change: transform;
+}
+
+.curtainLeft {
+  left: 0;
+  /* Borde dorado al lado interior (derecha) — el "ribete" del telón */
+  border-right: 3px solid var(--color-dorado);
+  /* Sombra del borde proyectada hacia adentro del stage */
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.45),
+    inset -8px 0 16px rgba(0, 0, 0, 0.4);
+  animation: curtain-open-left 1400ms cubic-bezier(0.32, 0.72, 0, 1) 200ms forwards;
+}
+
+.curtainRight {
+  right: 0;
+  border-left: 3px solid var(--color-dorado);
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.45),
+    inset 8px 0 16px rgba(0, 0, 0, 0.4);
+  animation: curtain-open-right 1400ms cubic-bezier(0.32, 0.72, 0, 1) 200ms forwards;
+}
+
+@keyframes curtain-open-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-110%);
+  }
+}
+
+@keyframes curtain-open-right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(110%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Sin animación: las cortinas empiezan ya abiertas. */
+  .curtainLeft {
+    transform: translateX(-110%);
+    animation: none;
+  }
+  .curtainRight {
+    transform: translateX(110%);
+    animation: none;
+  }
+}
+
 /* ── Botones de acción del Result (Compartir + Descargar) ──────────── */
 
 .resultAction {
