@@ -177,56 +177,54 @@ function CanastoIcon() {
 }
 
 function MorrionIcon() {
-  // Galera histórica del Regimiento de Patricios: copa negra de altura
-  // moderada con ligera curva en las caras, ala ancha levemente
-  // curvada, PLUMA BLANCA alta saliendo desde el frente, ESCARAPELA
-  // ROJA con detalle blanco al pie de la pluma y una gota/lágrima
-  // blanca cayendo desde la cocarda hacia el ala. Referencia: foto
-  // del usuario del original museístico.
+  // Shako/morrión alto del Regimiento de Patricios (uniforme de gala
+  // tipo Guardia Histórica): cilindro negro derecho con COPA SUPERIOR
+  // ROJA, banda negra al pie, ala mínima, y una PLUMA/PENACHO BLANCO
+  // alto y vertical al frente, casi tan alto como el shako. Sin
+  // escarapela frontal — la silueta de identidad es la copa roja +
+  // pluma blanca.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
-      {/* Pluma blanca alta detrás de la copa, con barbas sugeridas. */}
+      {/* Pluma blanca alta y vertical al frente, casi del alto del shako. */}
       <path
         fill="#fbf7ec"
-        d="M 33 3 Q 29 12 30 22 Q 30 28 33 32 Q 36 28 36 22 Q 37 12 33 3 Z"
+        d="M 33 4 Q 30 12 31 22 Q 31 28 33 31 Q 35 28 35 22 Q 36 12 33 4 Z"
       />
-      <g stroke="#d9c98f" strokeWidth="0.6" strokeLinecap="round" fill="none" opacity="0.7">
-        <path d="M 33 7 L 30 10" />
-        <path d="M 33 11 L 29 14" />
-        <path d="M 33 16 L 29 19" />
-        <path d="M 33 21 L 30 24" />
-        <path d="M 33 7 L 36 10" />
-        <path d="M 33 11 L 37 14" />
-        <path d="M 33 16 L 37 19" />
-        <path d="M 33 21 L 36 24" />
+      <g stroke="#d9c98f" strokeWidth="0.5" strokeLinecap="round" fill="none" opacity="0.7">
+        <path d="M 33 8 L 30 11" />
+        <path d="M 33 13 L 30 16" />
+        <path d="M 33 18 L 30 21" />
+        <path d="M 33 23 L 31 26" />
+        <path d="M 33 8 L 36 11" />
+        <path d="M 33 13 L 36 16" />
+        <path d="M 33 18 L 36 21" />
+        <path d="M 33 23 L 35 26" />
       </g>
 
-      {/* Copa de la galera — rectángulo con leve curvatura en los lados. */}
+      {/* Cuerpo del shako — cilindro vertical derecho, casi sin curvatura. */}
+      <rect x="22" y="20" width="20" height="26" fill="currentColor" rx="1.5" />
+
+      {/* Copa superior ROJA — el rasgo de identidad. */}
       <path
-        fill="currentColor"
-        d="M 22 20 Q 22 18 25 18 L 39 18 Q 42 18 42 20 L 41 44 Q 41 46 32 46 Q 23 46 23 44 Z"
+        fill="#c8412c"
+        d="M 22 22 Q 22 19 25 19 L 39 19 Q 42 19 42 22 L 42 24 L 22 24 Z"
       />
+      {/* Borde fino oscuro entre la copa roja y el cilindro negro. */}
+      <rect x="22" y="24" width="20" height="1" fill="#1f1108" opacity="0.55" />
 
-      {/* Cinta oscura sutil en la base de la copa, justo arriba del ala. */}
-      <rect x="22.5" y="42" width="19" height="2" fill="#1f1108" opacity="0.55" />
+      {/* Banda negra de remate al pie del shako. */}
+      <rect x="22" y="42" width="20" height="4" fill="#1f1108" opacity="0.75" />
 
-      {/* Ala curvada hacia arriba en los extremos — el clásico "ala
-          recogida" de la galera de Patricios. */}
+      {/* Ala mínima abajo del shako — apenas un reborde para apoyar la cabeza. */}
+      <ellipse cx="32" cy="47" rx="13" ry="2" fill="currentColor" />
+
+      {/* Barbiquejo dorado cayendo del costado del shako (detalle militar). */}
       <path
-        fill="currentColor"
-        d="M 10 47 Q 32 53 54 47 Q 50 50 32 50 Q 14 50 10 47 Z"
-      />
-
-      {/* Escarapela ROJA con anillo blanco al frente de la copa, justo
-          al pie de la pluma. */}
-      <circle cx="32" cy="28" r="5" fill="#c8412c" />
-      <circle cx="32" cy="28" r="2" fill="#fbf7ec" />
-
-      {/* Lágrima/gota blanca cayendo desde la escarapela hacia el ala
-          — el ornamento característico que se ve en la foto. */}
-      <path
-        fill="#fbf7ec"
-        d="M 32 33 Q 28 38 30 42 Q 32 44 34 42 Q 36 38 32 33 Z"
+        stroke="#e7ce8e"
+        strokeWidth="1.2"
+        fill="none"
+        strokeLinecap="round"
+        d="M 24 28 Q 22 36 26 44"
       />
     </svg>
   );
