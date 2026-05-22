@@ -24,6 +24,15 @@
   padding: 0 var(--space-4);
   /* Padding-top respeta safe-area + espacio para el back FAB flotante. */
   padding-top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
+  /*
+   * No ponemos padding-bottom de safe-area acá: el step "choose" usa una
+   * BottomActionBar sticky con margen negativo lateral, y un padding del
+   * shell empujaría ese sticky hacia arriba, dejando una franja vacía
+   * abajo y duplicando el handling de safe-area (la bar ya lo hace).
+   * El step "result" sí necesita safe-area-inset-bottom para que el
+   * Footer no quede tapado por la barra de gestos — se aplica abajo,
+   * sobre .result.
+   */
 }
 
 /* ── Back FAB flotante (sólo cuando se puede volver) ─────────────────── */
@@ -330,14 +339,22 @@
 .result {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
   align-items: center;
   /* Sin justify-content center: queremos que el Footer (con
      margin-top: auto propio) sea empujado al pie del result screen,
      mientras el PortraitFrame + restart quedan agrupados arriba/centro. */
   flex: 1;
   min-height: 0;
-  padding: var(--space-3) 0 0;
+  /* Padding-bottom respeta la barra de gestos / home indicator de iOS para
+     que el Footer no quede tapado. */
+  padding: var(--space-3) 0 env(safe-area-inset-bottom, 0px);
+  /* Red de seguridad: si en algún device pequeño (iPhone SE, iPhone con
+     toolbars visibles) el contenido del result no entra en 100dvh, scrollea
+     internamente. La barra de scroll está oculta por globals.css. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .resultStage {

@@ -145,11 +145,16 @@ body {
   /* Permitir gestos táctiles normales pero sin el doble-tap-to-zoom. */
   touch-action: manipulation;
 
-  /* ── Safe area (notches, barra de gestos) ─────────────────────────────── */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  /*
+   * Safe-area NO se aplica acá: cada container fullscreen (AppFlow.shell,
+   * TermsGate.root, Splash.root) ya lo aplica internamente con
+   * env(safe-area-inset-*). Si lo aplicamos también en body, los containers
+   * que usan min-height: 100dvh terminan extendiéndose más allá del área
+   * visible del body (que con padding queda reducido), y como body tiene
+   * overflow: hidden, el contenido del fondo (Footer, Bottom Action Bar)
+   * se recorta. Esto era especialmente visible en iPhone con notch:
+   * el footer del step "result" se cortaba.
+   */
 }
 
 /*
