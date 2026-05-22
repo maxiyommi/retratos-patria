@@ -173,7 +173,7 @@ export const CHARACTERS: Character[] = [
       `Uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES (versión actual de la Guardia Histórica, custodia ceremonial del Cabildo). Reproducir EXACTAMENTE este uniforme — todos los elementos, sin variantes.
 
 ═══════════════════════════════════════════════════════
-RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de DOS hileras de botones plateados BIEN SEPARADAS sobre el pecho, HOMBROS LISOS SIN HOMBRERAS, CUELLO ROJO con 4 botones plateados, PUÑOS ROJOS, FAJA ROJA, dos correas blancas cruzadas en X sobre el pecho, y una GALERA NEGRA de COPA MODERADA (no muy alta) tipo SOMBRERO DE COPA con UN LADO DEL ALA LEVANTADO (el izquierdo), adorno rojo y blanco en ese mismo costado, y una PLUMA BLANCA vertical alta saliendo del adorno.
+RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de DOS hileras de botones plateados BIEN SEPARADAS sobre el pecho, HOMBROS LISOS SIN HOMBRERAS, CUELLO ROJO con 4 botones plateados, PUÑOS ROJOS, FAJA ROJA, dos correas blancas cruzadas en X sobre el pecho, y una GALERA NEGRA de COPA MODERADA (no muy alta) tipo SOMBRERO DE COPA con UNA SOLAPA MUY CORTA Y CHIQUITA pegada contra la copa del lado izquierdo (no sobresale, queda contra la copa), donde está el adorno rojo y blanco con una PLUMA BLANCA vertical alta.
 ═══════════════════════════════════════════════════════
 
 ╔═══════════════════════════════════════════════════════╗
@@ -188,8 +188,13 @@ FORMA Y TIPO:
 - ALTURA de la copa: MODERADA — un poco más alta que ancha, pero NO un sombrero de copa muy alto tipo Lincoln. La copa es contenida, modesta en alto, aproximadamente entre 14-18 cm de alto (la mitad o un poco más del ancho de la cabeza). NO es la copa altísima del top-hat victoriano; es más corta y compacta.
 - TOP / CORONA: redondeada, levemente domada o plana suave. NO un cilindro hueco con boca arriba, NO una boca abierta tipo shako.
 - LADOS de la copa: rectos verticales — NO un cilindro rígido de shako militar.
-- ALA: ANGOSTA Y CORTA — el ala sobresale poco de la copa, es estrecha (apenas un reborde alrededor de la base). NO es un ala media tipo gentleman top-hat, NO es ancha de cowboy.
-- UN SOLO LADO DEL ALA SE LEVANTA / "COCKED UP" — específicamente el lado IZQUIERDO del wearer (mismo costado del adorno), que se prende hacia arriba y queda PEGADO / CEÑIDO CONTRA LA COPA del sombrero, formando una solapa CORTA que no sobresale mucho. La solapa levantada es chica, apenas un reborde que se pliega contra la copa. El otro lado (derecho del wearer), el frente y la parte de atrás del ala se mantienen PLANOS al horizonte y angostos. NO es un ala plana entera, NO es un ala completamente curvada hacia arriba en los dos lados, NO es un sombrero "cowboy", NO es la solapa larga cocada de bicornio napoleónico: es UN solo lado izquierdo del ala CORTA, levantada y pegada contra la copa, el resto plano y angosto.
+- ALA: ANGOSTA Y CORTA en todo el contorno — apenas un reborde estrecho que rodea la base de la copa. NO ala media de gentleman top-hat, NO ala ancha de cowboy ni de gauchesco.
+
+- ⚠️⚠️ SOLAPA LEVANTADA — REQUISITO CRÍTICO: del lado izquierdo del wearer (mismo costado del adorno), una parte del ala se levanta y queda PEGADA CONTRA LA COPA. Esta SOLAPA LEVANTADA es **MUY CORTA, CHIQUITA, DISCRETA — NUNCA larga, NUNCA ancha, NUNCA grande**. Apenas un PETALITO de fieltro pegado al lado de la copa, del tamaño aproximado del adorno (escudete + loop) que sostiene. Su altura es como mucho un tercio de la altura de la copa. La solapa **NO sobresale del contorno superior de la copa**, queda contenida dentro del perfil del sombrero, ceñida.
+
+- LO QUE NO ES LA SOLAPA: NO una solapa ancha que cubra toda la cara izquierda de la galera, NO una pestaña grande tipo bicornio napoleónico, NO una valva que extienda lateralmente, NO un ala entera curvada hacia arriba, NO una pieza que sobresalga arriba de la copa, NO una solapa de ala extendida que se pliega como tricornio. Es una piecita chiquita, casi vestigial, sólo lo necesario para sostener el adorno.
+
+- El resto del ala (lado derecho del wearer, frente, parte de atrás) se mantiene PLANO al horizonte, ANGOSTO. NO levantado en ningún otro lado.
 - COLOR: ÍNTEGRAMENTE NEGRO de fieltro mate, de arriba a abajo, sin ninguna parte de otro color, sin cinta colorada, sin galones, sin bordes vivos. Sólo negro.
 
 ADORNO LATERAL DE LA GALERA (al costado izquierdo del wearer, lado derecho del observador en foto frontal):
@@ -255,7 +260,8 @@ PROHIBIDO ABSOLUTAMENTE (lista exhaustiva de anti-patrones):
 - HOMBRERAS ROJAS, charreteras rojas, fleco rojo, sobrehombros rojos, o cualquier ornamento rojo en los hombros — NUNCA. Los hombros son sólo azul navy liso de la chaqueta.
 - Charreteras grandes doradas o galones dorados llamativos en los hombros.
 - Galera muy alta tipo top-hat victoriano de Lincoln — es de copa MODERADA, no extremadamente alta.
-- Ala / solapa de la galera ANCHA o LARGA — el ala es ANGOSTA y la solapa cocada del costado izquierdo es CORTA, pegada a la copa. NUNCA un ala larga cocada tipo bicornio napoleónico, NUNCA un ala media-ancha estilo cowboy o gaucho.
+- ⚠️ Solapa de la galera ANCHA, LARGA, GRANDE, EXTENDIDA, o que SOBRESALGA por encima del contorno de la copa — TODOS PROHIBIDOS. La solapa levantada del lado izquierdo es CHIQUITA, casi vestigial, apenas lo necesario para sostener el adorno, contenida dentro del perfil del sombrero. NUNCA solapa tipo bicornio napoleónico (larga y cocada), NUNCA solapa que cubra toda la cara izquierda de la copa, NUNCA una valva extendida lateralmente, NUNCA un ala plegada hacia arriba estilo tricornio. Si la solapa parece grande, está mal: hacerla más chica.
+- Ala completa media-ancha o ancha — el ala es ANGOSTA. NUNCA ala media-ancha tipo gentleman top-hat, NUNCA ala ancha de cowboy o gauchesca.
 - Más de dos columnas de botones en la chaqueta — son SIEMPRE exactamente DOS, ni más ni menos. NO una tercera columna central, NO botones agregados arriba o en los costados, NO galones, NO alamares decorativos, NO condecoraciones cruzando el pecho.
 - Cuello blanco o dorado en lugar de ROJO.
 - Uniforme de granaderos de San Martín (1812+ — casaca con plastrón rojo distinto), Confederación, ejército argentino moderno, traje militar de fines del XIX.
