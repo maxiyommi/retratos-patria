@@ -162,9 +162,9 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "patricio",
-    nombreDama: "Patricio de Buenos Aires",
-    nombreCaballero: "Patricio de Buenos Aires",
-    descripcionCorta: "Regimiento de Patricios",
+    nombreDama: "Soldado de la Patria",
+    nombreCaballero: "Soldado de la Patria",
+    descripcionCorta: "Milicia patriota",
     // Históricamente no existieron patricias en el Regimiento — la UI
     // bloquea la card cuando el género es "dama".
     genderRestriction: "caballero",
@@ -317,7 +317,7 @@ const SHORT_LABELS: Record<CharacterId, { dama: string; caballero: string }> = {
   porteno: { dama: "Porteña", caballero: "Porteño" },
   patriota: { dama: "Patriota", caballero: "Patriota" },
   vendedor: { dama: "Vendedora", caballero: "Vendedor" },
-  patricio: { dama: "Patricio", caballero: "Patricio" },
+  patricio: { dama: "Soldado", caballero: "Soldado" },
   gaucho: { dama: "Gaucha", caballero: "Gaucho" },
   aguatero: { dama: "Aguatera", caballero: "Aguatero" },
 };
