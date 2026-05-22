@@ -50,3 +50,6 @@ yarn-error.log*
 # fotos de prueba (privacidad de menores — ver CLAUDE.md)
 /test-photos/
 *.heic
+
+# Memoria interna del proyecto (no se versiona)
+CLAUDE.md

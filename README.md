@@ -169,9 +169,10 @@ Los puntos de entrada para adaptar el proyecto:
 | El cuadro que se descarga (marco, cartela, brand) | `composeFramedPortrait()` en `components/AppFlow.tsx` |
 | La imagen de preview cuando se comparte el link | `app/opengraph-image.tsx` |
 
-Para entender por qué está armado así y qué decisiones se tomaron, leé
-[`CLAUDE.md`](./CLAUDE.md) — es el archivo de memoria del diseño con
-las restricciones y principios del proyecto.
+El comportamiento por step y los principios de privacidad están
+documentados en [`content/terminos.md`](./content/terminos.md) y en
+los comentarios de cada componente. Mirá `components/AppFlow.tsx` para
+entender el orquestado de los 4 pasos.
 
 ---
 
