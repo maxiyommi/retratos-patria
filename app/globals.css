@@ -80,7 +80,7 @@ body {
   --bg-halo: rgba(231, 206, 142, 0.22);
 }
 
-/* El espejo — celeste profundo (cabina de fotos sobria). */
+/* El retrato — celeste profundo (cabina de fotos sobria). */
 html[data-step="camera"] {
   --bg-top: #2f6f9b;
   --bg-bottom: #143b5a;
@@ -258,24 +258,63 @@ select {
  * y "después" con un crossfade + slide.
  */
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
+  /*
+   * Sólo el .step recibe el slide horizontal (lleva view-transition-name:
+   * step-content desde AppFlow.module.css). El root incluye el shell
+   * completo (con el BottomActionBar position:fixed) y se queda quieto —
+   * sin animación aplicada. Resultado: la bar permanece anclada al pie
+   * del viewport mientras el contenido del step desliza adentro.
+   */
+  ::view-transition-old(step-content),
+  ::view-transition-new(step-content) {
     animation-duration: 380ms;
     animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
     animation-fill-mode: both;
   }
 
-  html[data-transition-direction="forward"]::view-transition-old(root) {
+  html[data-transition-direction="forward"]::view-transition-old(step-content) {
     animation-name: vt-slide-out-left;
   }
-  html[data-transition-direction="forward"]::view-transition-new(root) {
+  html[data-transition-direction="forward"]::view-transition-new(step-content) {
     animation-name: vt-slide-in-right;
   }
-  html[data-transition-direction="backward"]::view-transition-old(root) {
+  html[data-transition-direction="backward"]::view-transition-old(step-content) {
     animation-name: vt-slide-out-right;
   }
-  html[data-transition-direction="backward"]::view-transition-new(root) {
+  html[data-transition-direction="backward"]::view-transition-new(step-content) {
     animation-name: vt-slide-in-left;
+  }
+
+  /*
+   * BottomActionBar: tiene su propio view-transition-name = "bottom-bar"
+   * (en BottomActionBar.module.css). Aunque vive DENTRO del .step (que sí
+   * slidea), al tener nombre propio el browser la captura como capa
+   * separada, anclada a su posición fixed. Sólo crossfadea si su
+   * contenido cambia entre steps.
+   */
+  ::view-transition-old(bottom-bar),
+  ::view-transition-new(bottom-bar) {
+    animation-duration: 280ms;
+    animation-timing-function: var(--ease-out);
+    animation-fill-mode: both;
+  }
+  ::view-transition-old(bottom-bar) {
+    animation-name: vt-fade-out;
+  }
+  ::view-transition-new(bottom-bar) {
+    animation-name: vt-fade-in;
+  }
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
   }
 }
 
@@ -338,7 +377,11 @@ select {
     scroll-behavior: auto !important;
   }
   ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-old(step-content),
+  ::view-transition-new(step-content),
+  ::view-transition-old(bottom-bar),
+  ::view-transition-new(bottom-bar) {
     animation: none !important;
   }
 }

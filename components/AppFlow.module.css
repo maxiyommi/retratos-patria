@@ -35,58 +35,6 @@
    */
 }
 
-/* ── Back FAB flotante (sólo cuando se puede volver) ─────────────────── */
-
-.backFab {
-  will-change: transform;
-  position: absolute;
-  /* Más arriba y un toque más a la izquierda, fuera del flow del eyebrow.
-     safe-area-inset-top respetado. */
-  top: calc(var(--space-2) + env(safe-area-inset-top, 0px));
-  left: calc(var(--space-3));
-  z-index: 10;
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* Ghost button transparente con borde dorado-suave — integra con el
-     eyebrow del LargeTitle (que también es dorado-suave) sin competir.
-     Color del chevron = mismo dorado-suave. */
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--color-dorado-suave);
-  border: 1px solid rgba(231, 206, 142, 0.4);
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 0;
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  animation: back-fab-in 320ms var(--ease-out);
-}
-
-.backFab:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: var(--color-dorado-suave);
-}
-
-.backFab:active {
-  transform: scale(0.9);
-  transition-duration: 90ms;
-}
-
-@keyframes back-fab-in {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
 /* ── Main + step container ──────────────────────────────────────────── */
 
 .main {
@@ -94,6 +42,9 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  /* Reserva el espacio del BottomActionBar fijo + safe-area-inset-bottom.
+     Sin esto, el contenido del step se metería debajo de la bar. */
+  padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom, 0px));
 }
 
 .step {
@@ -102,23 +53,36 @@
   flex-direction: column;
   min-height: 0;
   animation: step-fade-in 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  /*
+   * El step es el ÚNICO elemento que cambia entre pantallas. Le damos su
+   * propio view-transition-name así durante un document.startViewTransition
+   * sólo este árbol slidea (left/right) y el resto del root (incluido el
+   * BottomActionBar position:fixed) se queda quieto. Antes el slide caía
+   * sobre el root completo y la bar se iba con él.
+   */
+  view-transition-name: step-content;
 }
 
-/* Cuando NO estamos en camera el back FAB se muestra a top-left, y
-   necesitamos que el LargeTitle (eyebrow + título) no quede pisado.
-   Sumamos padding-top suficiente para clear del FAB (40px + margen). */
+/* Breathing entre el shell padding y el comienzo del eyebrow/título en
+   los steps que no son camera. Antes era var(--space-6) para clear del
+   back FAB; sin FAB alcanza con var(--space-2). */
 .main:not([data-step="camera"]) .step {
-  padding-top: var(--space-6);
+  padding-top: var(--space-2);
 }
 
+/*
+ * Sin transform: si la animación pone transform en el .step crea un
+ * containing block para descendientes position: fixed (caso del
+ * BottomActionBar). El bar dejaría de anclarse al viewport y se
+ * posicionaría contra el .step durante los 380ms del fade-in. Sólo
+ * opacity = sin containing block creado.
+ */
 @keyframes step-fade-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -143,26 +107,109 @@
   min-height: 0;
 }
 
-/* Header del choose: chip de foto a la izquierda, GenderToggle ocupando el resto. */
-.chooseHeader {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-3);
-  align-items: center;
+/*
+ * Top row del choose: eyebrow afuera, y abajo título + subtítulo a la
+ * izquierda con el chip de foto a la derecha. Sacar el eyebrow del bloque
+ * que comparte fila con el chip nos da centrado limpio: la línea-base del
+ * chip alinea exactamente con el centro del título + subtítulo, no con el
+ * centro óptico del header completo (que incluye al eyebrow).
+ */
+.chooseEyebrow {
+  margin: 0;
+  font-family: var(--font-stack-body);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-dorado-suave);
+  font-weight: 500;
+  opacity: 0.85;
+  /* Misma cadencia que LargeTitle.module.css → .eyebrow para no romper la
+     animación de entrada del step. */
+  animation: chooseEyebrow-in 480ms var(--ease-out) backwards;
 }
 
-/* Chip de foto circular con badge de "retomar" abajo a la derecha. */
+/*
+ * Grid de cabecera del choose:
+ *   col 1 (auto)   |   col 2 (1fr)
+ *   ─────────────────────────────────
+ *   ¿Quién serás?  |     [📷 chip]
+ *   subtítulo      |     (mismo cell)
+ *
+ * El chip ocupa ambas filas de la columna derecha → su centro vertical
+ * cae exacto entre el título y el subtítulo. justify-self: center lo
+ * centra horizontalmente entre el "?" y el borde derecho.
+ */
+.chooseTitleGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  margin-top: var(--space-2);
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+}
+
+.chooseTitleGrid > :first-child {
+  /* LargeTitle: ancho auto según el texto del h1. */
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.chooseTitleGrid > .photoChip {
+  /* Chip ocupa las dos filas de la columna derecha. */
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-self: center;
+  align-self: center;
+}
+
+.chooseTitleGrid > .chooseSubtitle {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+/* Subtítulo: mismo look que tendría dentro del LargeTitle. margin-bottom
+   genera respiración antes del toggle de género. */
+.chooseSubtitle {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-stack-body);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-blanco-calido);
+  opacity: 0.82;
+  animation: chooseEyebrow-in 540ms var(--ease-out) 80ms backwards;
+}
+
+@keyframes chooseEyebrow-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+}
+
+/* Header del choose: GenderToggle centrado en su propia fila. */
+.chooseHeader {
+  display: flex;
+  justify-content: center;
+}
+
+/* Chip de foto circular con badge de "retomar" abajo a la derecha.
+   Centrado vertical y horizontalmente con justify-self/align-self
+   desde la grilla .chooseTitleGrid. */
 .photoChip {
   will-change: transform;
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: 80px;
+  height: 80px;
   padding: 0;
   border-radius: 50%;
   border: 2px solid var(--color-dorado-suave);
   background: var(--color-superficie);
   cursor: pointer;
-  flex-shrink: 0;
   box-shadow: var(--shadow-sm);
   transition: transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -182,48 +229,17 @@
 
 .photoChipBadge {
   position: absolute;
-  bottom: -3px;
-  right: -3px;
-  width: 22px;
-  height: 22px;
+  bottom: -2px;
+  right: -2px;
+  width: 26px;
+  height: 26px;
   background: var(--color-celeste-tinta);
   color: var(--color-blanco-calido);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  border: 1.5px solid var(--color-blanco-calido);
+  border: 2px solid var(--color-blanco-calido);
   box-shadow: 0 1px 3px rgba(31, 80, 114, 0.35);
-}
-
-/* Título central del choose con drop-cap dorado. */
-.chooseTitle {
-  margin: 0;
-  text-align: center;
-  font-family: var(--font-stack-display);
-  font-style: italic;
-  font-weight: 500;
-  font-size: var(--font-size-lg);
-  color: var(--color-blanco-calido);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: 1.1;
-}
-
-.chooseTitle em {
-  color: var(--color-dorado-suave);
-  font-style: italic;
-}
-
-/* Drop-cap: la primera E grande dorada como inicial de libro antiguo. */
-.chooseTitleDropcap {
-  font-family: var(--font-stack-display);
-  font-style: italic;
-  font-weight: 600;
-  font-size: 1.45em;
-  line-height: 0.9;
-  color: var(--color-dorado-suave);
-  margin-right: 1px;
-  vertical-align: -0.06em;
-  text-shadow: 0 1px 2px rgba(31, 80, 114, 0.25);
 }
 
 /* Contenedor del picker. Con la nueva lista vertical empezamos arriba,
@@ -295,9 +311,9 @@
 
 .cta {
   will-change: transform;
-  width: 100%;
+  flex: 1;
   min-height: calc(var(--target-min-tap) + 8px);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
   background: var(--color-celeste-tinta);
   color: var(--color-blanco-calido);
@@ -307,6 +323,11 @@
   letter-spacing: 0.01em;
   cursor: pointer;
   border: 0;
+  /* Texto siempre en una línea — recorta con elipsis si fuera más largo
+     que el ancho disponible (raro con el shortLabel del personaje). */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   box-shadow:
     0 6px 18px rgba(31, 80, 114, 0.35),
     inset 0 -3px 0 var(--color-dorado);
@@ -332,6 +353,79 @@
   cursor: not-allowed;
   box-shadow: var(--shadow-sm);
   transform: none;
+}
+
+/* ── Back rectangular a la izquierda del CTA en la BottomActionBar ───── */
+
+/*
+ * Mismo lenguaje rectangular que el CTA, sólo más angosto (ancho fijo) y
+ * en estilo secundario (ghost con borde dorado-suave). Misma altura que
+ * el .cta para que la bar tenga peso visual uniforme.
+ */
+.ctaBack {
+  will-change: transform;
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: calc(var(--target-min-tap) + 8px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-blanco-calido);
+  border: 1px solid rgba(231, 206, 142, 0.45);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ctaBack:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--color-dorado-suave);
+}
+
+.ctaBack:active {
+  transform: scale(0.92);
+  transition-duration: 90ms;
+}
+
+/* ── Cancelar (Painting) — botón ghost full-width en la bar ─────────── */
+
+.cancelCta {
+  will-change: transform;
+  flex: 1;
+  min-height: calc(var(--target-min-tap) + 8px);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-blanco-calido);
+  border: 1px solid rgba(231, 206, 142, 0.55);
+  font-family: var(--font-stack-body);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cancelCta:hover {
+  background: rgba(231, 206, 142, 0.18);
+  border-color: var(--color-dorado-suave);
+}
+
+.cancelCta:active {
+  transform: scale(0.97);
+  transition-duration: 90ms;
 }
 
 /* ── Step RESULT — frame + RayBurst + restart ───────────────────────── */
@@ -367,31 +461,53 @@
   width: 100%;
 }
 
-.restart {
+/* ── Botones de acción del Result (Compartir + Descargar) ──────────── */
+
+.resultAction {
   will-change: transform;
-  align-self: center;
-  padding: var(--space-3) var(--space-5);
-  font-family: var(--font-stack-display);
-  font-style: italic;
-  font-size: var(--font-size-base);
-  background: transparent;
-  border: 1px solid rgba(231, 206, 142, 0.6);
-  border-radius: var(--radius-pill);
+  flex: 1;
+  min-height: calc(var(--target-min-tap) + 8px);
+  padding: var(--space-3) var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--color-blanco-calido);
+  border: 1px solid rgba(231, 206, 142, 0.4);
+  font-family: var(--font-stack-body);
+  font-size: var(--font-size-base);
+  font-weight: 500;
   cursor: pointer;
-  min-height: var(--target-min-tap);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition:
     background-color var(--duration-fast) var(--ease-out),
     transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.restart:hover {
-  background: rgba(231, 206, 142, 0.18);
+.resultAction:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--color-dorado-suave);
 }
 
-.restart:active {
-  transform: scale(0.94);
-  transition-duration: 80ms;
+.resultAction:active {
+  transform: scale(0.97);
+  transition-duration: 90ms;
+}
+
+.resultActionPrimary {
+  background: var(--color-celeste-tinta);
+  border-color: rgba(231, 206, 142, 0.7);
+  box-shadow: inset 0 -2px 0 var(--color-dorado);
+}
+
+.resultActionPrimary:hover {
+  background: #16415e;
 }
 
 .demoBadge {

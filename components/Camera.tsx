@@ -27,6 +27,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageProcessingError, resizeImage } from "@/lib/image";
 import { haptic } from "@/lib/haptic";
 import { PhotoEditor } from "@/components/PhotoEditor";
+import { BottomActionBar } from "@/components/BottomActionBar";
 import styles from "./Camera.module.css";
 
 export interface CameraProps {
@@ -300,8 +301,8 @@ export function Camera({ onPhotoReady }: CameraProps) {
     <div className={styles.root}>
       {/*
         El LargeTitle del AppFlow ya cumple la función de "intro": eyebrow
-        "Paso 1 · El espejo" + título "Mirate" + subtítulo guía. Aquí
-        renderizamos directamente el viewport sin texto redundante.
+        "Paso 1 · El retrato" + título "Posicionate" + subtítulo guía.
+        Aquí renderizamos directamente el viewport sin texto redundante.
       */}
 
       <div className={styles.viewport}>
@@ -366,17 +367,9 @@ export function Camera({ onPhotoReady }: CameraProps) {
         </p>
       )}
 
-      <div className={styles.actions}>
+      <BottomActionBar>
         {preview ? (
           <>
-            <button
-              type="button"
-              className={`${styles.actionButton} ${styles.actionPrimary}`}
-              onClick={handleUse}
-            >
-              <CheckIcon />
-              <span>Usar esta foto</span>
-            </button>
             <button
               type="button"
               className={styles.actionButton}
@@ -384,6 +377,14 @@ export function Camera({ onPhotoReady }: CameraProps) {
             >
               <RetakeIcon />
               <span>Sacar otra</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.actionButton} ${styles.actionPrimary}`}
+              onClick={handleUse}
+            >
+              <CheckIcon />
+              <span>Usar esta foto</span>
             </button>
           </>
         ) : showLiveCamera ? (
@@ -430,7 +431,7 @@ export function Camera({ onPhotoReady }: CameraProps) {
             <span>{busy ? "Procesando…" : "Subir foto"}</span>
           </button>
         )}
-      </div>
+      </BottomActionBar>
 
       {showFallback && status === "denied" && (
         <p className={styles.hintBelow}>

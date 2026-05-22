@@ -17,7 +17,7 @@
  * cambio sea aún más fluido.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SolDeMayo } from "@/components/SolDeMayo";
 import { Footer } from "@/components/Footer";
 import { haptic } from "@/lib/haptic";
@@ -35,6 +35,7 @@ export interface TermsGateProps {
 export function TermsGate({ termsHtml, children }: TermsGateProps) {
   // null = aún no leímos localStorage (durante SSR/primer render)
   const [accepted, setAccepted] = useState<boolean | null>(null);
+  const sheetRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     try {
@@ -44,6 +45,24 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
       setAccepted(false);
     }
   }, []);
+
+  function openSheet() {
+    haptic("tap");
+    sheetRef.current?.showModal();
+  }
+
+  function closeSheet() {
+    sheetRef.current?.close();
+  }
+
+  /*
+   * Bottom-sheet pattern: el backdrop del <dialog> ocupa la pantalla
+   * entera. Si el tap cae en el dialog mismo (no en su contenido), es
+   * porque el usuario tocó el área de fondo y queremos cerrar.
+   */
+  function handleSheetClick(e: React.MouseEvent<HTMLDialogElement>) {
+    if (e.target === sheetRef.current) closeSheet();
+  }
 
   function handleAccept() {
     haptic("success");
@@ -97,18 +116,50 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
         <li>Proyecto educativo, sin fines comerciales.</li>
       </ul>
 
-      <details className={styles.details}>
-        <summary className={styles.detailsToggle}>
-          <span>Leer el texto completo</span>
-          <ChevronGlyph />
-        </summary>
-        <div
-          className={styles.fullText}
-          // HTML del .md propio del proyecto, parseado server-side con
-          // marked. No hay fuente externa = no XSS.
-          dangerouslySetInnerHTML={{ __html: termsHtml }}
-        />
-      </details>
+      <button
+        type="button"
+        className={styles.openSheet}
+        onClick={openSheet}
+        aria-haspopup="dialog"
+      >
+        <span>Leer el texto completo</span>
+        <UpArrowGlyph />
+      </button>
+
+      {/*
+        Bottom sheet nativo con <dialog>. Slide-up desde abajo con animación
+        de resorte, backdrop oscurecido con blur, drag handle decorativo
+        arriba, cierre por backdrop tap, botón × o ESC.
+      */}
+      <dialog
+        ref={sheetRef}
+        className={styles.sheet}
+        onClick={handleSheetClick}
+        aria-labelledby="terms-sheet-title"
+      >
+        <div className={styles.sheetInner}>
+          <span className={styles.sheetHandle} aria-hidden />
+          <header className={styles.sheetHeader}>
+            <h2 id="terms-sheet-title" className={styles.sheetTitle}>
+              Términos y Aviso de Privacidad
+            </h2>
+            <button
+              type="button"
+              className={styles.sheetClose}
+              onClick={closeSheet}
+              aria-label="Cerrar"
+            >
+              <CloseGlyph />
+            </button>
+          </header>
+          <div
+            className={styles.sheetBody}
+            // HTML del .md propio del proyecto, parseado server-side con
+            // marked. No hay fuente externa = no XSS.
+            dangerouslySetInnerHTML={{ __html: termsHtml }}
+          />
+        </div>
+      </dialog>
 
       <div className={styles.actions}>
         <button
@@ -151,22 +202,34 @@ function FlourishMark() {
   );
 }
 
-function ChevronGlyph() {
+function UpArrowGlyph() {
   return (
     <svg
       viewBox="0 0 16 16"
       width="14"
       height="14"
-      className={styles.detailsChevron}
       aria-hidden
     >
       <path
-        d="M 4 6 L 8 10 L 12 6"
+        d="M 8 11 L 8 4 M 4 7 L 8 4 L 12 7"
         stroke="currentColor"
         strokeWidth="1.6"
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CloseGlyph() {
+  return (
+    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden>
+      <path
+        d="M 4 4 L 12 12 M 12 4 L 4 12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
       />
     </svg>
   );

@@ -152,6 +152,7 @@ export function AppFlow() {
 
   const selected = characterId ? getCharacterById(characterId) : null;
   const fullName = selected ? getFullName(selected, gender) : "Sin elegir";
+  const shortName = selected ? getShortLabel(selected, gender) : "";
 
   // Sincronizamos el step actual con html[data-step] para que globals.css
   // pueda cambiar el background atmosférico por habitación. Además
@@ -385,24 +386,13 @@ export function AppFlow() {
     }
   }
 
-  // En el step camera no mostramos botón "volver" (es el inicio); en el resto
-  // sí. Es la única affordance "back" que necesita el flujo — no es una app
-  // multinivel, sólo cuatro pasos lineales.
-  const showBack = step !== "camera";
+  // Back vive dentro de la BottomActionBar de cada step que la usa (split
+  // bar [← back] [CTA]). Camera no necesita back porque es el inicio del
+  // flujo; Painting tiene su propio botón "Cancelar"; Result tiene
+  // "Probar con otra foto". No hace falta back FAB top-left.
 
   return (
     <div className={styles.shell}>
-      {showBack && (
-        <button
-          type="button"
-          className={styles.backFab}
-          onClick={goCamera}
-          aria-label="Volver al inicio"
-        >
-          <BackChevron />
-        </button>
-      )}
-
       <SolFlash trigger={step} />
 
       <main className={styles.main} data-step={step}>
@@ -410,10 +400,10 @@ export function AppFlow() {
           {step === "camera" && (
             <>
               <LargeTitle
-                eyebrow="Paso 1 · El espejo"
+                eyebrow="Paso 1 · El retrato"
                 subtitle="Centrá tu cara en el óvalo dorado. Una sola persona en la foto da mejores resultados."
               >
-                Mirate
+                Posicionate
               </LargeTitle>
               <Camera onPhotoReady={handlePhotoReady} />
             </>
@@ -421,24 +411,36 @@ export function AppFlow() {
 
           {step === "choose" && photo && (
             <>
-              <LargeTitle
-                eyebrow="Paso 2 · El catálogo"
-                subtitle="Elegí cómo querés ser pintado en 1810."
-              >
-                ¿Quién <em>serás</em>?
-              </LargeTitle>
+              <p className={styles.chooseEyebrow}>Paso 2 · El rol</p>
+              <div className={styles.chooseTitleGrid}>
+                <LargeTitle>¿Quién <em>serás</em>?</LargeTitle>
+                <button
+                  type="button"
+                  className={styles.photoChip}
+                  onClick={goCamera}
+                  aria-label="Cambiar foto"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo} alt="" />
+                  <span className={styles.photoChipBadge} aria-hidden>
+                    <RetakeGlyph />
+                  </span>
+                </button>
+                <p className={styles.chooseSubtitle}>
+                  Elegí cómo querés ser pintado en 1810.
+                </p>
+              </div>
               <ChooseScreen
-                photo={photo}
                 gender={gender}
                 onGenderChange={setGender}
                 characterId={characterId}
                 onCharacterChange={setCharacterId}
-                onRetakePhoto={goCamera}
+                onBack={goCamera}
                 onStart={handleStartPaint}
                 onEnterDemo={
                   isBillingError(transformError) ? handleEnterDemoMode : null
                 }
-                fullName={fullName}
+                shortName={shortName}
                 errorMessage={transformError}
               />
             </>
@@ -452,10 +454,16 @@ export function AppFlow() {
               >
                 Pintándote
               </LargeTitle>
-              <LoadingState
-                characterName={fullName}
-                onCancel={handleCancelPaint}
-              />
+              <LoadingState characterName={fullName} />
+              <BottomActionBar>
+                <button
+                  type="button"
+                  className={styles.cancelCta}
+                  onClick={handleCancelPaint}
+                >
+                  Cancelar
+                </button>
+              </BottomActionBar>
             </>
           )}
 
@@ -477,6 +485,14 @@ export function AppFlow() {
           )}
         </div>
       </main>
+
+      {/*
+        Target del portal del BottomActionBar. Vive en el .shell, no en
+        .main / .step, así la bar nunca termina como descendiente de un
+        elemento con animación o transform — eso rompía el position: fixed
+        haciendo que la bar se posicionara contra .step en vez del viewport.
+      */}
+      <div id="bottom-bar-portal" />
     </div>
   );
 }
@@ -502,45 +518,31 @@ function BackChevron() {
 /* ── Pantalla CHOOSE — compacta, sin scroll, CTA en BottomActionBar ── */
 
 interface ChooseScreenProps {
-  photo: string;
   gender: Gender;
   onGenderChange: (g: Gender) => void;
   characterId: CharacterId | null;
   onCharacterChange: (id: CharacterId) => void;
-  onRetakePhoto: () => void;
+  onBack: () => void;
   onStart: () => void;
   onEnterDemo: (() => void) | null;
-  fullName: string;
+  shortName: string;
   errorMessage: string | null;
 }
 
 function ChooseScreen({
-  photo,
   gender,
   onGenderChange,
   characterId,
   onCharacterChange,
-  onRetakePhoto,
+  onBack,
   onStart,
   onEnterDemo,
-  fullName,
+  shortName,
   errorMessage,
 }: ChooseScreenProps) {
   return (
     <div className={styles.choose}>
       <header className={styles.chooseHeader}>
-        <button
-          type="button"
-          className={styles.photoChip}
-          onClick={onRetakePhoto}
-          aria-label="Cambiar foto"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photo} alt="" />
-          <span className={styles.photoChipBadge} aria-hidden>
-            <RetakeGlyph />
-          </span>
-        </button>
         <GenderToggle value={gender} onChange={onGenderChange} />
       </header>
 
@@ -559,11 +561,6 @@ function ChooseScreen({
         </div>
       )}
 
-      <h2 className={styles.chooseTitle}>
-        <span className={styles.chooseTitleDropcap}>E</span>legí tu{" "}
-        <em>personaje</em>
-      </h2>
-
       <div className={styles.chooseGrid}>
         <CharacterPicker
           characters={CHARACTERS}
@@ -576,11 +573,19 @@ function ChooseScreen({
       <BottomActionBar>
         <button
           type="button"
+          className={styles.ctaBack}
+          onClick={onBack}
+          aria-label="Volver"
+        >
+          <BackChevron />
+        </button>
+        <button
+          type="button"
           className={styles.cta}
           onClick={onStart}
           disabled={!characterId}
         >
-          {characterId ? `Pintarme como ${fullName}` : "Elegí un rol primero"}
+          {characterId ? `Pintarme como ${shortName}` : "Elegí un rol primero"}
         </button>
       </BottomActionBar>
     </div>
@@ -618,24 +623,69 @@ function ResultScreen({
       )}
       <div className={styles.resultStage}>
         <RayBurst trigger={burstKey} />
+        {/* PortraitFrame sin onDownload/onShare → no renderea los botones
+            internos. Las acciones viven en la BottomActionBar de abajo
+            para unificar UX con el resto del flujo. */}
         <PortraitFrame
           imageDataUrl={portrait}
           characterName={characterName}
           variant="cabildo"
-          onDownload={onDownload}
-          onShare={onShare}
         />
       </div>
-      <button type="button" className={styles.restart} onClick={onRestart}>
-        Probar con otra foto
-      </button>
       {/*
         Recordatorio de identidad al cierre del flujo — momento "salí
         con tu retrato listo y enterate quién hizo esto". Mismo Footer
         que aparece en el Splash y el TermsGate; consistente.
       */}
       <Footer />
+
+      <BottomActionBar>
+        <button
+          type="button"
+          className={styles.ctaBack}
+          onClick={onRestart}
+          aria-label="Probar con otra foto"
+        >
+          <BackChevron />
+        </button>
+        <button
+          type="button"
+          className={styles.resultAction}
+          onClick={onShare}
+        >
+          <ShareGlyph />
+          <span>Compartir</span>
+        </button>
+        <button
+          type="button"
+          className={`${styles.resultAction} ${styles.resultActionPrimary}`}
+          onClick={onDownload}
+        >
+          <DownloadGlyph />
+          <span>Descargar</span>
+        </button>
+      </BottomActionBar>
     </div>
+  );
+}
+
+function ShareGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <polyline points="16 6 12 2 8 6" />
+      <line x1="12" y1="2" x2="12" y2="15" />
+    </svg>
+  );
+}
+
+function DownloadGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
   );
 }
 

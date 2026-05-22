@@ -27,8 +27,13 @@ export interface PortraitFrameProps {
   imageDataUrl: string;
   characterName: string;
   variant?: Variant;
-  onDownload: () => void;
-  onShare: () => void;
+  /**
+   * Si se pasan, se renderizan los botones de descargar/compartir
+   * debajo del marco. Si se omiten, el frame muestra sólo el cuadro y
+   * los botones viven afuera (típicamente en la BottomActionBar del step).
+   */
+  onDownload?: () => void;
+  onShare?: () => void;
 }
 
 export function PortraitFrame({
@@ -84,24 +89,26 @@ export function PortraitFrame({
         </p>
       </figure>
 
-      <div className={styles.actions}>
-        <button
-          type="button"
-          className={`${styles.actionButton} ${styles.actionPrimary}`}
-          onClick={onDownload}
-        >
-          <DownloadIcon />
-          <span>Descargar</span>
-        </button>
-        <button
-          type="button"
-          className={styles.actionButton}
-          onClick={onShare}
-        >
-          <ShareIcon />
-          <span>Compartir</span>
-        </button>
-      </div>
+      {onDownload && onShare && (
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={`${styles.actionButton} ${styles.actionPrimary}`}
+            onClick={onDownload}
+          >
+            <DownloadIcon />
+            <span>Descargar</span>
+          </button>
+          <button
+            type="button"
+            className={styles.actionButton}
+            onClick={onShare}
+          >
+            <ShareIcon />
+            <span>Compartir</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

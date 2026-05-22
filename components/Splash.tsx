@@ -24,6 +24,7 @@
  *  - 800-2300ms: Sol de Mayo emerge.
  *  - 2200-3600ms: "Retratos" emerge con gradient dorado.
  *  - 2900-3900ms: "de la Patria" emerge.
+ *  - 3400-4300ms: tagline descriptivo emerge.
  *  - 3700-4400ms: botón Ingresar emerge.
  *  - 4300-5000ms: footer emerge.
  *  - 3800ms en adelante: shimmer dorado perpetuo sobre "Retratos".
@@ -107,6 +108,10 @@ export function Splash() {
           <span className={styles.titleMain}>Retratos</span>
           <span className={styles.titleSub}>de la Patria</span>
         </h1>
+
+        <p className={styles.tagline}>
+          Descubrí tu <em>retrato patrio</em>.
+        </p>
 
         <button
           type="button"

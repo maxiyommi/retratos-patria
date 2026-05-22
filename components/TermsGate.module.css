@@ -2,8 +2,8 @@
  * TermsGate.module.css — Real Cédula digital.
  *
  * Diseñado para caber en 100dvh sin scroll en mobile (~390x844). El
- * único elemento con scroll interno es el .fullText cuando se expande
- * el <details>, capado a 40dvh para no robar pantalla.
+ * texto legal completo vive en un bottom sheet (<dialog> nativo) que
+ * sube de abajo cuando el usuario toca "Leer el texto completo".
  *
  * Lenguaje visual: chrome celeste + acento dorado, ornamento estilo
  * libro antiguo (drop-cap, flourish divider, pluma estilizada). Sigue
@@ -165,19 +165,14 @@
   text-shadow: 0 0 6px rgba(201, 161, 74, 0.4);
 }
 
-/* ── Details desplegable (texto completo) ─────────────────────────── */
+/* ── Botón que dispara el bottom sheet ────────────────────────────── */
 
-.details {
+.openSheet {
+  cursor: pointer;
+  padding: var(--space-3) var(--space-4);
   border: 1px solid rgba(231, 206, 142, 0.45);
   border-radius: var(--radius-md);
   background: rgba(31, 80, 114, 0.18);
-  overflow: hidden;
-}
-
-.detailsToggle {
-  list-style: none;
-  cursor: pointer;
-  padding: var(--space-3) var(--space-4);
   font-family: var(--font-stack-display);
   font-style: italic;
   font-weight: 500;
@@ -187,95 +182,237 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
+  width: 100%;
+  transition:
+    background-color 240ms var(--ease-out),
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.detailsToggle::-webkit-details-marker {
-  display: none;
-}
-
-.detailsChevron {
+.openSheet svg {
   color: var(--color-dorado-suave);
-  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.details[open] .detailsChevron {
-  transform: rotate(180deg);
+.openSheet:hover {
+  background: rgba(31, 80, 114, 0.28);
 }
 
-.fullText {
-  padding: var(--space-4);
-  max-height: 40dvh;
-  overflow-y: auto;
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-blanco-calido);
-  -webkit-overflow-scrolling: touch;
-  border-top: 1px solid rgba(231, 206, 142, 0.3);
-  /* Texto legal — el usuario tiene derecho a copiarlo. Re-habilitamos
-     selección y callout sólo en este bloque (el resto de la app los
-     bloquea globalmente para feel app nativa). */
+.openSheet:active {
+  transform: scale(0.98);
+  transition-duration: 90ms;
+}
+
+/* ── Bottom sheet nativo con <dialog> ─────────────────────────────── */
+
+/*
+ * Patrón iOS bottom-sheet: el <dialog> ocupa todo el viewport, su
+ * .sheetInner se ancla al borde inferior y sube con resorte. Al abrirse
+ * con .showModal() el browser inyecta un ::backdrop semi-opaco que
+ * podemos estilizar.
+ *
+ * Animaciones de entrada/salida: usamos @starting-style + display/overlay
+ * con transition-behavior: allow-discrete para que la salida no haga
+ * "popping". En browsers viejos (< Safari 17.4 / Chrome 117) cae a
+ * un fade simple sin slide, lo que sigue siendo aceptable.
+ */
+.sheet {
+  /* Reset del display y los defaults del dialog. */
+  padding: 0;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100dvh;
+  /* Anclamos al pie del viewport. */
+  margin: 0;
+  inset: 0;
+  /* Estado base (cerrado) — usado por @starting-style en navegadores
+     que lo soportan, para que la apertura interpole desde acá. */
+  opacity: 0;
+  transition:
+    opacity 280ms cubic-bezier(0.32, 0.72, 0, 1),
+    overlay 360ms cubic-bezier(0.32, 0.72, 0, 1) allow-discrete,
+    display 360ms cubic-bezier(0.32, 0.72, 0, 1) allow-discrete;
+  /* iOS: dejá selección y callout en el dialog (legal: el usuario
+     puede querer copiar los términos). */
   -webkit-user-select: text;
   user-select: text;
   -webkit-touch-callout: default;
 }
 
-.fullText::-webkit-scrollbar {
-  width: 0;
-}
-.fullText::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 999px;
+.sheet[open] {
+  opacity: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
-.fullText h1,
-.fullText h2,
-.fullText h3 {
+@starting-style {
+  .sheet[open] {
+    opacity: 0;
+  }
+  .sheet[open] .sheetInner {
+    transform: translateY(100%);
+  }
+}
+
+.sheet::backdrop {
+  background: rgba(15, 38, 60, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition:
+    background-color 280ms cubic-bezier(0.32, 0.72, 0, 1),
+    display 360ms allow-discrete;
+}
+
+@starting-style {
+  .sheet[open]::backdrop {
+    background: rgba(15, 38, 60, 0);
+  }
+}
+
+.sheetInner {
+  width: 100%;
+  max-width: 32rem;
+  max-height: 85dvh;
+  background:
+    linear-gradient(180deg, #2f6f9b 0%, #1f5072 100%);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow:
+    0 -10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(231, 206, 142, 0.35);
+  display: flex;
+  flex-direction: column;
+  /* Safe-area-inset-bottom: el sheet llega al borde inferior. */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transform: translateY(0);
+  transition: transform 380ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Drag handle decorativo arriba — la "pildorita" iOS. No es draggable
+   real pero comunica la affordance de "tirar para cerrar". */
+.sheetHandle {
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin: 10px auto 6px;
+  background: rgba(231, 206, 142, 0.5);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-3);
+  border-bottom: 1px solid rgba(231, 206, 142, 0.25);
+  flex-shrink: 0;
+}
+
+.sheetTitle {
+  margin: 0;
+  font-family: var(--font-stack-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  color: var(--color-dorado-suave);
+  letter-spacing: -0.01em;
+}
+
+.sheetClose {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(231, 206, 142, 0.35);
+  border-radius: 50%;
+  color: var(--color-blanco-calido);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sheetClose:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.sheetClose:active {
+  transform: scale(0.9);
+  transition-duration: 80ms;
+}
+
+.sheetBody {
+  padding: var(--space-4);
+  overflow-y: auto;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-blanco-calido);
+  -webkit-overflow-scrolling: touch;
+  /* Texto legal — el usuario tiene derecho a copiarlo. */
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+.sheetBody::-webkit-scrollbar {
+  width: 0;
+}
+
+.sheetBody h1,
+.sheetBody h2,
+.sheetBody h3 {
   font-family: var(--font-stack-display);
   font-style: italic;
   color: var(--color-dorado-suave);
   margin: var(--space-4) 0 var(--space-2);
 }
 
-.fullText h1 {
+.sheetBody h1 {
   font-size: var(--font-size-lg);
 }
-.fullText h2 {
+.sheetBody h2 {
   font-size: var(--font-size-md);
 }
-.fullText h3 {
+.sheetBody h3 {
   font-size: var(--font-size-base);
 }
 
-.fullText p {
+.sheetBody p {
   margin: 0 0 var(--space-3);
 }
 
-.fullText ul {
+.sheetBody ul {
   margin: 0 0 var(--space-3);
   padding-left: var(--space-5);
 }
 
-.fullText li {
+.sheetBody li {
   margin-bottom: var(--space-2);
 }
 
-.fullText a {
+.sheetBody a {
   color: var(--color-dorado-suave);
   text-decoration-color: rgba(231, 206, 142, 0.5);
 }
 
-.fullText hr {
+.sheetBody hr {
   border: 0;
   border-top: 1px solid rgba(231, 206, 142, 0.3);
   margin: var(--space-4) 0;
 }
 
-.fullText strong {
+.sheetBody strong {
   color: var(--color-blanco-calido);
   font-weight: 600;
 }
 
-.fullText em {
+.sheetBody em {
   font-style: italic;
   color: rgba(251, 247, 236, 0.85);
 }
@@ -332,11 +469,16 @@
 @media (prefers-reduced-motion: reduce) {
   .root,
   .sun,
-  .detailsChevron {
+  .sheet,
+  .sheetInner,
+  .sheetClose,
+  .openSheet {
     animation: none;
     transition: none;
   }
-  .acceptButton:active {
+  .acceptButton:active,
+  .openSheet:active,
+  .sheetClose:active {
     transform: none;
   }
 }

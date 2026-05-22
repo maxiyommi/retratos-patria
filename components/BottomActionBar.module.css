@@ -1,35 +1,64 @@
+/*
+ * BottomActionBar — barra fija al pie del viewport, estilo tab-bar nativa.
+ *
+ * - position: fixed (no sticky) — siempre visible aunque el contenido
+ *   scrollee. Da la sensación de "barra de sistema" del SO, no de un
+ *   elemento que aparece y desaparece.
+ * - Altura interior FIJA (--bar-content-h: 60px) más safe-area-inset-bottom
+ *   abajo. Total constante en todos los steps.
+ * - Inner centrado con max-width: var(--max-width-content) para que el
+ *   contenido se alinee con el shell de AppFlow aunque la bar misma
+ *   se extienda full-viewport-width.
+ */
+
 .root {
-  /*
-   * Saca al elemento del flow normal y lo planta al pie del .shell de
-   * AppFlow. Margen negativo lateral para que el blur llegue al borde
-   * del viewport.
-   */
-  position: sticky;
+  --bar-content-h: 60px;
+
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 6;
-  margin: 0 calc(-1 * var(--space-5));
-  padding: var(--space-4) var(--space-5);
-  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  /*
+   * La bar vive dentro del .step (lo renderean Camera/Choose/etc.) pero
+   * el .step tiene view-transition-name: step-content, así que la bar
+   * sería capturada como parte del step y arrastrada con el slide. Le
+   * damos su propio view-transition-name para que la browser la trate
+   * como una capa separada: el step slidea, la bar permanece quieta y
+   * sólo crossfadea entre estados.
+   */
+  view-transition-name: bottom-bar;
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(
     to top,
-    rgba(91, 158, 206, 0.95) 35%,
-    rgba(91, 158, 206, 0.65) 100%
+    rgba(31, 80, 114, 0.96) 0%,
+    rgba(31, 80, 114, 0.82) 100%
   );
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border-top: 1px solid rgba(231, 206, 142, 0.4);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-top: 1px solid rgba(231, 206, 142, 0.35);
   /* Hilo dorado finísimo arriba — guiño al pan de oro del marco. */
-  box-shadow: inset 0 1px 0 rgba(231, 206, 142, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(231, 206, 142, 0.2),
+    0 -8px 24px rgba(15, 38, 60, 0.25);
 }
 
 .inner {
+  /* Centrado horizontal y limitado al mismo max-width que el shell del
+     AppFlow, así los botones quedan alineados al contenido por encima. */
+  max-width: var(--max-width-content);
+  margin: 0 auto;
   display: flex;
   gap: var(--space-3);
-  align-items: stretch;
+  align-items: center;
+  /* Altura fija del área de contenido — todos los steps son iguales. */
+  min-height: var(--bar-content-h);
 }
 
-.inner > * {
-  flex: 1;
-}
+/*
+ * Sin universal `flex: 1` acá: cada consumer (CTA, back, cancel, etc.)
+ * declara su propio flex. Antes había `.inner > * { flex: 1 }` que ganaba
+ * por especificidad contra los `flex: 0 0 auto` de los botones secundarios
+ * y los estiraba.
+ */

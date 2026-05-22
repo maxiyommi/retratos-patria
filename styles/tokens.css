@@ -99,4 +99,13 @@
   /* ── Layout ──────────────────────────────────────────────────────────── */
   --max-width-content: 28rem;   /* ~448px — mobile-first, una columna */
   --target-min-tap: 2.75rem;    /* 44px mínimo para botones tactiles */
+  /*
+   * Altura total de la BottomActionBar (padding superior + content +
+   * padding inferior, sin contar safe-area). Cualquier step que use la
+   * bar reserva este espacio abajo con padding-bottom para que el
+   * contenido no quede tapado por la bar fija.
+   *
+   * Cálculo: space-3 (12) + content 60 + space-3 (12) = 84px.
+   */
+  --bottom-bar-h: 5.25rem;      /* 84px */
 }

@@ -5,7 +5,7 @@
  *
  * Vive en el chrome celeste. Determina, junto con el personaje elegido en
  * CharacterPicker, qué retrato genera Gemini ("Dama porteña" vs "Caballero
- * porteño", "Dama soldada" vs "Caballero soldado", etc.).
+ * porteño", "Patricia de Buenos Aires" vs "Patricio de Buenos Aires", etc.).
  *
  * La pastilla blanca se desliza entre las dos opciones; el texto activo
  * pasa a celeste-tinta para contraste.

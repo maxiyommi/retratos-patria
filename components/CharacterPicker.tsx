@@ -83,11 +83,15 @@ function CharacterIcon({ id }: { id: CharacterId }) {
     case "porteno":
       return <PeinetonIcon />;
     case "patriota":
-      return <TricornioIcon />;
+      return <EscarapelaIcon />;
     case "vendedor":
       return <CanastoIcon />;
-    case "soldado":
+    case "patricio":
       return <MorrionIcon />;
+    case "gaucho":
+      return <SombreroAludoIcon />;
+    case "aguatero":
+      return <BarrilIcon />;
   }
 }
 
@@ -118,17 +122,26 @@ function PeinetonIcon() {
   );
 }
 
-function TricornioIcon() {
-  // Tricornio con escarapela celeste/blanca al frente.
+function EscarapelaIcon() {
+  // Escarapela argentina — cocarda celeste/blanca/celeste, símbolo directo
+  // del Patriota de Mayo. Anillos concéntricos + dos cintas cayendo abajo.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
-      <path
-        fill="currentColor"
-        d="M 8 42 L 22 16 L 32 20 L 42 16 L 56 42 Q 56 50 48 50 L 16 50 Q 8 50 8 42 Z"
-      />
-      {/* Escarapela celeste/blanca en la copa central */}
-      <circle cx="32" cy="32" r="4.5" fill="#5b9ece" />
-      <circle cx="32" cy="32" r="2.3" fill="#fbf7ec" />
+      {/* Cintas/colas cayendo detrás del disco — sugieren la cocarda prendida */}
+      <g fill="#5b9ece">
+        <path d="M 22 36 L 18 58 L 26 54 L 28 38 Z" />
+        <path d="M 42 36 L 46 58 L 38 54 L 36 38 Z" />
+      </g>
+      <g fill="#fbf7ec">
+        <path d="M 26 38 L 22 58 L 26 56 L 28 40 Z" opacity="0.85" />
+        <path d="M 38 38 L 42 58 L 38 56 L 36 40 Z" opacity="0.85" />
+      </g>
+      {/* Disco principal con anillos concéntricos */}
+      <circle cx="32" cy="28" r="18" fill="#5b9ece" />
+      <circle cx="32" cy="28" r="12" fill="#fbf7ec" />
+      <circle cx="32" cy="28" r="6" fill="#5b9ece" />
+      {/* Pliegue / botón central pequeño con currentColor para "anclar" al rol */}
+      <circle cx="32" cy="28" r="2" fill="currentColor" />
     </svg>
   );
 }
@@ -164,23 +177,106 @@ function CanastoIcon() {
 }
 
 function MorrionIcon() {
-  // Morrión con escarapela celeste/blanca prominente al frente.
+  // Galera histórica del Regimiento de Patricios: copa negra de altura
+  // moderada con ligera curva en las caras, ala ancha levemente
+  // curvada, PLUMA BLANCA alta saliendo desde el frente, ESCARAPELA
+  // ROJA con detalle blanco al pie de la pluma y una gota/lágrima
+  // blanca cayendo desde la cocarda hacia el ala. Referencia: foto
+  // del usuario del original museístico.
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
-      {/* Cuerpo del morrión */}
+      {/* Pluma blanca alta detrás de la copa, con barbas sugeridas. */}
+      <path
+        fill="#fbf7ec"
+        d="M 33 3 Q 29 12 30 22 Q 30 28 33 32 Q 36 28 36 22 Q 37 12 33 3 Z"
+      />
+      <g stroke="#d9c98f" strokeWidth="0.6" strokeLinecap="round" fill="none" opacity="0.7">
+        <path d="M 33 7 L 30 10" />
+        <path d="M 33 11 L 29 14" />
+        <path d="M 33 16 L 29 19" />
+        <path d="M 33 21 L 30 24" />
+        <path d="M 33 7 L 36 10" />
+        <path d="M 33 11 L 37 14" />
+        <path d="M 33 16 L 37 19" />
+        <path d="M 33 21 L 36 24" />
+      </g>
+
+      {/* Copa de la galera — rectángulo con leve curvatura en los lados. */}
       <path
         fill="currentColor"
-        d="M 24 10 L 22 44 Q 22 48 26 48 L 38 48 Q 42 48 42 44 L 40 10 Z"
+        d="M 22 20 Q 22 18 25 18 L 39 18 Q 42 18 42 20 L 41 44 Q 41 46 32 46 Q 23 46 23 44 Z"
       />
-      {/* Visera */}
+
+      {/* Cinta oscura sutil en la base de la copa, justo arriba del ala. */}
+      <rect x="22.5" y="42" width="19" height="2" fill="#1f1108" opacity="0.55" />
+
+      {/* Ala curvada hacia arriba en los extremos — el clásico "ala
+          recogida" de la galera de Patricios. */}
       <path
         fill="currentColor"
-        d="M 16 48 L 48 48 L 44 56 L 20 56 Z"
+        d="M 10 47 Q 32 53 54 47 Q 50 50 32 50 Q 14 50 10 47 Z"
       />
-      {/* Escarapela celeste/blanca grande al frente */}
-      <circle cx="32" cy="26" r="5.5" fill="#5b9ece" />
-      <circle cx="32" cy="26" r="2.8" fill="#fbf7ec" />
-      <circle cx="32" cy="26" r="1.2" fill="#5b9ece" />
+
+      {/* Escarapela ROJA con anillo blanco al frente de la copa, justo
+          al pie de la pluma. */}
+      <circle cx="32" cy="28" r="5" fill="#c8412c" />
+      <circle cx="32" cy="28" r="2" fill="#fbf7ec" />
+
+      {/* Lágrima/gota blanca cayendo desde la escarapela hacia el ala
+          — el ornamento característico que se ve en la foto. */}
+      <path
+        fill="#fbf7ec"
+        d="M 32 33 Q 28 38 30 42 Q 32 44 34 42 Q 36 38 32 33 Z"
+      />
+    </svg>
+  );
+}
+
+function SombreroAludoIcon() {
+  // Sombrero gauchesco de ala ancha con barbijo bajo el mentón.
+  return (
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
+      {/* Ala ancha del sombrero */}
+      <ellipse cx="32" cy="36" rx="26" ry="6" fill="currentColor" />
+      {/* Copa baja */}
+      <path
+        fill="currentColor"
+        d="M 20 36 Q 20 18 32 18 Q 44 18 44 36 Z"
+      />
+      {/* Cinta de la copa */}
+      <rect x="20" y="32" width="24" height="3" fill="#efe1bf" opacity="0.85" />
+      {/* Barbijo cayendo bajo el ala */}
+      <g stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none">
+        <path d="M 14 38 Q 18 52 28 58" />
+        <path d="M 50 38 Q 46 52 36 58" />
+      </g>
+    </svg>
+  );
+}
+
+function BarrilIcon() {
+  // Barril de madera con aros metálicos — emblema del aguatero porteño.
+  return (
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={styles.icon} aria-hidden>
+      {/* Cuerpo del barril (forma abombada) */}
+      <path
+        fill="currentColor"
+        d="M 18 12 L 46 12 Q 54 32 46 52 L 18 52 Q 10 32 18 12 Z"
+      />
+      {/* Duelas verticales sugeridas */}
+      <g stroke="#efe1bf" strokeWidth="1.2" fill="none" opacity="0.55">
+        <path d="M 26 14 Q 24 32 26 50" />
+        <path d="M 32 13 V 51" />
+        <path d="M 38 14 Q 40 32 38 50" />
+      </g>
+      {/* Aros metálicos: superior, medio y inferior */}
+      <g stroke="#efe1bf" strokeWidth="2.6" fill="none" strokeLinecap="round">
+        <path d="M 17 16 L 47 16" />
+        <path d="M 13 32 L 51 32" />
+        <path d="M 17 48 L 47 48" />
+      </g>
+      {/* Tapón / orificio de servicio arriba */}
+      <circle cx="32" cy="16" r="2" fill="#efe1bf" opacity="0.85" />
     </svg>
   );
 }

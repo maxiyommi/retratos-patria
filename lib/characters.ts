@@ -1,13 +1,18 @@
 /*
- * characters.ts — fuente única de verdad de los 4 personajes.
+ * characters.ts — fuente única de verdad de los 6 personajes.
  *
  * Cada personaje es un ROL neutro respecto al género (porteño/a, patriota,
- * vendedor/a, soldado/a). El género (dama/caballero) lo elige aparte el
- * usuario con el GenderToggle. La combinación rol × género da:
+ * vendedor/a, patricio/a, gaucho/a, aguatero/a). El género (dama/caballero)
+ * lo elige aparte el usuario con el GenderToggle. La combinación rol ×
+ * género da:
  *  - el nombre completo que se muestra en la cartela del retrato
  *  - el prompt específico que se manda a Gemini con la foto del usuario
  *
  * Reglas que TODOS los prompts respetan:
+ *  - ANCLA HISTÓRICA: Buenos Aires colonial, Virreinato del Río de la Plata,
+ *    año 1810, alrededor de la Revolución de Mayo. Sin elementos de épocas
+ *    posteriores (Confederación, fines del XIX, presente). Sin elementos de
+ *    otras geografías coloniales (Lima, México, Cuzco).
  *  - Conservar exactamente los rasgos faciales (rostro, edad, expresión,
  *    complexión). NO modificar el cuerpo ni la edad. Sólo agregar
  *    indumentaria y fondo de época.
@@ -22,7 +27,13 @@
 
 import type { Gender } from "@/components/GenderToggle";
 
-export type CharacterId = "porteno" | "patriota" | "vendedor" | "soldado";
+export type CharacterId =
+  | "porteno"
+  | "patriota"
+  | "vendedor"
+  | "patricio"
+  | "gaucho"
+  | "aguatero";
 
 export interface Character {
   id: CharacterId;
@@ -60,7 +71,12 @@ export interface Character {
  * 4. Estilo pictórico y safety como cierre.
  */
 
-const PROMPT_INTRO = `Esta fotografía muestra a una persona específica. Tu tarea: crear un retrato al óleo de ESA MISMA PERSONA, reconocible, vestida con indumentaria de la Buenos Aires colonial de 1810.
+const PROMPT_INTRO = `Esta fotografía muestra a una persona específica. Tu tarea: crear un retrato al óleo de ESA MISMA PERSONA, reconocible, caracterizada como un personaje específico de la BUENOS AIRES COLONIAL DE 1810 — Virreinato del Río de la Plata, alrededor de la Revolución de Mayo.
+
+ANCLA HISTÓRICA (no negociable):
+- Año: 1810 exclusivamente. NO usar moda ni objetos de épocas posteriores (Restauración rosista, Confederación, fines del siglo XIX, presente). NO usar elementos modernos (relojes pulsera, anteojos, ropa contemporánea, electrónica).
+- Lugar: BUENOS AIRES y el Río de la Plata. NO usar referencias visuales de otras geografías coloniales (Lima, Cuzco, México colonial, España peninsular): la indumentaria, los accesorios y el clima visual son rioplatenses.
+- Estética: retrato al óleo colonial rioplatense del temprano siglo XIX.
 
 PRESERVACIÓN DEL ROSTRO — lo más importante de toda la instrucción:
 La cara del retrato debe verse exactamente igual a la de la foto original. Conservá rigurosamente: la forma del rostro y la estructura ósea (mandíbula, mejillas, frente), la forma y el color de los ojos, la forma y el tamaño de la nariz, la forma de la boca y los labios, el arco y la posición de las cejas, el tono y la textura de la piel, la edad aparente de la persona, la expresión facial, el color y la textura del cabello, y cualquier marca distintiva (lunares, pecas, cicatrices). Alguien que conoce a la persona debe poder identificarla al instante en el retrato. La FIDELIDAD al original es más valiosa que la estética: no idealices, no embellezcas, no suavices arrugas, no rejuvenezcas ni envejezcas, no cambies proporciones, no agregues maquillaje que altere los rasgos.
@@ -106,48 +122,72 @@ export const CHARACTERS: Character[] = [
     id: "porteno",
     nombreDama: "Dama porteña",
     nombreCaballero: "Caballero porteño",
-    descripcionCorta: "vestimenta de sociedad porteña",
+    descripcionCorta: "Salones y tertulias",
     promptDama: buildPrompt(
-      `Vestir como dama porteña de sociedad de 1810. Vestido de talle alto al estilo Imperio, en muselina o seda clara, con bordados sutiles en el corpiño. Peinetón alto de carey sobre el cabello recogido. Mantilla de encaje sobre los hombros. Aros de perla pequeños. Manos serenas. Postura recta y digna.`
+      `Vestir como DAMA PORTEÑA de sociedad de Buenos Aires en 1810, propia de los salones y tertulias del Virreinato del Río de la Plata. Vestido de talle alto al estilo Imperio (moda francesa adoptada por la elite porteña de la época), en muselina o seda clara, con bordados sutiles en el corpiño. Peinetón alto de carey sobre el cabello recogido — accesorio emblemático de la mujer porteña de 1810. Mantilla de encaje sobre los hombros. Aros de perla pequeños. Manos serenas. Postura recta y digna.`
     ),
     promptCaballero: buildPrompt(
-      `Vestir como caballero porteño de sociedad de 1810. Casaca oscura de paño con solapas anchas, chaleco bordado color crema o vino, camisa blanca con jabot (chorrera de encaje) en el cuello. Pelo peinado hacia atrás o con coleta atada. Posiblemente un anillo o reloj de cadena. Postura erguida y serena.`
+      `Vestir como CABALLERO PORTEÑO de sociedad de Buenos Aires en 1810, propio de los salones y tertulias del Virreinato del Río de la Plata. Casaca oscura de paño con solapas anchas, chaleco bordado color crema o vino, camisa blanca con jabot (chorrera de encaje) en el cuello — moda francesa adoptada por la elite porteña de la época. Pelo peinado hacia atrás o con coleta atada. Posiblemente un anillo o reloj de bolsillo con cadena (NO reloj pulsera, que es del siglo XX). Postura erguida y serena.`
     ),
   },
   {
     id: "patriota",
     nombreDama: "Dama patriota",
     nombreCaballero: "Caballero patriota",
-    descripcionCorta: "casaca azul y tricornio de Mayo",
+    descripcionCorta: "Revolución de Mayo",
     promptDama: buildPrompt(
-      `Vestir como mujer patriota de la Revolución de Mayo de 1810. Vestido oscuro de paño con detalles bordados, mantilla de encaje, escarapela celeste y blanca prendida sobre el corazón. Cabello recogido con peinetón. Expresión decidida y solemne. Una mano puede sostener un pequeño rollo o pergamino sugerido.`
+      `Vestir como MUJER PATRIOTA de la Revolución de Mayo en Buenos Aires, 1810 — partidaria civil de la causa de la Primera Junta. Vestido oscuro de paño con detalles bordados, mantilla de encaje sobre los hombros, escarapela CELESTE Y BLANCA (símbolo de la Revolución de Mayo, adoptada por las patriotas porteñas) prendida sobre el corazón. Cabello recogido con peinetón porteño. Expresión decidida y solemne. Una mano puede sostener un pequeño rollo o pergamino sugerido (proclama de la Junta).`
     ),
     promptCaballero: buildPrompt(
-      `Vestir como caballero patriota de la Revolución de Mayo de 1810. Casaca azul oscuro con cuello alto bordado en dorado, charreteras o galones discretos, camisa blanca con jabot en el cuello, escarapela celeste y blanca prendida sobre el pecho. Sombrero tricornio sobre la cabeza o sostenido en una mano. Postura noble, mirada firme.`
+      `Vestir como CABALLERO PATRIOTA de la Revolución de Mayo en Buenos Aires, 1810 — partidario civil de la causa de la Primera Junta. Casaca azul oscuro con cuello alto bordado en dorado, charreteras o galones discretos, camisa blanca con jabot en el cuello, escarapela CELESTE Y BLANCA (símbolo de la Revolución de Mayo) prendida sobre el pecho. Sombrero tricornio sobre la cabeza o sostenido en una mano. Postura noble, mirada firme. NO confundir con uniforme militar: es indumentaria civil del cabildante o vecino patriota porteño.`
     ),
   },
   {
     id: "vendedor",
     nombreDama: "Vendedora ambulante",
     nombreCaballero: "Vendedor ambulante",
-    descripcionCorta: "poncho, sombrero y canasto",
+    descripcionCorta: "Calle porteña",
     promptDama: buildPrompt(
-      `Vestir como vendedora ambulante porteña de 1810, oficio popular del Río de la Plata. Vestido sencillo de paño marrón o crudo, delantal blanco modesto, pañuelo en la cabeza. Cesto o canasto de mimbre apoyado sobre el hombro o el costado, con panes, frutas o atados de yerba asomando. Expresión cálida y franca, propia de la calle.`
+      `Vestir como VENDEDORA AMBULANTE PORTEÑA de Buenos Aires en 1810, oficio popular de las calles empedradas del Río de la Plata (calles del centro porteño, alrededor de la Plaza de la Victoria / Plaza Mayor). Vestido sencillo de paño marrón o crudo, delantal blanco modesto, pañuelo atado a la cabeza. Cesto o canasto de mimbre apoyado sobre el hombro o el costado, con panes, frutas locales o atados de yerba mate asomando. Expresión cálida y franca, propia del trato cotidiano del barrio porteño.`
     ),
     promptCaballero: buildPrompt(
-      `Vestir como vendedor ambulante porteño de 1810, oficio popular del Río de la Plata. Camisa blanca holgada con chaleco de paño marrón, poncho cruzado sobre el hombro, pañuelo en el cuello, sombrero de paja o de ala ancha. Canasto de mimbre o atado de productos (panes, yerba) en una mano o al hombro. Expresión franca, propia de la calle.`
+      `Vestir como VENDEDOR AMBULANTE PORTEÑO de Buenos Aires en 1810, oficio popular de las calles empedradas del Río de la Plata. Camisa blanca holgada con chaleco de paño marrón, poncho rioplatense cruzado sobre el hombro, pañuelo en el cuello, sombrero de paja o de ala ancha de la época. Canasto de mimbre o atado de productos (panes, yerba mate) en una mano o al hombro. Expresión franca, propia del trato cotidiano del barrio porteño.`
     ),
   },
   {
-    id: "soldado",
-    nombreDama: "Soldada de la Patria",
-    nombreCaballero: "Soldado de la Patria",
-    descripcionCorta: "morrión, escarapela y fusil",
+    id: "patricio",
+    nombreDama: "Patricia de Buenos Aires",
+    nombreCaballero: "Patricio de Buenos Aires",
+    descripcionCorta: "Regimiento de Patricios",
     promptDama: buildPrompt(
-      `Vestir como soldada de la Patria de 1810, en honor a las mujeres que combatieron en la independencia (por ejemplo, Juana Azurduy). Casaca militar azul oscuro con vivos celestes y blancos, charreteras doradas, camisa blanca debajo. Cabello recogido o con sombrero. Escarapela celeste y blanca prominente. Si entra naturalmente, sostiene un sable o un fusil con la culata apoyada. Postura militar firme y digna.`
+      `Vestir con el uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES de 1810 — el cuerpo militar fundado en 1806 durante las Invasiones Inglesas y eje de la Revolución de Mayo (cuerpo del que Cornelio Saavedra fue comandante). El uniforme es el del cuerpo, vestido por una mujer en honor a quienes apoyaron la causa patriota: casaca azul oscuro hasta la cintura con cuello, solapas y vueltas blancas y botones dorados; chaleco blanco debajo; pantalón blanco hasta la rodilla con botines o polainas negras; bandolera blanca cruzada sobre el pecho. GALERA NEGRA de copa moderada (no shako alto), con ala ligeramente recogida, una PLUMA BLANCA alta saliendo del frente, una ESCARAPELA ROJA con detalle blanco al pie de la pluma y una pequeña lágrima/gota blanca de adorno bajando hacia el ala. Cabello recogido bajo la galera. Si entra naturalmente, sostiene un sable al cinto o un fusil de chispa apoyado en la culata. Postura militar firme y digna. NO usar uniformes de épocas posteriores (granaderos de San Martín, Confederación, ejército moderno).`
     ),
     promptCaballero: buildPrompt(
-      `Vestir como soldado de la Patria de 1810, miembro de las milicias patriotas. Casaca militar azul oscuro con vivos celestes y blancos, charreteras doradas, camisa blanca debajo. Morrión negro o tipo casco con escarapela celeste y blanca prominente al frente, posiblemente con un penacho. Si entra naturalmente, sostiene un fusil con la culata apoyada o un sable al cinto. Postura militar firme y digna.`
+      `Vestir con el uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES de 1810 — el cuerpo militar fundado en 1806 durante las Invasiones Inglesas y eje de la Revolución de Mayo (cuerpo del que Cornelio Saavedra fue comandante). Casaca azul oscuro hasta la cintura con cuello, solapas y vueltas blancas y botones dorados; chaleco blanco debajo; pantalón blanco hasta la rodilla con botines o polainas negras; bandolera blanca cruzada sobre el pecho. GALERA NEGRA de copa moderada (no shako alto), con ala ligeramente recogida, una PLUMA BLANCA alta saliendo del frente, una ESCARAPELA ROJA con detalle blanco al pie de la pluma y una pequeña lágrima/gota blanca de adorno bajando hacia el ala. Si entra naturalmente, fusil de chispa al hombro, sable al cinto o ambos. Postura militar firme, mirada decidida. NO usar uniformes de épocas posteriores (granaderos de San Martín, Confederación, ejército moderno).`
+    ),
+  },
+  {
+    id: "gaucho",
+    nombreDama: "Gaucha del campo",
+    nombreCaballero: "Gaucho del campo",
+    descripcionCorta: "Pampa rioplatense",
+    promptDama: buildPrompt(
+      `Vestir como GAUCHA o PAISANA del campo rioplatense en 1810 — la pampa bonaerense, Virreinato del Río de la Plata. Blusa blanca de algodón con escote modesto, falda larga oscura de paño, chal o pañoleta cruzada sobre el pecho, pañuelo atado a la cabeza o sombrero de paja con barbijo. Botas de potro o alpargatas. Si entra naturalmente, sostiene un mate de calabaza con bombilla en la mano (costumbre rioplatense). Postura serena, mirada franca, propia de la vida en la pampa.`
+    ),
+    promptCaballero: buildPrompt(
+      `Vestir como GAUCHO del campo rioplatense en 1810, paisano de la pampa bonaerense (Virreinato del Río de la Plata). Indumentaria gauchesca histórica: camisa blanca o crudo de algodón holgada, chiripá de paño oscuro sobre las piernas (NO pantalón europeo), faja ancha colorada en la cintura, poncho de lana cruzado sobre un hombro (tonos tierra, vino o gris). Sombrero aludo de copa baja con barbijo bajo el mentón, botas de potro o de cuero. Si entra naturalmente, facón al cinto en la espalda. Mirada franca y reservada, postura firme y descansada.`
+    ),
+  },
+  {
+    id: "aguatero",
+    nombreDama: "Aguatera porteña",
+    nombreCaballero: "Aguatero porteño",
+    descripcionCorta: "Oficio del río",
+    promptDama: buildPrompt(
+      `Vestir como AGUATERA PORTEÑA de Buenos Aires en 1810 — oficio popular de la ciudad colonial anterior al agua corriente, característica del Río de la Plata. Vestido sencillo de paño oscuro, delantal de tela cruda, pañuelo atado a la cabeza, mantón sobre los hombros. Manos trabajadas. Si entra naturalmente, un cántaro de barro o un pequeño barril de madera con aros oscuros apoyado en la cadera o el hombro. Expresión digna y serena, propia del trabajo cotidiano del barrio porteño.`
+    ),
+    promptCaballero: buildPrompt(
+      `Vestir como AGUATERO PORTEÑO de Buenos Aires en 1810 — oficio popular de la ciudad colonial anterior al agua corriente: el que cargaba agua del Río de la Plata en barriles y la repartía casa por casa por las calles empedradas. Camisa blanca de algodón holgada, chaleco de paño marrón o gris, pantalón ancho hasta la pantorrilla, faja en la cintura, pañuelo al cuello, sombrero de ala ancha. Botas o alpargatas. Si entra naturalmente, sostiene un barril de madera con aros metálicos al hombro o una jarra de barro. Expresión franca y trabajadora.`
     ),
   },
 ];
@@ -174,7 +214,9 @@ const SHORT_LABELS: Record<CharacterId, { dama: string; caballero: string }> = {
   porteno: { dama: "Porteña", caballero: "Porteño" },
   patriota: { dama: "Patriota", caballero: "Patriota" },
   vendedor: { dama: "Vendedora", caballero: "Vendedor" },
-  soldado: { dama: "Soldada", caballero: "Soldado" },
+  patricio: { dama: "Patricia", caballero: "Patricio" },
+  gaucho: { dama: "Gaucha", caballero: "Gaucho" },
+  aguatero: { dama: "Aguatera", caballero: "Aguatero" },
 };
 
 export function getShortLabel(c: Character, gender: Gender): string {

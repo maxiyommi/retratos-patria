@@ -18,12 +18,32 @@ const ebGaramond = EB_Garamond({
   display: "swap",
 });
 
+const SITE_URL = "https://retratos-patria.vercel.app";
+const SITE_TITLE = "Retratos de la Patria";
+const SITE_DESCRIPTION =
+  "Sacate una foto y mirate como una figura de la Buenos Aires colonial de 1810. Webapp educativa, gratuita y de código abierto.";
+
 export const metadata: Metadata = {
-  title: "Retratos de la Patria",
-  description:
-    "Webapp educativa: retratá tu cara como una figura de la Buenos Aires colonial de 1810.",
+  // metadataBase resuelve URLs relativas (como /opengraph-image) a URLs
+  // absolutas, que es lo que las redes sociales necesitan para previsualizar.
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   manifest: "/manifest.webmanifest",
-  applicationName: "Retratos de la Patria",
+  applicationName: SITE_TITLE,
+  authors: [{ name: "Maximiliano Yommi", url: "https://www.linkedin.com/in/maximilianoyommi/" }],
+  creator: "Maximiliano Yommi",
+  publisher: "Maximiliano Yommi",
+  keywords: [
+    "Semana de Mayo",
+    "Revolución de Mayo",
+    "1810",
+    "Buenos Aires colonial",
+    "retrato IA",
+    "educación",
+    "Argentina",
+    "código abierto",
+  ],
   appleWebApp: {
     capable: true,
     title: "Retratos 1810",
@@ -37,6 +57,26 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
+  /*
+   * OpenGraph + Twitter Card: lo que WhatsApp, Telegram, iMessage, Slack,
+   * Twitter/X, LinkedIn, Facebook y Discord usan para construir el preview
+   * cuando se comparte el link. La imagen la genera app/opengraph-image.tsx
+   * vía next/og — Next la sirve automáticamente bajo /opengraph-image y
+   * la inyecta en og:image y twitter:image.
+   */
+  openGraph: {
+    type: "website",
+    locale: "es_AR",
+    url: SITE_URL,
+    siteName: SITE_TITLE,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
   // Next 16 sólo emite `mobile-web-app-capable`, pero iOS Safari históricamente
   // requiere `apple-mobile-web-app-capable` para abrir en modo standalone

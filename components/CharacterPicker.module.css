@@ -1,17 +1,24 @@
 /*
- * CharacterPicker.module.css — lista vertical estilo iOS Settings.
+ * CharacterPicker.module.css — grilla 2×3 minimalista estilo iOS lock-screen
+ * picker / Apple TV "Who's Watching".
  *
- * Las filas viven en el chrome (blanco cálido sobre celeste). La única
- * cita al mundo 1810 es el círculo pergamino que aloja el ícono — un
- * detalle puntual, no decoración global.
+ * Cada tile es una superficie de vidrio esmerilado (rgba blanco + backdrop
+ * blur). Sin borde visible en idle. El ícono se renderiza directo sobre la
+ * tile, sin "ventanita" pergamino — una sola capa visual.
+ *
+ * Estado seleccionado: la tile se llena de blanco cálido, el ícono pasa a
+ * celeste tinta, el nombre pasa a celeste profundo. La selección "ilumina"
+ * la tile en vez de "encerrarla" con un borde — ese es el move Apple.
  */
 
 .list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* Gap más ajustado entre cards (era space-3) — la grilla se siente
+     más densa y las cards más chicas en relación. */
   gap: var(--space-2);
   width: 100%;
 }
@@ -20,33 +27,47 @@
   margin: 0;
 }
 
-/* ── Fila (cada personaje) ─────────────────────────────────────────── */
+/* ── Tile (cada personaje) ─────────────────────────────────────────── */
 
 .row {
+  position: relative;
   width: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  min-height: 72px;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  /* aspect-ratio 3:2 — cards más bajitas/compactas, manteniendo el mismo
+     contenido (ícono + nombre + descripción). Reduce el área visual sin
+     tocar el contenido. */
+  aspect-ratio: 3 / 2;
   border-radius: var(--radius-md);
-  background-color: var(--color-superficie);
-  border: 1.5px solid rgba(91, 158, 206, 0.25);
+  /* Vidrio esmerilado: rgba blanco translúcido + blur. Sobre el fondo
+     celeste del step "choose" da el aspecto material de iOS / Apple. */
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  /* Sombra moderna en dos capas: un "key" cercano que da peso + una capa
+     larga y suave tipo Stripe/Linear que sugiere elevación sobre el
+     fondo celeste. La sombra es tinta celeste para integrar con el
+     chrome, no negra (negro mancha el celeste). */
+  box-shadow:
+    0 1px 2px rgba(15, 38, 60, 0.16),
+    0 8px 20px -6px rgba(15, 38, 60, 0.22);
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   font-family: inherit;
-  color: var(--color-celeste-tinta);
-  box-shadow: var(--shadow-sm);
   /* GPU layer hint para que scale/shadow corran a 60fps en mobile. */
   will-change: transform, opacity;
   transition:
-    background-color 240ms var(--ease-out),
-    border-color 240ms var(--ease-out),
-    box-shadow 240ms var(--ease-out),
-    opacity 240ms var(--ease-out),
+    background-color 280ms var(--ease-out),
+    border-color 280ms var(--ease-out),
+    box-shadow 280ms var(--ease-out),
+    opacity 280ms var(--ease-out),
     transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* Entrada escalonada — las filas aparecen en cascada. */
+  /* Entrada escalonada — las tiles aparecen en cascada. */
   animation: row-in 380ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
@@ -54,14 +75,13 @@
 .item:nth-child(2) .row { animation-delay: 130ms; }
 .item:nth-child(3) .row { animation-delay: 200ms; }
 .item:nth-child(4) .row { animation-delay: 270ms; }
+.item:nth-child(5) .row { animation-delay: 340ms; }
+.item:nth-child(6) .row { animation-delay: 410ms; }
 
-.row:hover {
-  border-color: rgba(91, 158, 206, 0.55);
-  box-shadow: var(--shadow-md);
-}
-
+/* Halo blanco sutil al apretar — confirma el tap sin agregar borde permanente. */
 .row:active {
-  transform: scale(0.985);
+  transform: scale(0.96);
+  background-color: rgba(255, 255, 255, 0.2);
   transition-duration: 90ms;
 }
 
@@ -69,119 +89,119 @@
 
 .row[data-state="selected"] {
   background-color: var(--color-blanco-calido);
-  border-color: var(--color-dorado);
+  border-color: var(--color-dorado-suave);
+  /* Sombra elevada con calidez dorada — la card "se prende" y flota
+     un escalón por encima del resto. Capa cercana + capa larga + halo
+     dorado difuso para enmarcar sin agregar borde grueso. */
   box-shadow:
-    0 6px 20px rgba(201, 161, 74, 0.28),
-    0 2px 8px rgba(31, 80, 114, 0.15);
+    0 2px 6px rgba(201, 161, 74, 0.22),
+    0 14px 32px -8px rgba(201, 161, 74, 0.35),
+    0 0 0 1px rgba(201, 161, 74, 0.18);
 }
 
 .row[data-state="dim"] {
-  opacity: 0.5;
-  box-shadow: none;
-  border-color: rgba(91, 158, 206, 0.15);
+  opacity: 0.55;
 }
 
-.row[data-state="dim"]:hover {
-  opacity: 0.7;
+.row[data-state="dim"]:active {
+  opacity: 0.75;
 }
 
-/* ── Ventanita pergamino con el ícono ───────────────────────────── */
+/* ── Ícono — sin "ventanita" pergamino, directo sobre la tile ────── */
 
 .iconWindow {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 55%),
-    var(--color-pergamino);
-  color: var(--color-celeste-tinta);
-  box-shadow:
-    inset 0 0 0 1px rgba(107, 74, 43, 0.4),
-    inset 0 -2px 4px rgba(107, 74, 43, 0.2),
-    inset 0 2px 3px rgba(255, 255, 255, 0.55);
+  /* En idle el ícono es dorado-suave sobre el cristal celeste; al
+     seleccionar, pasa a celeste-tinta sobre el blanco cálido — invertimos
+     el contraste para que la tile elegida se sienta "encendida". */
+  color: var(--color-dorado-suave);
   flex-shrink: 0;
   transition:
-    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    color 240ms var(--ease-out),
-    box-shadow 240ms var(--ease-out);
+    transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 240ms var(--ease-out);
 }
 
 .row[data-state="selected"] .iconWindow {
-  color: var(--color-celeste-profundo);
-  transform: scale(1.04);
-  box-shadow:
-    inset 0 0 0 1px rgba(107, 74, 43, 0.55),
-    inset 0 -2px 4px rgba(107, 74, 43, 0.25),
-    inset 0 2px 3px rgba(255, 255, 255, 0.65),
-    0 0 0 3px rgba(231, 206, 142, 0.45);
+  color: var(--color-celeste-tinta);
+  transform: scale(1.08);
 }
 
 .icon {
-  width: 60%;
-  height: 60%;
+  width: 100%;
+  height: 100%;
   display: block;
+  /* Sombra muy sutil para separar el ícono del fondo translúcido. */
+  filter: drop-shadow(0 1px 2px rgba(31, 80, 114, 0.18));
+  transition: filter 240ms var(--ease-out);
 }
 
-/* ── Labels stack (nombre + descripción) ────────────────────────── */
+.row[data-state="selected"] .icon {
+  filter: none;
+}
+
+/* ── Nombre y descripción ─────────────────────────────────────── */
 
 .label {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
   min-width: 0;
+  width: 100%;
 }
 
 .name {
   font-family: var(--font-stack-display);
   font-style: italic;
   font-size: var(--font-size-md);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.1;
-  color: var(--color-celeste-tinta);
+  color: var(--color-blanco-calido);
   letter-spacing: var(--letter-spacing-tight);
+  transition: color 240ms var(--ease-out);
+  /* Asegurar que nombres largos no rompan la grilla. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .row[data-state="selected"] .name {
-  color: var(--color-celeste-profundo);
+  color: var(--color-celeste-tinta);
+  font-weight: 600;
 }
 
+/* Descripción muy breve — caption discreto debajo del nombre. */
 .description {
   font-family: var(--font-stack-body);
-  font-style: italic;
-  font-size: var(--font-size-sm);
-  line-height: 1.35;
-  color: var(--color-celeste-profundo);
-  opacity: 0.82;
+  font-size: var(--font-size-xs);
+  line-height: 1.25;
+  color: var(--color-blanco-calido);
+  opacity: 0.72;
+  letter-spacing: 0.01em;
+  /* Recortar si fuera más largo que la card. */
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
+  max-width: 100%;
+  transition: color 240ms var(--ease-out), opacity 240ms var(--ease-out);
 }
 
-/* ── Indicador derecho (chevron / check) ──────────────────────────── */
-
-.indicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
+.row[data-state="selected"] .description {
   color: var(--color-celeste-profundo);
-  opacity: 0.4;
-  transition:
-    color 240ms var(--ease-out),
-    opacity 240ms var(--ease-out),
-    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0.85;
 }
 
-.row[data-state="selected"] .indicator {
-  color: var(--color-dorado);
-  opacity: 1;
-  transform: scale(1.15);
+/* ── Indicador: invisible (Apple-style sin check badge) ─────────── */
+
+/* La selección se comunica por el fill de la tile y el cambio de color
+   del ícono y el nombre. No hace falta un badge encima — agrega ruido. */
+.indicator {
+  display: none;
 }
 
 /* ── Animaciones ─────────────────────────────────────────────────── */
@@ -200,13 +220,13 @@
 @media (prefers-reduced-motion: reduce) {
   .row,
   .iconWindow,
-  .indicator {
+  .icon,
+  .name {
     animation: none;
     transition: none;
   }
   .row:active,
-  .row[data-state="selected"] .iconWindow,
-  .row[data-state="selected"] .indicator {
+  .row[data-state="selected"] .iconWindow {
     transform: none;
   }
 }
