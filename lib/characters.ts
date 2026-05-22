@@ -188,7 +188,8 @@ FORMA Y TIPO:
 - ALTURA de la copa: MODERADA — un poco más alta que ancha, pero NO un sombrero de copa muy alto tipo Lincoln. La copa es contenida, modesta en alto, aproximadamente entre 14-18 cm de alto (la mitad o un poco más del ancho de la cabeza). NO es la copa altísima del top-hat victoriano; es más corta y compacta.
 - TOP / CORONA: redondeada, levemente domada o plana suave. NO un cilindro hueco con boca arriba, NO una boca abierta tipo shako.
 - LADOS de la copa: rectos verticales — NO un cilindro rígido de shako militar.
-- ALA: media. UN SOLO LADO DEL ALA SE LEVANTA / "COCKED UP" — específicamente el lado IZQUIERDO del wearer (el mismo costado donde está el adorno de escudete + pluma), que se prende hacia arriba contra la copa creando una silueta de "looped-up brim" típica de uniformes ceremoniales del siglo XIX. El otro lado (derecho del wearer) y el frente y la parte de atrás del ala se mantienen PLANOS al horizonte. NO es un ala plana entera, NO es un ala completamente curvada hacia arriba en los dos lados, NO es un sombrero "cowboy": es UN solo lado izquierdo del ala levantado contra la copa, el resto plano.
+- ALA: ANGOSTA Y CORTA — el ala sobresale poco de la copa, es estrecha (apenas un reborde alrededor de la base). NO es un ala media tipo gentleman top-hat, NO es ancha de cowboy.
+- UN SOLO LADO DEL ALA SE LEVANTA / "COCKED UP" — específicamente el lado IZQUIERDO del wearer (mismo costado del adorno), que se prende hacia arriba y queda PEGADO / CEÑIDO CONTRA LA COPA del sombrero, formando una solapa CORTA que no sobresale mucho. La solapa levantada es chica, apenas un reborde que se pliega contra la copa. El otro lado (derecho del wearer), el frente y la parte de atrás del ala se mantienen PLANOS al horizonte y angostos. NO es un ala plana entera, NO es un ala completamente curvada hacia arriba en los dos lados, NO es un sombrero "cowboy", NO es la solapa larga cocada de bicornio napoleónico: es UN solo lado izquierdo del ala CORTA, levantada y pegada contra la copa, el resto plano y angosto.
 - COLOR: ÍNTEGRAMENTE NEGRO de fieltro mate, de arriba a abajo, sin ninguna parte de otro color, sin cinta colorada, sin galones, sin bordes vivos. Sólo negro.
 
 ADORNO LATERAL DE LA GALERA (al costado izquierdo del wearer, lado derecho del observador en foto frontal):
@@ -215,7 +216,9 @@ RESTO DEL UNIFORME (elementos secundarios — todos obligatorios)
 A) CHAQUETA / CASACA
 - Color: AZUL MARINO oscuro (navy), paño grueso.
 - Largo: hasta la cadera/cintura.
-- Frente: estilo DOBLE PECHERA — DOS COLUMNAS PARALELAS VERTICALES de 7-8 BOTONES PLATEADOS / DE PELTRE cada una. **Las dos columnas están BIEN SEPARADAS / SPACED APART, cada una sobre el costado del pecho** (una a la izquierda, otra a la derecha — NO juntas al centro). El espacio entre ambas columnas es amplio, equivalente al ancho del esternón o más, dejando un panel azul liso vertical en el centro del pecho.
+- Frente: estilo DOBLE PECHERA — **EXACTAMENTE DOS COLUMNAS** PARALELAS VERTICALES de 7-8 BOTONES PLATEADOS / DE PELTRE cada una. Sólo DOS, nunca tres, nunca cuatro, nunca filas adicionales arriba o al costado. Sólo dos columnas paralelas, ni una más.
+- **Las dos columnas están BIEN SEPARADAS / SPACED APART, cada una sobre el costado del pecho** (una a la izquierda, otra a la derecha — NO juntas al centro). El espacio entre ambas columnas es amplio, equivalente al ancho del esternón o más, dejando un panel azul liso vertical en el centro del pecho.
+- ENTRE las dos columnas: NADA. No hay tercera columna, no hay botones adicionales, no hay condecoraciones, no hay galones cruzando horizontalmente, no hay alamares decorativos, no hay broches. Sólo el azul liso de la chaqueta entre las dos columnas verticales de botones.
 - ENTRE las dos columnas de botones NO hay solapa blanca, NO hay jabot, NO hay chaleco visible — es el azul liso de la chaqueta directamente, con los botones plateados a ambos costados.
 - CUELLO: ROJO ALTO Y PARADO (granate), llegando hasta la mandíbula. NO blanco, NO dorado.
 - **EN EL CUELLO ROJO van CUATRO (4) BOTONES PLATEADOS pequeños, dos a cada lado, en línea horizontal sobre la tela roja del cuello**, simulando un cierre frontal del cuello.
@@ -252,6 +255,8 @@ PROHIBIDO ABSOLUTAMENTE (lista exhaustiva de anti-patrones):
 - HOMBRERAS ROJAS, charreteras rojas, fleco rojo, sobrehombros rojos, o cualquier ornamento rojo en los hombros — NUNCA. Los hombros son sólo azul navy liso de la chaqueta.
 - Charreteras grandes doradas o galones dorados llamativos en los hombros.
 - Galera muy alta tipo top-hat victoriano de Lincoln — es de copa MODERADA, no extremadamente alta.
+- Ala / solapa de la galera ANCHA o LARGA — el ala es ANGOSTA y la solapa cocada del costado izquierdo es CORTA, pegada a la copa. NUNCA un ala larga cocada tipo bicornio napoleónico, NUNCA un ala media-ancha estilo cowboy o gaucho.
+- Más de dos columnas de botones en la chaqueta — son SIEMPRE exactamente DOS, ni más ni menos. NO una tercera columna central, NO botones agregados arriba o en los costados, NO galones, NO alamares decorativos, NO condecoraciones cruzando el pecho.
 - Cuello blanco o dorado en lugar de ROJO.
 - Uniforme de granaderos de San Martín (1812+ — casaca con plastrón rojo distinto), Confederación, ejército argentino moderno, traje militar de fines del XIX.
 
