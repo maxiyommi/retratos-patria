@@ -173,7 +173,7 @@ export const CHARACTERS: Character[] = [
       `Uniforme histórico del REGIMIENTO DE PATRICIOS DE BUENOS AIRES (versión actual de la Guardia Histórica, custodia ceremonial del Cabildo). Reproducir EXACTAMENTE este uniforme — todos los elementos, sin variantes.
 
 ═══════════════════════════════════════════════════════
-RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de dos hileras de botones plateados, CUELLO Y PUÑOS ROJOS, FAJA ROJA, dos correas blancas cruzadas en X sobre el pecho, y una GALERA NEGRA ALTA tipo SOMBRERO DE COPA con un adorno rojo y blanco al costado izquierdo del que sale una PLUMA BLANCA vertical.
+RESUMEN VISUAL (gestalt): un soldado con CHAQUETA AZUL NAVY de DOS hileras de botones plateados BIEN SEPARADAS sobre el pecho, CUELLO ROJO con 4 botones plateados, PUÑOS ROJOS, FAJA ROJA, dos correas blancas cruzadas en X sobre el pecho, y una GALERA NEGRA ALTA tipo SOMBRERO DE COPA con UN LADO DEL ALA LEVANTADO (el izquierdo), adorno rojo y blanco en ese mismo costado, y una PLUMA BLANCA vertical alta saliendo del adorno.
 ═══════════════════════════════════════════════════════
 
 ╔═══════════════════════════════════════════════════════╗
@@ -188,7 +188,7 @@ FORMA Y TIPO:
 - ALTURA de la copa: claramente más alta que ancha, alta y angosta, NO baja.
 - TOP / CORONA: redondeada, levemente domada o plana suave. NO un cilindro hueco con boca arriba, NO una boca abierta tipo shako.
 - LADOS de la copa: rectos verticales — NO un cilindro rígido de shako militar.
-- ALA: media, plana al borde. NO ancha de cowboy, NO aludo gauchesco.
+- ALA: media. UN SOLO LADO DEL ALA SE LEVANTA / "COCKED UP" — específicamente el lado IZQUIERDO del wearer (el mismo costado donde está el adorno de escudete + pluma), que se prende hacia arriba contra la copa creando una silueta de "looped-up brim" típica de uniformes ceremoniales del siglo XIX. El otro lado (derecho del wearer) y el frente y la parte de atrás del ala se mantienen PLANOS al horizonte. NO es un ala plana entera, NO es un ala completamente curvada hacia arriba en los dos lados, NO es un sombrero "cowboy": es UN solo lado izquierdo del ala levantado contra la copa, el resto plano.
 - COLOR: ÍNTEGRAMENTE NEGRO de fieltro mate, de arriba a abajo, sin ninguna parte de otro color, sin cinta colorada, sin galones, sin bordes vivos. Sólo negro.
 
 ADORNO LATERAL DE LA GALERA (al costado izquierdo del wearer, lado derecho del observador en foto frontal):
@@ -215,9 +215,10 @@ RESTO DEL UNIFORME (elementos secundarios — todos obligatorios)
 A) CHAQUETA / CASACA
 - Color: AZUL MARINO oscuro (navy), paño grueso.
 - Largo: hasta la cadera/cintura.
-- Frente: estilo DOBLE PECHERA — DOS COLUMNAS PARALELAS VERTICALES de 7-8 BOTONES PLATEADOS / DE PELTRE cada una. Las columnas van paralelas desde el cuello hasta la cintura.
-- ENTRE las dos columnas de botones NO hay solapa blanca ni jabot — es el azul de la chaqueta directamente.
+- Frente: estilo DOBLE PECHERA — DOS COLUMNAS PARALELAS VERTICALES de 7-8 BOTONES PLATEADOS / DE PELTRE cada una. **Las dos columnas están BIEN SEPARADAS / SPACED APART, cada una sobre el costado del pecho** (una a la izquierda, otra a la derecha — NO juntas al centro). El espacio entre ambas columnas es amplio, equivalente al ancho del esternón o más, dejando un panel azul liso vertical en el centro del pecho.
+- ENTRE las dos columnas de botones NO hay solapa blanca, NO hay jabot, NO hay chaleco visible — es el azul liso de la chaqueta directamente, con los botones plateados a ambos costados.
 - CUELLO: ROJO ALTO Y PARADO (granate), llegando hasta la mandíbula. NO blanco, NO dorado.
+- **EN EL CUELLO ROJO van CUATRO (4) BOTONES PLATEADOS pequeños, dos a cada lado, en línea horizontal sobre la tela roja del cuello**, simulando un cierre frontal del cuello.
 - PUÑOS / vueltas en los extremos de las mangas: ROJOS también, con un par de botones plateados.
 - Hombros planos, sin charreteras grandes ni galones llamativos.
 
@@ -240,7 +241,10 @@ Postura: militar firme y digna, hombros rectos, mirada al frente. Si entra natur
 
 PROHIBIDO ABSOLUTAMENTE (lista exhaustiva de anti-patrones):
 - Cualquier tipo de TRAJE CIVIL: casaca de salón, jabot/chorrera, frac, smoking, sotana, túnica, sobrecasaca larga, camisa sin chaqueta encima.
-- SOMBREROS distintos a la galera descripta: tricornio, bicornio, shako cilíndrico militar moderno, morrión con visera, sombrero de copa civil con ala plana, sombrero bombín, sombrero gauchesco aludo, sombrero de paja, gorra con visera. La galera es UNA sola forma, la de top-hat alto angosto con ala curvada arriba descripta más arriba.
+- SOMBREROS distintos a la galera descripta: tricornio, bicornio, shako cilíndrico militar moderno, morrión con visera, sombrero de copa civil con ala plana ENTERA, sombrero bombín, sombrero gauchesco aludo, sombrero de paja, gorra con visera. La galera es UNA sola forma, top-hat alto angosto negro con UN solo lado del ala (el izquierdo) levantado contra la copa.
+- Galera con AMBOS lados del ala curvados hacia arriba (es UNO solo, el izquierdo). Galera con el ala enteramente plana sin lado levantado. Galera con el lado DERECHO levantado en vez del izquierdo.
+- Columnas de botones plateados JUNTAS / CENTRADAS al medio del pecho (las dos columnas van bien SEPARADAS, una sobre cada costado del pecho, con panel azul liso en el medio).
+- Cuello rojo SIN los 4 botones plateados (los 4 botones en el cuello son parte del uniforme; no omitir).
 - Galera con COPA ROJA u otra cinta colorada. La galera es íntegramente NEGRA; el rojo está en el ESCUDETE del adorno lateral, NO en la galera misma.
 - Pluma o escarapela CENTRADAS al frente de la galera (van al COSTADO IZQUIERDO).
 - BOTÓN/HEBILLA/PLACA/MEDALLA/ROSETA/ESCUDO/MOÑO en el centro de la X de bandoleras (intersección LISA).
