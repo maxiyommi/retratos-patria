@@ -4,7 +4,7 @@
 
 ## En dos minutos
 
-- **Retratos de la Patria** es una app educativa que transforma tu foto en un retrato pintado al óleo de una figura de la Buenos Aires colonial de **1810**.
+- **Retratos de la Patria** es una app educativa que transforma tu foto en un retrato pintado al óleo de una **figura de la Argentina colonial**.
 - **No guardamos tu foto en ningún lado.** Se procesa y se descarta.
 - Para hacer el retrato, mandamos tu foto a la IA de Google (Gemini). Eso significa que tu imagen sale momentáneamente hacia servidores de Google. Más detalle abajo.
 - **Si sos menor de edad, necesitás autorización** de tu mamá, papá o adulto responsable para usar la app.
@@ -14,7 +14,7 @@
 
 ## Qué hace la app
 
-Tomás una foto desde tu cámara (o subís una que ya tengas), elegís entre cuatro personajes históricos de la Buenos Aires de 1810 — Dama o Caballero porteño, patriota, vendedor o soldado de la Patria — y la inteligencia artificial te devuelve un retrato pintado al óleo donde estás vestido como esa figura. El proyecto es educativo y nació para la **Semana de Mayo**.
+Tomás una foto desde tu cámara (o subís una que ya tengas), elegís entre varios personajes históricos de la Argentina colonial — porteño/a, patriota, vendedor/a, patricio, gaucho/a, aguatero/a — y la inteligencia artificial te devuelve un retrato pintado al óleo donde estás vestido como esa figura. El proyecto es educativo y nació para la **Semana de Mayo**.
 
 ## Qué NO hace la app (privacidad)
 
@@ -29,9 +29,7 @@ Tomás una foto desde tu cámara (o subís una que ya tengas), elegís entre cua
 Para generar el retrato necesitamos un modelo de inteligencia artificial. Usamos la API de **Google Gemini**. Implicancias importantes:
 
 - **Tu foto se envía momentáneamente a servidores de Google** para que el modelo la transforme.
-- Google **puede usar esos datos para mejorar sus modelos** cuando se utiliza el *tier gratuito* de la API.
-- Cuando se utiliza el *tier pago*, Google se compromete a **no usar los datos para entrenamiento**.
-- **Si la app se va a exponer a un grupo escolar con niños y niñas, se recomienda usar el tier pago.** La clave de API es local de quien instala la app: cada instalación elige qué tier usar.
+- El procesamiento se hace con la **API paga de Gemini** (sin uso del modo gratuito). Google se compromete, en su tier pago, a **no usar los datos para entrenamiento**.
 - Tras procesar tu foto, **nosotros no la conservamos** del lado del servidor.
 
 ## Sobre menores de 18 años
