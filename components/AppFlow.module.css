@@ -493,28 +493,12 @@
 }
 
 /*
- * Sombra cinematográfica detrás del marco: dos drop-shadows layered
- * (una cercana definida + una larga difusa) que dan sensación de
- * objeto FLOTANDO sobre la pared del museo, más un halo dorado
- * sutil envolviéndolo. Pseudo-elemento ::after, posicionado donde
- * estaría el marco aproximadamente.
+ * El intento previo con .resultStage::after creaba una sombra que envolvía
+ * un rectángulo invisible — se veía como un "segundo fondo" detrás del
+ * marco porque su tamaño no calzaba exacto. El PortraitFrame ya tiene su
+ * propia shadow-marco para el drop-shadow; el spotlight (::before) y el
+ * galleryPedestal alcanzan para el efecto "objeto exhibido".
  */
-.resultStage::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(78%, 22rem);
-  height: min(78%, 22rem);
-  transform: translate(-50%, -50%);
-  border-radius: 6px;
-  pointer-events: none;
-  z-index: 0;
-  box-shadow:
-    0 24px 48px -8px rgba(0, 0, 0, 0.55),
-    0 60px 100px -20px rgba(0, 0, 0, 0.55),
-    0 0 80px 12px rgba(231, 206, 142, 0.08);
-}
 
 @keyframes spotlight-breathe {
   0%, 100% {
