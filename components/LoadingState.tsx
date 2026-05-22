@@ -8,11 +8,11 @@
  * mismo espacio cuadrado que ocuparía el PortraitFrame y, cuando Gemini
  * devuelve, hace una transición visual al PortraitFrame real.
  *
- * Decisión estética: **Sol de Mayo bordándose**. Los 16 rayos aparecen uno
- * a uno como hilos de oro siendo cosidos sobre el lienzo, en orden clockwise
- * (alternando recto/ondulado). Tarda ~8 segundos en completarse. Después
- * el sol "respira" indefinidamente con un pulse muy sutil, así si Gemini
- * tarda más (8-15s normalmente), el usuario no ve un loop obvio.
+ * Decisión estética: **pinceladas y manchas de pintura celeste y blanca**.
+ * Trazos curvos aparecen uno detrás del otro como si un pincel los estuviera
+ * dando sobre el lienzo, en los colores de la Patria (celeste + blanco
+ * cálido). Acompañan salpicaduras del mismo pigmento. Total ~7 segundos
+ * para completarse y después loopea sutilmente.
  *
  * Los mensajes textuales rotan cada 2.8s siguiendo el proceso real de un
  * retratista (preparar bastidor → mezclar pigmentos → mojar pinceles →
@@ -38,15 +38,47 @@ const MESSAGES = [
 
 const MESSAGE_INTERVAL_MS = 2800;
 
-// 16 rayos en orden clockwise, intercalando recto y ondulado.
-type RayDef = { type: "straight" | "wavy"; angle: number };
-const RAYS_ORDERED: RayDef[] = [];
-for (let i = 0; i < 8; i++) {
-  RAYS_ORDERED.push({ type: "straight", angle: i * 45 });
-  RAYS_ORDERED.push({ type: "wavy", angle: i * 45 + 22.5 });
-}
+/*
+ * Pinceladas: paths curvos con stroke-linecap round que se "dibujan"
+ * uno detrás del otro vía stroke-dasharray animation. El color alterna
+ * entre celeste y blanco-cálido formando un patrón visual de bandera.
+ */
+type StrokeDef = {
+  d: string;
+  color: "celeste" | "blanco";
+  width: number;
+  delay: number; // segundos
+};
 
-const RAY_STAGGER_S = 0.42;
+const STROKES: StrokeDef[] = [
+  { d: "M -78 -55 Q -18 -78 60 -45", color: "celeste", width: 16, delay: 0 },
+  { d: "M -72 -10 Q -8 12 68 -10", color: "blanco", width: 18, delay: 0.6 },
+  { d: "M -68 28 Q 8 50 72 22", color: "celeste", width: 16, delay: 1.2 },
+  { d: "M -58 62 Q 0 80 58 55", color: "blanco", width: 14, delay: 1.8 },
+];
+
+/*
+ * Manchas de pintura — salpicaduras pequeñas distribuidas asimétricamente
+ * alrededor de las pinceladas. Aparecen con un pop scale + fade.
+ */
+type SplashDef = {
+  cx: number;
+  cy: number;
+  r: number;
+  color: "celeste" | "blanco";
+  delay: number;
+};
+
+const SPLASHES: SplashDef[] = [
+  { cx: -82, cy: -78, r: 5, color: "celeste", delay: 0.15 },
+  { cx: 68, cy: -82, r: 6, color: "blanco", delay: 0.45 },
+  { cx: -46, cy: -30, r: 3, color: "blanco", delay: 0.75 },
+  { cx: 80, cy: 6, r: 4, color: "celeste", delay: 1.15 },
+  { cx: -85, cy: 52, r: 5, color: "blanco", delay: 1.55 },
+  { cx: 82, cy: 70, r: 4, color: "celeste", delay: 2.05 },
+  { cx: -28, cy: 88, r: 3, color: "celeste", delay: 2.45 },
+  { cx: 38, cy: 90, r: 5, color: "blanco", delay: 2.75 },
+];
 
 export function LoadingState({ characterName }: LoadingStateProps) {
   const [messageIndex, setMessageIndex] = useState(0);
@@ -74,33 +106,43 @@ export function LoadingState({ characterName }: LoadingStateProps) {
         <svg
           viewBox="-100 -100 200 200"
           xmlns="http://www.w3.org/2000/svg"
-          className={styles.sol}
+          className={styles.paint}
           aria-hidden
         >
-          <g className={styles.solGroup}>
-            {RAYS_ORDERED.map((ray, i) => (
-              <g
-                key={`${ray.type}-${ray.angle}`}
-                transform={`rotate(${ray.angle})`}
-              >
-                {ray.type === "straight" ? (
-                  <polygon
-                    className={styles.ray}
-                    style={{ animationDelay: `${i * RAY_STAGGER_S}s` }}
-                    points="-6,-50 6,-50 0,-95"
-                  />
-                ) : (
-                  <path
-                    className={styles.ray}
-                    style={{ animationDelay: `${i * RAY_STAGGER_S}s` }}
-                    d="M-4,-50 Q 0,-65 -3,-78 Q 0,-90 4,-50 Z"
-                  />
-                )}
-              </g>
-            ))}
-            <circle className={styles.disc} r="38" />
-            <circle className={styles.discRing} r="38" />
-          </g>
+          {/* Salpicaduras: van por debajo de las pinceladas */}
+          {SPLASHES.map((s, i) => (
+            <circle
+              key={`splash-${i}`}
+              className={`${styles.splash} ${
+                s.color === "celeste" ? styles.colCeleste : styles.colBlanco
+              }`}
+              cx={s.cx}
+              cy={s.cy}
+              r={s.r}
+              style={{ animationDelay: `${s.delay}s` }}
+            />
+          ))}
+          {/* Pinceladas — paths curvos que se dibujan con stroke-dasharray */}
+          {STROKES.map((s, i) => (
+            <path
+              key={`stroke-${i}`}
+              className={`${styles.stroke} ${
+                s.color === "celeste" ? styles.colCeleste : styles.colBlanco
+              }`}
+              d={s.d}
+              strokeWidth={s.width}
+              pathLength={100}
+              style={{ animationDelay: `${s.delay}s` }}
+            />
+          ))}
+          {/* Cabeza del pincel: un círculo dorado-suave que sigue la última
+              pincelada al final, como si el pincel se quedara apoyado. */}
+          <circle
+            className={styles.brushHead}
+            cx="58"
+            cy="55"
+            r="6"
+          />
         </svg>
 
         <div className={styles.shimmer} aria-hidden />

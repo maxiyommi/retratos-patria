@@ -77,48 +77,70 @@
           mask-image: radial-gradient(circle at center, #000 50%, rgba(0,0,0,0.6) 100%);
 }
 
-/* ── Sol de Mayo bordándose ──────────────────────────────────────────── */
+/* ── Pinceladas y manchas de pintura ───────────────────────────────── */
 
-.sol {
-  /* Sin position absolute + inset (issues en Safari iOS): ahora es
-     un elemento flex-item que el .canvas centra. width/height en %
-     determinan el tamaño relativo al lienzo. */
+.paint {
+  /* SVG que ocupa todo el lienzo. Centrado por el flex del .canvas. */
   position: relative;
-  width: 68%;
-  height: 68%;
-  filter: drop-shadow(0 2px 4px rgba(58, 38, 24, 0.35));
+  width: 90%;
+  height: 90%;
+  filter: drop-shadow(0 2px 5px rgba(58, 38, 24, 0.25));
 }
 
-.solGroup {
-  will-change: transform;
-  /*
-   * "Respiración" sutil. Comienza desde un scale 1.0 y oscila muy poco
-   * (1.0 ↔ 1.025) para que el sol parezca vivo aún después de formarse.
-   */
-  transform-origin: 50% 50%;
-  transform-box: view-box;
-  animation: sol-breathe 5.2s var(--ease-in-out) 8s infinite;
+/* Color helpers — aplicados como classes según la prop color de cada
+   pincelada/salpicadura. */
+.colCeleste {
+  --paint-color: var(--color-celeste);
+}
+.colBlanco {
+  --paint-color: var(--color-blanco-calido);
 }
 
-/* Cada rayo: fade-in con leve overshoot. forwards = se queda dorado. */
-.ray {
-  fill: var(--color-dorado);
-  opacity: 0;
-  animation: ray-fade-in 1.6s var(--ease-out) forwards;
-}
-
-.disc {
-  fill: var(--color-dorado);
-  opacity: 0;
-  animation: disc-fade-in 1s var(--ease-out) 0.2s forwards;
-}
-
-.discRing {
+/*
+ * Pincelada: path que se dibuja con stroke-dasharray + stroke-dashoffset
+ * (técnica clásica de "SVG draw-in"). Las stroke-* requieren saber el
+ * largo del path; usamos pathLength="100" para normalizar todos a 100
+ * y trabajar siempre con offset 100→0.
+ */
+.stroke {
   fill: none;
-  stroke: rgba(58, 38, 24, 0.45);
-  stroke-width: 2.4;
+  stroke: var(--paint-color);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  opacity: 0.92;
+  animation: stroke-draw 1.4s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+/* Nota: el `pathLength="100"` se aplica como atributo SVG en el TSX
+   sobre cada <path>, no como propiedad CSS (no es propiedad CSS válida).
+   Eso garantiza que dasharray:100 sea siempre el largo total del path. */
+
+/*
+ * Salpicadura: círculo pequeño que aparece con un "pop" — scale del
+ * centro 0 → 1 con un overshoot leve. Se queda visible al final.
+ */
+.splash {
+  fill: var(--paint-color);
   opacity: 0;
-  animation: disc-fade-in 1s var(--ease-out) 0.2s forwards;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: splash-pop 720ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/*
+ * Cabeza del pincel: punto dorado-suave que aparece al final, en la
+ * última pincelada — como si el pincel se hubiera quedado apoyado.
+ */
+.brushHead {
+  fill: var(--color-dorado);
+  stroke: var(--color-dorado-suave);
+  stroke-width: 2;
+  opacity: 0;
+  animation:
+    brush-rest 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 3.2s forwards,
+    brush-pulse 2.4s var(--ease-in-out) 3.8s infinite;
 }
 
 /* Brillo barriendo de izquierda a derecha — comienza una vez formado el sol. */
@@ -223,21 +245,25 @@
   }
 }
 
-@keyframes ray-fade-in {
-  0%   { opacity: 0; }
-  55%  { opacity: 0.45; }
-  85%  { opacity: 1.0; }
-  100% { opacity: 0.95; }
+@keyframes stroke-draw {
+  0%   { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
 }
 
-@keyframes disc-fade-in {
-  0%   { opacity: 0; transform: scale(0.6); }
+@keyframes splash-pop {
+  0%   { opacity: 0; transform: scale(0.2); }
+  60%  { opacity: 1; transform: scale(1.18); }
+  100% { opacity: 0.9; transform: scale(1); }
+}
+
+@keyframes brush-rest {
+  0%   { opacity: 0; transform: scale(0.4); }
   100% { opacity: 1; transform: scale(1); }
 }
 
-@keyframes sol-breathe {
+@keyframes brush-pulse {
   0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.025); }
+  50%      { transform: scale(1.18); }
 }
 
 @keyframes shimmer-sweep {
@@ -256,17 +282,19 @@
 
 @media (prefers-reduced-motion: reduce) {
   .canvas,
-  .solGroup,
   .shimmer,
-  .ray,
-  .disc,
-  .discRing,
+  .stroke,
+  .splash,
+  .brushHead,
   .message {
     animation: none;
   }
-  .ray,
-  .disc,
-  .discRing {
+  .stroke {
+    stroke-dashoffset: 0;
+    opacity: 0.92;
+  }
+  .splash,
+  .brushHead {
     opacity: 1;
     transform: none;
   }

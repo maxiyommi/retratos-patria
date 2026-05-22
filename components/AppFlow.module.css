@@ -465,6 +465,73 @@
 }
 
 /*
+ * Spotlight de museo: cono cálido dorado descendiendo desde arriba del
+ * stage hacia el marco. Pseudo-elemento ::before, gradient radial
+ * elíptico alto y angosto. mix-blend: screen para no pisar los colores
+ * del fondo, sólo agregar luz. No bloquea clicks.
+ */
+.resultStage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 55% 80% at 50% 0%,
+    rgba(231, 206, 142, 0.32) 0%,
+    rgba(231, 206, 142, 0.16) 30%,
+    rgba(231, 206, 142, 0.06) 55%,
+    rgba(231, 206, 142, 0) 78%
+  );
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+  /* Soft pulse — la luz "respira" sutilmente. */
+  animation: spotlight-breathe 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/*
+ * Sombra cinematográfica detrás del marco: dos drop-shadows layered
+ * (una cercana definida + una larga difusa) que dan sensación de
+ * objeto FLOTANDO sobre la pared del museo, más un halo dorado
+ * sutil envolviéndolo. Pseudo-elemento ::after, posicionado donde
+ * estaría el marco aproximadamente.
+ */
+.resultStage::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(78%, 22rem);
+  height: min(78%, 22rem);
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    0 24px 48px -8px rgba(0, 0, 0, 0.55),
+    0 60px 100px -20px rgba(0, 0, 0, 0.55),
+    0 0 80px 12px rgba(231, 206, 142, 0.08);
+}
+
+@keyframes spotlight-breathe {
+  0%, 100% {
+    opacity: 0.92;
+  }
+  50% {
+    opacity: 1.05;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resultStage::before {
+    animation: none;
+  }
+}
+
+/*
  * Pedestal de galería: sombra elíptica difusa al pie del cuadro que
  * sugiere apoyo físico/atril. NO es una sombra de drop del marco (esa la
  * tiene el frame con su shadow-marco); es la "mancha de luz" sobre el
