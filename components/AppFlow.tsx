@@ -182,6 +182,24 @@ export function AppFlow() {
     }, "backward");
   }
 
+  /**
+   * Volver a la galería de personajes preservando la foto. Útil desde
+   * el resultado: el usuario ya hizo el esfuerzo de sacarse la foto y
+   * sólo quiere probar otro rol con la misma imagen.
+   */
+  function goChooseFromResult() {
+    transitionState(() => {
+      setStep("choose");
+      // Limpiar lo del resultado pero NO la foto ni el rol elegido —
+      // el usuario vuelve al picker con su selección anterior aún
+      // resaltada, lista para elegir otra si quiere.
+      setPortrait(null);
+      setTransformError(null);
+      setIsDemoMode(false);
+      setBurstKey(null);
+    }, "backward");
+  }
+
   function handleEnterDemoMode() {
     if (!photo || !characterId) return;
     transitionState(() => {
@@ -480,7 +498,7 @@ export function AppFlow() {
 
           {step === "result" && portrait && (
             <>
-              <LargeTitle eyebrow="Paso 4 · La galería" align="center">
+              <LargeTitle eyebrow="Paso 4 · La galería">
                 Vos en <em>1810</em>
               </LargeTitle>
               <ResultScreen
@@ -488,7 +506,7 @@ export function AppFlow() {
                 characterName={fullName}
                 onDownload={handleDownload}
                 onShare={handleShare}
-                onRestart={goCamera}
+                onRestart={goChooseFromResult}
                 isDemoMode={isDemoMode}
                 burstKey={burstKey}
               />
@@ -656,7 +674,7 @@ function ResultScreen({
           type="button"
           className={styles.ctaBack}
           onClick={onRestart}
-          aria-label="Probar con otra foto"
+          aria-label="Elegir otro rol"
         >
           <BackChevron />
         </button>
