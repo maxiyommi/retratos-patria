@@ -4,9 +4,9 @@ Webapp educativa: una persona se saca una foto y la IA la "retrata" como una
 figura de la Buenos Aires colonial de **1810** — el mismo rostro, pintado al
 óleo y vestido de época. Pensada para la Semana de Mayo en escuelas.
 
-Es un proyecto personal y sin fines comerciales de
-[**Maximiliano Yommi**](https://www.linkedin.com/in/maximilianoyommi/), de
-**código abierto** desde su concepción (licencia MIT).
+Es un proyecto personal, sin fines comerciales, de **código abierto**
+desde su concepción (licencia MIT). Quien lo desarrolla está detrás del
+[repositorio en GitHub](https://github.com/maxiyommi/retratos-patria).
 
 ## Cómo funciona
 
@@ -88,7 +88,8 @@ La app procesa fotos de chicos en contexto escolar. Por eso:
 
 ## Licencia
 
-[MIT](./LICENSE) — Maximiliano Yommi, 2026.
+[MIT](./LICENSE) — 2026.
 
-Si lo usás en tu escuela o lo adaptás, me encantaría saberlo:
-[LinkedIn](https://www.linkedin.com/in/maximilianoyommi/).
+Si lo usás en tu escuela o lo adaptás, podés
+[abrir un issue en GitHub](https://github.com/maxiyommi/retratos-patria/issues)
+para contarlo.

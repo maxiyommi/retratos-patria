@@ -179,7 +179,7 @@ export default async function OgImage() {
             letterSpacing: "0.02em",
           }}
         >
-          Proyecto de código abierto · Maximiliano Yommi
+          Proyecto educativo · Código abierto
         </div>
       </div>
     ),

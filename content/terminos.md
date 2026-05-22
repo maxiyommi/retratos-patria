@@ -50,7 +50,7 @@ Retratos de la Patria se ajusta al marco legal de la República Argentina:
 
 ## Sin fines comerciales · Código abierto
 
-- Retratos de la Patria es un **proyecto personal de Maximiliano Yommi**.
+- Retratos de la Patria es un **proyecto personal**, sin relación con ninguna empresa ni institución educativa.
 - **No tiene fines comerciales.** No vendemos las imágenes ni los datos. No hay publicidad. No hay suscripciones.
 - Es **código abierto** bajo licencia MIT. Podés revisar el código y hacer tu propia copia: <https://github.com/maxiyommi/retratos-patria>.
 - Cualquier persona que despliegue la app usa su propia clave de Google Gemini (ver "Tu foto y Google Gemini" más arriba).
@@ -61,12 +61,10 @@ Como no guardamos nada nuestro lado, no hay nada que borrar de nuestros servidor
 
 Si descargaste el retrato o lo compartiste, esa copia vive en **tu dispositivo** o en **el dispositivo de quien la haya recibido** — esas copias las administrás vos.
 
-## Si tenés dudas o querés contactarnos
+## Si tenés dudas o querés reportar algo
 
-Maximiliano Yommi — autor del proyecto:
-
-- LinkedIn: <https://www.linkedin.com/in/maximilianoyommi/>
-- Reportar un problema: <https://github.com/maxiyommi/retratos-patria/issues>
+- Abrir un issue en GitHub: <https://github.com/maxiyommi/retratos-patria/issues>
+- Repositorio del proyecto: <https://github.com/maxiyommi/retratos-patria>
 
 ---
 

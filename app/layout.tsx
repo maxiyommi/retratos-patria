@@ -39,9 +39,7 @@ export const metadata: Metadata = {
    * que la instale.
    */
   applicationName: SITE_TITLE,
-  authors: [{ name: "Maximiliano Yommi", url: "https://www.linkedin.com/in/maximilianoyommi/" }],
-  creator: "Maximiliano Yommi",
-  publisher: "Maximiliano Yommi",
+  authors: [{ url: "https://github.com/maxiyommi/retratos-patria" }],
   keywords: [
     "Semana de Mayo",
     "Revolución de Mayo",

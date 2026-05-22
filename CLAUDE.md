@@ -12,8 +12,10 @@ enmarcado y lo descarga o comparte.
 
 - Nombre de trabajo: **Retratos de la Patria**.
 - Origen: proyecto escolar para la Semana de Mayo.
-- Autor: **Maximiliano Yommi**. Es un proyecto personal y sin fines
-  comerciales (no es un producto de una empresa).
+- Es un proyecto personal y sin fines comerciales (no es producto de una
+  empresa). Política de privacidad: el autor no se nombra en contenido
+  visible al usuario — sólo se referencia el repo de GitHub. Mantener
+  ese criterio al editar copys, footers, OG image, etc.
 - Proyecto de **código abierto** (licencia MIT) desde su concepción.
 - **Mobile-first**: se usa desde el celular. Diseño pensado para ~390px de
   ancho; el escritorio es secundario.
@@ -129,7 +131,7 @@ body:     { image: string (dataURL base64), characterId: 'dama'|'caballero'|'ven
 
 \`\`\`
 /  (raíz)
-  LICENSE                   # licencia MIT (autor: Maximiliano Yommi)
+  LICENSE                   # licencia MIT (copyright = GitHub handle maxiyommi)
   README.md                 # documentación pública del proyecto
   CLAUDE.md                 # este archivo
   .env.example              # plantilla de variables (sin valores) — SÍ se commitea
@@ -213,10 +215,15 @@ GEMINI_API_KEY=...     # SOLO server-side. Nunca exponer al cliente.
 
 ## Autoría y footer
 
-- El footer firma: **"Proyecto de código abierto de Maximiliano Yommi"**, con
-  links a su LinkedIn y al repo de GitHub.
+- El footer firma: **"Proyecto educativo de código abierto"** + link al
+  repo de GitHub. NO se nombra al autor — quien quiera saber la identidad
+  llega vía GitHub. Esto es deliberado: política de privacidad del autor.
+- Mismo criterio en OG image, terminos.md, README, layout metadata: no
+  exponer nombre+apellido en contenido visible.
 - Es un proyecto personal: no debe presentarse como producto de una empresa.
-- El \`LICENSE\` (MIT) lleva el copyright a nombre de Maximiliano Yommi.
+- El \`LICENSE\` (MIT) usa el handle de GitHub \`maxiyommi\` como copyright
+  holder, no el nombre y apellido. La identidad legal queda enlazada vía
+  el perfil de GitHub si hace falta.
 
 ## Restricciones críticas (LEER SIEMPRE)
 

@@ -1,8 +1,11 @@
 /*
- * Footer — firma de autoría + links a LinkedIn y GitHub.
+ * Footer — firma de autoría + link al repo.
  *
- * Es un proyecto personal de Maximiliano Yommi: no debe presentarse como
- * producto de una empresa. La firma es directa y digna, sin pomposidad.
+ * Es un proyecto personal de código abierto, no producto de una empresa.
+ * La firma deliberadamente NO nombra al autor en el texto visible — el
+ * link al repo de GitHub alcanza para que quien quiera identificar al
+ * autor lo encuentre. Razón: control de privacidad / no exponer datos
+ * personales innecesariamente desde la app.
  */
 
 import styles from "./Footer.module.css";
@@ -11,16 +14,7 @@ export function Footer() {
   return (
     <footer className={styles.root}>
       <p className={styles.line}>
-        Proyecto de código abierto de{" "}
-        <a
-          className={styles.author}
-          href="https://www.linkedin.com/in/maximilianoyommi/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Maximiliano Yommi
-        </a>
-        .
+        Proyecto educativo de código abierto.
       </p>
       <p className={styles.line}>
         <a
