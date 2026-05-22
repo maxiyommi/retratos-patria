@@ -23,6 +23,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ImageProcessingError } from "@/lib/image";
 import { haptic } from "@/lib/haptic";
+import { BottomActionBar } from "@/components/BottomActionBar";
 import styles from "./PhotoEditor.module.css";
 
 const OUTPUT_MAX_SIZE = 1024;
@@ -262,14 +263,7 @@ export function PhotoEditor({
         entrar en el óvalo.
       </p>
 
-      <div className={styles.actions}>
-        <button
-          type="button"
-          className={`${styles.actionButton} ${styles.actionPrimary}`}
-          onClick={handleConfirm}
-        >
-          Usar esta foto
-        </button>
+      <BottomActionBar>
         <button
           type="button"
           className={styles.actionButton}
@@ -277,7 +271,14 @@ export function PhotoEditor({
         >
           Cancelar
         </button>
-      </div>
+        <button
+          type="button"
+          className={`${styles.actionButton} ${styles.actionPrimary}`}
+          onClick={handleConfirm}
+        >
+          Usar esta foto
+        </button>
+      </BottomActionBar>
     </div>
   );
 }
