@@ -38,8 +38,17 @@
 
 .canvas {
   position: relative;
-  width: 100%;
+  /*
+   * El canvas es cuadrado (aspect-ratio 1/1) y debe caber junto al título,
+   * el intro, el messageWrap y la BottomActionBar dentro del 100svh real
+   * (svh = small viewport, con barras de Safari visibles). Capamos el ancho
+   * para que el alto resultante deje al menos ~360px para el resto del UI;
+   * sin esto, en pantallas anchas (iPhone Pro Max) el canvas crecía y
+   * empujaba el messageWrap fuera de la pantalla.
+   */
+  width: min(100%, calc(100svh - 360px));
   aspect-ratio: 1 / 1;
+  margin-inline: auto;
   border-radius: 4px;
   background-color: var(--color-pergamino);
   overflow: hidden;
