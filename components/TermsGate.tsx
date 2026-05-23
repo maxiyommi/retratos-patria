@@ -19,7 +19,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SolDeMayo } from "@/components/SolDeMayo";
-import { Footer } from "@/components/Footer";
 import { BottomActionBar } from "@/components/BottomActionBar";
 import { haptic } from "@/lib/haptic";
 import { transitionState } from "@/lib/transition";
@@ -114,7 +113,18 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
         <li>
           Si sos menor, necesitás autorización de un adulto responsable.
         </li>
-        <li>Proyecto educativo, sin fines comerciales.</li>
+        <li>
+          Proyecto educativo de código abierto, sin fines comerciales.{" "}
+          <a
+            className={styles.summaryLink}
+            href="https://github.com/maxiyommi/retratos-patria"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ver el código en GitHub
+          </a>
+          .
+        </li>
       </ul>
 
       <button
@@ -161,14 +171,6 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
           />
         </div>
       </dialog>
-
-      <div className={styles.actions}>
-        <p className={styles.fineprint}>
-          Al continuar aceptás los Términos y el Aviso de Privacidad
-          completos.
-        </p>
-        <Footer />
-      </div>
 
       {/*
         Portal target para el BottomActionBar — sin esto, la bar no

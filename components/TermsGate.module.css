@@ -23,8 +23,8 @@
   margin: 0 auto;
   /*
    * Padding-bottom reserva el espacio del BottomActionBar fijo igual
-   * que lo hace AppFlow .main. Sin esto el contenido (Footer, fineprint)
-   * quedaría tapado por la bar.
+   * que lo hace AppFlow .main. Sin esto el contenido del recuadro
+   * superior quedaría tapado por la bar en viewports cortos.
    */
   padding: calc(var(--space-7) + env(safe-area-inset-top, 0px))
     var(--space-5)
@@ -157,6 +157,19 @@
 .summary li strong {
   font-weight: 600;
   color: var(--color-celeste-profundo);
+}
+
+.summaryLink {
+  color: var(--color-celeste-profundo);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: rgba(31, 80, 114, 0.35);
+  text-underline-offset: 0.16em;
+  transition: text-decoration-color var(--duration-fast) var(--ease-out);
+}
+
+.summaryLink:hover {
+  text-decoration-color: var(--color-celeste-profundo);
 }
 
 .summary li::before {
@@ -422,14 +435,7 @@
   color: rgba(251, 247, 236, 0.85);
 }
 
-/* ── Acciones al pie ─────────────────────────────────────────────── */
-
-.actions {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
+/* ── Acción primaria (BottomActionBar) ─────────────────────────────── */
 
 /*
  * Botón primario que vive DENTRO del BottomActionBar — mismo lenguaje
@@ -469,14 +475,6 @@
   transition-duration: 90ms;
 }
 
-.fineprint {
-  margin: 0;
-  text-align: center;
-  font-size: var(--font-size-xs);
-  font-style: italic;
-  opacity: 0.7;
-  color: var(--color-blanco-calido);
-}
 
 @media (prefers-reduced-motion: reduce) {
   .root,
