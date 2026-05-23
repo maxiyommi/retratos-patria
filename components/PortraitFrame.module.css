@@ -36,7 +36,10 @@
 /* ── Marco ───────────────────────────────────────────────────────────── */
 
 .frame {
-  will-change: transform, opacity;
+  /*
+   * Sin will-change estático: la animación hang() es one-shot al montar.
+   * El transform del keyframe ya promueve la capa mientras dura.
+   */
   position: relative;
   margin: 0;
   padding: var(--frame-pad, var(--space-4));

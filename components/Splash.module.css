@@ -241,7 +241,12 @@
 }
 
 .titleMain {
-  will-change: transform, filter, background-position;
+  /*
+   * Sin will-change estático sobre filter/background-position: filter no
+   * se compone como capa, y mantener el hint promovido todo el tiempo no
+   * cambiaba la performance del title-shimmer pero sí reservaba memoria.
+   * El slam usa transform, que ya promueve solo durante el keyframe.
+   */
   font-family: var(--font-stack-display);
   font-style: italic;
   font-weight: 600;
@@ -270,9 +275,16 @@
     drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35))
     drop-shadow(0 6px 28px rgba(0, 0, 0, 0.55))
     drop-shadow(0 0 24px rgba(231, 206, 142, 0.4));
+  /*
+   * El shimmer corre 3 vueltas en lugar de infinite. Antes seguía
+   * animando background-position por siempre mientras la Splash estuviera
+   * visible — costo continuo de GPU sin que el usuario lo notara después
+   * de unos segundos. Tres pasadas dan el detalle estético en la entrada
+   * y después se queda quieto.
+   */
   animation:
     title-main-slam 1500ms cubic-bezier(0.34, 1.56, 0.64, 1) 2200ms backwards,
-    title-shimmer 5s linear 4000ms infinite;
+    title-shimmer 5s linear 4000ms 3;
 }
 
 .titleSub {

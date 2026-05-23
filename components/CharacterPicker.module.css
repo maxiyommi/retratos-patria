@@ -43,12 +43,15 @@
      tocar el contenido. */
   aspect-ratio: 3 / 2;
   border-radius: var(--radius-md);
-  /* Vidrio esmerilado: rgba blanco translúcido + blur. Sobre el fondo
-     celeste del step "choose" da el aspecto material de iOS / Apple. */
-  background-color: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  /*
+   * Superficie translúcida sin backdrop-filter — sobre el celeste opaco
+   * del step "choose" el blur no se aprecia y costaba 6 layers de blur
+   * simultáneas (una por tile) que en iPhone Pro Max golpean fuerte la
+   * GPU. Color plano + borde suave consigue prácticamente el mismo look
+   * de vidrio frosted.
+   */
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   /* Sombra moderna en dos capas: un "key" cercano que da peso + una capa
      larga y suave tipo Stripe/Linear que sugiere elevación sobre el
      fondo celeste. La sombra es tinta celeste para integrar con el
@@ -59,8 +62,11 @@
   cursor: pointer;
   text-align: center;
   font-family: inherit;
-  /* GPU layer hint para que scale/shadow corran a 60fps en mobile. */
-  will-change: transform, opacity;
+  /*
+   * Sin will-change estático en las 6 tiles — reservaba layers GPU
+   * permanentes (~6 MB de VRAM). Las animaciones de scale/opacity
+   * promueven la capa puntualmente cuando corren.
+   */
   transition:
     background-color 280ms var(--ease-out),
     border-color 280ms var(--ease-out),

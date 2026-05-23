@@ -8,13 +8,12 @@
  * mismo espacio cuadrado que ocuparía el PortraitFrame y, cuando Gemini
  * devuelve, hace una transición visual al PortraitFrame real.
  *
- * Decisión estética: **pinceladas y salpicaduras de óleo celeste y blanco**.
- * Las pinceladas son paths CERRADOS con forma TAPERED (afilada en los
- * extremos, más ancha al medio) — silueta de pincelada de óleo real, no
- * stroke uniforme tipo salchicha. Las salpicaduras son BLOBS IRREGULARES
- * (no círculos perfectos) más gotas satélite chiquitas alrededor. Todo
- * pasa por un filtro SVG de feTurbulence + feDisplacementMap que rompe
- * los bordes, dándole textura de óleo sobre lienzo.
+ * Decisión estética: **pinceladas de óleo celeste y blanco**. Cada path es
+ * un brochazo CERRADO con forma TAPERED (afilada en los extremos, más
+ * ancha al medio) — silueta de pincelada de óleo real, no stroke uniforme.
+ * Sin filtros SVG por arriba: las curvas Bezier ya dan el carácter de
+ * pincelada y el filter feTurbulence + feDisplacementMap se eliminó
+ * porque era el mayor costo de GPU del flujo (re-evaluación 60 fps × 5s).
  *
  * Coreografía: pinceladas se revelan vía SVG mask (rect que crece de
  * izq a der scaleX 0→1), staggered 0/0.65/1.3/2.0s. Salpicaduras
@@ -114,27 +113,19 @@ export function LoadingState({ characterName }: LoadingStateProps) {
           aria-hidden
         >
           <defs>
-            {/* Filtro de textura: feTurbulence + feDisplacementMap rompe
-                los bordes de cada path dando feel de pincelada irregular
-                sobre lienzo rugoso. */}
-            <filter
-              id="paint-rough"
-              x="-15%"
-              y="-15%"
-              width="130%"
-              height="130%"
-            >
-              <feTurbulence
-                type="fractalNoise"
-                baseFrequency="1.4"
-                numOctaves="2"
-                seed="5"
-              />
-              <feDisplacementMap in="SourceGraphic" scale="2.5" />
-            </filter>
-            {/* Una mask por pincelada — rect que crece scaleX 0→1
-                desde el extremo izquierdo, simulando que un pincel
-                está pintando de izq a der. */}
+            {/*
+             * Antes había un filtro feTurbulence + feDisplacementMap que
+             * rompía los bordes para dar feel de óleo sobre lienzo. Se
+             * sacó porque al combinarse con las masks animadas (revealRect
+             * scaleX 0→1) el filter se re-evaluaba a 60fps durante 5s,
+             * con la GPU al 100% en iPhone — un costo enorme por un
+             * detalle estético que casi no se percibe. Los paths ya
+             * tienen forma irregular en su `d=`, lo que alcanza para
+             * sostener el carácter de pincelada.
+             *
+             * Una mask por pincelada: rect que crece scaleX 0→1 desde el
+             * extremo izquierdo, simulando que un pincel pasa de izq a der.
+             */}
             {STROKES.map((s) => (
               <mask key={s.maskId} id={s.maskId}>
                 <rect
@@ -151,10 +142,8 @@ export function LoadingState({ characterName }: LoadingStateProps) {
           </defs>
 
           {/* Tres franjas de la bandera — celeste / blanco / celeste —
-              pintadas a brochazo ancho de izq a der, una detrás de
-              otra. El filtro paint-rough rompe los bordes para feel
-              óleo sobre lienzo. */}
-          <g filter="url(#paint-rough)">
+              pintadas a brochazo ancho de izq a der, una detrás de otra. */}
+          <g>
             {STROKES.map((s, i) => (
               <path
                 key={`stroke-${i}`}

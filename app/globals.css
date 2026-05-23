@@ -16,16 +16,17 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  /*
-   * backface-visibility hidden — fuerza al browser a promover
-   * elementos animados a un composite layer en GPU. Mejora notable
-   * en mobile para que transforms y animaciones corran a 60fps sin
-   * touchear el main thread.
-   */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
   -webkit-tap-highlight-color: transparent;
 }
+
+/*
+ * Nota: NO aplicamos backface-visibility: hidden ni transform: translateZ(0)
+ * de forma universal. La idea de "promover todo el árbol a GPU" suena bien
+ * pero en iPhone explota el uso de memoria de la GPU y dispara repaints
+ * masivos al cambiar de step. La promoción a composite layer la pedimos
+ * sólo en los elementos que efectivamente animan (will-change activo o el
+ * propio keyframe con transform/opacity).
+ */
 
 html,
 body {
@@ -115,18 +116,26 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-texto);
   background-color: var(--bg-bottom);
+  /*
+   * Fondo en 2 capas: halo dorado superior + gradiente vertical de top a
+   * bottom. La textura de pergamino tileada se sacó del body — sumaba
+   * repaint cost en iOS Safari y casi no se veía sobre el gradiente. La
+   * textura sigue presente DENTRO del marco del retrato y del lienzo del
+   * LoadingState, que es donde aporta carácter.
+   *
+   * background-attachment NO fixed: en iOS Safari fixed dispara repaints
+   * fullscreen ante cualquier cambio. scroll funciona igual visualmente
+   * porque el documento no scrollea.
+   */
   background-image:
     radial-gradient(
       ellipse 90% 60% at 50% -10%,
       var(--bg-halo) 0%,
       transparent 50%
     ),
-    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%),
-    url("/paper-texture.svg");
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-size: 100% 100%, 100% 100%, 320px 320px;
-  background-blend-mode: normal, normal, multiply;
-  background-attachment: fixed, fixed, scroll;
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% 100%, 100% 100%;
   /* Transición suave del color de fondo al cambiar de step. */
   transition: background-color 540ms cubic-bezier(0.32, 0.72, 0, 1);
   -webkit-font-smoothing: antialiased;
@@ -318,16 +327,19 @@ select {
   }
 }
 
+/*
+ * Sólo transform + opacity en las view transitions — `filter: brightness()`
+ * no se compone en GPU y rasterizaba la capa entera en cada frame del
+ * crossfade. La diferencia visual es despreciable; el gain de fluidez no.
+ */
 @keyframes vt-slide-out-left {
   from {
     transform: translateX(0);
     opacity: 1;
-    filter: brightness(1);
   }
   to {
     transform: translateX(-22%);
     opacity: 0;
-    filter: brightness(0.92);
   }
 }
 
@@ -335,12 +347,10 @@ select {
   from {
     transform: translateX(22%);
     opacity: 0;
-    filter: brightness(0.92);
   }
   to {
     transform: translateX(0);
     opacity: 1;
-    filter: brightness(1);
   }
 }
 
