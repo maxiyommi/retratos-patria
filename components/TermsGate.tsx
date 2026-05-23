@@ -20,6 +20,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SolDeMayo } from "@/components/SolDeMayo";
 import { Footer } from "@/components/Footer";
+import { BottomActionBar } from "@/components/BottomActionBar";
 import { haptic } from "@/lib/haptic";
 import { transitionState } from "@/lib/transition";
 import styles from "./TermsGate.module.css";
@@ -162,6 +163,21 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
       </dialog>
 
       <div className={styles.actions}>
+        <p className={styles.fineprint}>
+          Al continuar aceptás los Términos y el Aviso de Privacidad
+          completos.
+        </p>
+        <Footer />
+      </div>
+
+      {/*
+        Portal target para el BottomActionBar — sin esto, la bar no
+        encuentra dónde montarse mientras el TermsGate está abierto
+        (AppFlow aún no se renderizó). Mismo id que usa el AppFlow.
+      */}
+      <div id="bottom-bar-portal" />
+
+      <BottomActionBar>
         <button
           type="button"
           className={styles.acceptButton}
@@ -169,12 +185,7 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
         >
           Acepto y continúo
         </button>
-        <p className={styles.fineprint}>
-          Al continuar aceptás los Términos y el Aviso de Privacidad
-          completos.
-        </p>
-        <Footer />
-      </div>
+      </BottomActionBar>
     </div>
   );
 }
