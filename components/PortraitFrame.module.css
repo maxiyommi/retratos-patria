@@ -17,7 +17,17 @@
   align-items: stretch;
   gap: var(--space-5);
   width: 100%;
-  max-width: 22rem; /* ~352px — entra cómodo en viewport mobile de 390px */
+  /*
+   * Max-width estándar 22rem (~352px) — entra cómodo en mobile.
+   *
+   * Adicionalmente, en pantallas con poca altura útil (iPhone Pro Max con
+   * Safari + bottom nav visible) capamos el ancho según 100svh para que
+   * el frame se shrinkee y NO queden tapados ni el "Imagen generada con
+   * IA" ni las esquinas inferiores por la BottomActionBar. El frame es
+   * aproximadamente cuadrado: alto ≈ ancho + 100px (cartela + aiNotice +
+   * padding); así reservamos 380px de viewport para header + bar + buffer.
+   */
+  max-width: min(22rem, calc(100svh - 440px));
   margin: 0 auto;
   /* La animación de "objeto recién colgado" empieza acá y se aplica al
      marco; los botones del chrome aparecen un toque después. */
