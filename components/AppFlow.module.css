@@ -42,9 +42,13 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  /* Reserva el espacio del BottomActionBar fijo + safe-area-inset-bottom.
-     Sin esto, el contenido del step se metería debajo de la bar. */
-  padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom, 0px));
+  /* Reserva el espacio del BottomActionBar fijo + safe-area-inset-bottom +
+     un colchón (--space-3) para absorber pequeñas diferencias entre la
+     altura nominal del bar (--bottom-bar-h) y la altura real cuando
+     Safari iOS está renderizando con su bottom nav bar visible. Sin este
+     colchón, el contenido del step (mensaje rotativo del paso 3, aiNotice
+     del paso 4) quedaba parcialmente tapado por la bar. */
+  padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom, 0px) + var(--space-3));
 }
 
 .step {
