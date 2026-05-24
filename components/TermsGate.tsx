@@ -48,9 +48,20 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
     }
   }, []);
 
+  /*
+   * El sheet se abre con `show()` (NO showModal). showModal pone el dialog
+   * en el top layer del navegador y bloquea inert el resto — incluido el
+   * BottomActionBar, que el usuario no podía tocar mientras leía. Con
+   * show() el dialog queda en el flujo normal del z-index y la bar (con
+   * z-index 100, mayor que el sheet) sigue clickeable, así se puede aceptar
+   * los términos sin cerrar antes el sheet. El backdrop nativo del dialog
+   * tampoco se renderea con show(); lo simulamos con un overlay propio.
+   *
+   * ESC también se maneja a mano (showModal lo daba gratis).
+   */
   function openSheet() {
     haptic("tap");
-    sheetRef.current?.showModal();
+    sheetRef.current?.show();
   }
 
   function closeSheet() {
@@ -58,13 +69,25 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
   }
 
   /*
-   * Bottom-sheet pattern: el backdrop del <dialog> ocupa la pantalla
-   * entera. Si el tap cae en el dialog mismo (no en su contenido), es
-   * porque el usuario tocó el área de fondo y queremos cerrar.
+   * Cerrar tocando el backdrop manual: el dialog no es modal, así que el
+   * click sobre el dialog mismo (área fuera del .sheetInner) cuenta como
+   * tap en el fondo.
    */
   function handleSheetClick(e: React.MouseEvent<HTMLDialogElement>) {
     if (e.target === sheetRef.current) closeSheet();
   }
+
+  // ESC handler manual (showModal lo daba gratis; show no).
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape" && sheetRef.current?.open) {
+        e.preventDefault();
+        closeSheet();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   function handleAccept() {
     haptic("success");
@@ -114,6 +137,10 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
         </li>
         <li>
           Si sos menor, necesitás autorización de un adulto responsable.
+        </li>
+        <li>
+          <strong>Hasta 4 retratos por dispositivo.</strong> Para no
+          recargar la cuota gratuita de Gemini.
         </li>
         <li>
           Proyecto educativo de código abierto, sin fines comerciales.{" "}

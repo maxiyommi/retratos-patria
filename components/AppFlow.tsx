@@ -43,6 +43,11 @@ import {
 import { dataUrlToFile } from "@/lib/image";
 import { haptic } from "@/lib/haptic";
 import { transitionState } from "@/lib/transition";
+import {
+  MAX_PORTRAITS_PER_DEVICE,
+  hasQuotaLeft,
+  incrementPortraitCount,
+} from "@/lib/quota";
 import type {
   TransformRequest,
   TransformResponse,
@@ -550,6 +555,16 @@ export function AppFlow() {
 
   async function handleStartPaint() {
     if (!photo || !characterId) return;
+    // Cuota soft por dispositivo (localStorage). El rate-limit del servidor
+    // cubre el abuso real; esto frena el abuso casual y respeta lo
+    // declarado en los términos.
+    if (!hasQuotaLeft()) {
+      haptic("error");
+      setTransformError(
+        `Ya generaste ${MAX_PORTRAITS_PER_DEVICE} retratos en este dispositivo, que es el límite que pusimos para no recargar la cuota gratuita de la IA. ¡Gracias por probar! Si querés más, podés clonar el repo en GitHub y usar tu propia clave.`,
+      );
+      return;
+    }
     haptic("select");
     setTransformError(null);
     setIsDemoMode(false);
@@ -591,6 +606,10 @@ export function AppFlow() {
         setBurstKey(Date.now());
         setStep("result");
       }, "forward");
+      // Sólo cuenta hacia la cuota cuando hay éxito real (la cuota se
+      // limita por retrato generado, no por intento — si Gemini falla
+      // no consumimos un slot).
+      incrementPortraitCount();
       haptic("success");
     } catch (err) {
       if (

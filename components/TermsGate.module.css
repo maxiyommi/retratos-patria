@@ -232,23 +232,34 @@
  * "popping". En browsers viejos (< Safari 17.4 / Chrome 117) cae a
  * un fade simple sin slide, lo que sigue siendo aceptable.
  */
+/*
+ * El sheet ya NO usa showModal; por eso no genera ::backdrop nativo. El
+ * efecto de oscurecimiento del fondo lo simulamos con un linear-gradient
+ * y backdrop-filter directamente en el .sheet, que abarca todo el viewport.
+ * El BottomActionBar (z-index 100, fixed) queda visualmente por encima
+ * del sheet y sigue clickeable para aceptar los términos sin cerrarlo.
+ */
 .sheet {
-  /* Reset del display y los defaults del dialog. */
+  position: fixed;
+  inset: 0;
+  /* Reset de los defaults del dialog. */
   padding: 0;
   border: 0;
-  background: transparent;
   width: 100%;
   max-width: 100%;
   max-height: 100dvh;
-  /* Anclamos al pie del viewport. */
   margin: 0;
-  inset: 0;
-  /* Estado base (cerrado) — usado por @starting-style en navegadores
-     que lo soportan, para que la apertura interpole desde acá. */
+  /* z-index menor que el BottomActionBar (100) para que la bar quede
+     por encima y clickeable mientras el sheet está abierto. */
+  z-index: 90;
+  /* Backdrop simulado: oscurecimiento + blur del fondo. */
+  background: rgba(15, 38, 60, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  /* Estado base (cerrado). */
   opacity: 0;
   transition:
     opacity 280ms cubic-bezier(0.32, 0.72, 0, 1),
-    overlay 360ms cubic-bezier(0.32, 0.72, 0, 1) allow-discrete,
     display 360ms cubic-bezier(0.32, 0.72, 0, 1) allow-discrete;
   /* iOS: dejá selección y callout en el dialog (legal: el usuario
      puede querer copiar los términos). */
@@ -273,21 +284,6 @@
   }
 }
 
-.sheet::backdrop {
-  background: rgba(15, 38, 60, 0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition:
-    background-color 280ms cubic-bezier(0.32, 0.72, 0, 1),
-    display 360ms allow-discrete;
-}
-
-@starting-style {
-  .sheet[open]::backdrop {
-    background: rgba(15, 38, 60, 0);
-  }
-}
-
 .sheetInner {
   width: 100%;
   max-width: 32rem;
@@ -301,8 +297,15 @@
     inset 0 1px 0 rgba(231, 206, 142, 0.35);
   display: flex;
   flex-direction: column;
-  /* Safe-area-inset-bottom: el sheet llega al borde inferior. */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /*
+   * El sheet ya no es modal: el BottomActionBar queda visualmente por
+   * encima del borde inferior. Reservamos el espacio del bar al
+   * padding-bottom para que el último renglón del texto (y el botón ×)
+   * no quede tapado mientras el usuario lee.
+   */
+  padding-bottom: calc(
+    var(--bottom-bar-h) + env(safe-area-inset-bottom, 0px) + var(--space-3)
+  );
   transform: translateY(0);
   transition: transform 380ms cubic-bezier(0.32, 0.72, 0, 1);
 }
