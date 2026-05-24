@@ -8,7 +8,7 @@
 - **No guardamos tu foto en ningún lado.** Se procesa y se descarta.
 - Para hacer el retrato, mandamos tu foto a la IA de Google (Gemini). Eso significa que tu imagen sale momentáneamente hacia servidores de Google. Más detalle abajo.
 - **Si sos menor de edad, necesitás autorización** de tu mamá, papá o adulto responsable para usar la app.
-- **Hasta 4 retratos por dispositivo.** Para no recargar la cuota gratuita de la IA. Si necesitás más, podés clonar el repo y usar tu propia clave.
+- **Hasta 4 retratos por día por dispositivo.** Para mantener el proyecto sostenible. El contador se reinicia cada día.
 - Al tocar "Acepto y continúo" estás aceptando estos términos. Sin esa aceptación, no podés usar la app.
 
 ---

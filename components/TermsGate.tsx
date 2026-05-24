@@ -139,8 +139,8 @@ export function TermsGate({ termsHtml, children }: TermsGateProps) {
           Si sos menor, necesitás autorización de un adulto responsable.
         </li>
         <li>
-          <strong>Hasta 4 retratos por dispositivo.</strong> Para no
-          recargar la cuota gratuita de Gemini.
+          <strong>Hasta 4 retratos por día por dispositivo.</strong> Para
+          mantener el proyecto sostenible.
         </li>
         <li>
           Proyecto educativo de código abierto, sin fines comerciales.{" "}

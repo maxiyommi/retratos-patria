@@ -44,7 +44,7 @@ import { dataUrlToFile } from "@/lib/image";
 import { haptic } from "@/lib/haptic";
 import { transitionState } from "@/lib/transition";
 import {
-  MAX_PORTRAITS_PER_DEVICE,
+  MAX_PORTRAITS_PER_DAY,
   hasQuotaLeft,
   incrementPortraitCount,
 } from "@/lib/quota";
@@ -555,13 +555,13 @@ export function AppFlow() {
 
   async function handleStartPaint() {
     if (!photo || !characterId) return;
-    // Cuota soft por dispositivo (localStorage). El rate-limit del servidor
-    // cubre el abuso real; esto frena el abuso casual y respeta lo
-    // declarado en los términos.
+    // Cuota soft diaria por dispositivo (localStorage). El rate-limit del
+    // servidor cubre el abuso real; esto frena el abuso casual y mantiene
+    // el proyecto sostenible. Resetea automáticamente al día siguiente.
     if (!hasQuotaLeft()) {
       haptic("error");
       setTransformError(
-        `Ya generaste ${MAX_PORTRAITS_PER_DEVICE} retratos en este dispositivo, que es el límite que pusimos para no recargar la cuota gratuita de la IA. ¡Gracias por probar! Si querés más, podés clonar el repo en GitHub y usar tu propia clave.`,
+        `Hoy ya generaste ${MAX_PORTRAITS_PER_DAY} retratos en este dispositivo. Mañana podés volver a probar — el contador se reinicia cada día para mantener el proyecto sostenible. ¡Gracias por usar la app!`,
       );
       return;
     }
