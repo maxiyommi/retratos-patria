@@ -195,7 +195,7 @@ Cada push a `main` redeploya automáticamente.
 - [Google Gemini API](https://ai.google.dev) (`gemini-2.5-flash-image`, conocida como Nano Banana) vía [`@google/genai`](https://www.npmjs.com/package/@google/genai)
 - CSS Modules + tokens en `styles/tokens.css` (sin Tailwind)
 - Deploy: [Vercel](https://vercel.com)
-- Sin base de datos, sin login, sin tracking.
+- Sin base de datos, sin login, sin cookies. Analítica anónima vía [Vercel Analytics](https://vercel.com/docs/analytics) (sin cookies, sin PII).
 
 ## Comandos útiles
 
@@ -229,7 +229,7 @@ Esta app procesa fotos de chicos en contexto escolar. Por eso:
 
 - **No persistimos** las fotos ni las imágenes generadas en ningún servidor ni base de datos.
 - **No logueamos** el contenido de las imágenes.
-- **No hay login ni cookies** de seguimiento.
+- **No hay login ni cookies de seguimiento.** Hay analítica anónima de Vercel (sin cookies, sin PII; sólo conteo de visitas, país y dispositivo).
 - Las imágenes generadas viven sólo en la sesión del navegador.
 - La foto se envía momentáneamente a Google Gemini (API paga: Google se compromete a no usar los datos para entrenamiento).
 - Marco legal: Ley 25.326 de Protección de Datos Personales y derecho a la propia imagen (Código Civil y Comercial, art. 53).

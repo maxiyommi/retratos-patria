@@ -1,6 +1,6 @@
 # Términos y Condiciones · Aviso de Privacidad
 
-*Versión 1 — vigente desde mayo de 2026.*
+*Versión 2 — vigente desde mayo de 2026.*
 
 ## En dos minutos
 
@@ -21,8 +21,20 @@ Tomás una foto desde tu cámara (o subís una que ya tengas), elegís entre var
 - **No guardamos tu foto** en ningún servidor ni base de datos nuestra. Se procesa, se devuelve el resultado, y se descarta.
 - **No guardamos el retrato generado.** Vive sólo en el navegador. Si querés conservarlo, tenés que descargarlo o compartirlo vos.
 - **No te pedimos cuenta, mail, ni datos personales.** No hay registro ni login.
-- **No te trackeamos.** No hay cookies de seguimiento, ni analítica de terceros, ni perfilado.
+- **No te perfilamos ni usamos cookies de seguimiento.** Hay una analítica básica de Vercel Analytics que cuenta cuántas personas visitan la app y desde qué país, sin cookies y sin recolectar datos personales. Más detalle en la sección "Métricas de uso" abajo.
 - **No logueamos el contenido de las imágenes** ni en archivos del servidor ni en métricas.
+
+## Métricas de uso (Vercel Analytics)
+
+Para saber cuántas personas usan la app y mejorar el proyecto, usamos **Vercel Analytics**, una herramienta integrada en la plataforma donde corre el sitio. Funciona así:
+
+- **No usa cookies.** No se guarda nada en tu navegador para identificarte entre visitas.
+- **No recolecta datos personales** (ni nombre, ni mail, ni dirección, ni nada vinculado a tu identidad).
+- **Sólo cuenta:** cantidad de visitas a cada página, país (no la ciudad), tipo de dispositivo (mobile/desktop), navegador. Nada que pueda usarse para reconocerte.
+- Para contar visitantes únicos sin cookies, Vercel calcula un **hash temporal** combinando tu IP y el user-agent del día. Ese hash se descarta cada 24 horas y no se asocia a vos.
+- Las métricas las ve sólo el autor del proyecto, en el panel de Vercel, en forma agregada.
+
+Si te molesta esto, **un bloqueador de scripts** (uBlock Origin, Brave shields, etc.) lo desactiva automáticamente y la app sigue funcionando igual.
 
 ## Tu foto y Google Gemini
 

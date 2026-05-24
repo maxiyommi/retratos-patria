@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, EB_Garamond } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "@/styles/tokens.css";
 import "./globals.css";
 
@@ -95,7 +96,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-AR" className={`${cormorant.variable} ${ebGaramond.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/*
+          Vercel Analytics: cuenta page views y visitantes únicos sin
+          cookies y sin recolectar PII (sólo un hash temporal de IP).
+          Activo sólo en producción (Vercel) — `vercel dev` y `next dev`
+          NO emiten eventos por default. Política declarada en
+          content/terminos.md.
+        */}
+        <Analytics />
+      </body>
     </html>
   );
 }
