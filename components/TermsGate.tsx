@@ -24,9 +24,11 @@ import { haptic } from "@/lib/haptic";
 import { transitionState } from "@/lib/transition";
 import styles from "./TermsGate.module.css";
 
-// v2: agrega declaración de Vercel Analytics (analítica anónima sin
-// cookies). Bumpeamos para re-pedir aceptación a quienes aceptaron v1.
-const TERMS_VERSION_KEY = "terminos_aceptados_v2";
+// v3: declara explícitamente la lista de eventos custom de Vercel Analytics
+// que se recolectan (personaje elegido, género, éxito/error de generación,
+// descarga/compartir, bloqueo por cuota) — todos anónimos. Bumpeamos para
+// re-pedir aceptación a quienes aceptaron v1/v2.
+const TERMS_VERSION_KEY = "terminos_aceptados_v3";
 
 export interface TermsGateProps {
   /** HTML pre-renderizado desde content/terminos.md. */

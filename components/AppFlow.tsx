@@ -48,6 +48,7 @@ import {
   hasQuotaLeft,
   incrementPortraitCount,
 } from "@/lib/quota";
+import { analytics, categorizeError } from "@/lib/analytics";
 import type {
   TransformRequest,
   TransformResponse,
@@ -560,6 +561,7 @@ export function AppFlow() {
     // el proyecto sostenible. Resetea automáticamente al día siguiente.
     if (!hasQuotaLeft()) {
       haptic("error");
+      analytics.quotaBlocked();
       setTransformError(
         `Hoy ya generaste ${MAX_PORTRAITS_PER_DAY} retratos en este dispositivo. Mañana podés volver a probar — el contador se reinicia cada día para mantener el proyecto sostenible. ¡Gracias por usar la app!`,
       );
@@ -584,6 +586,8 @@ export function AppFlow() {
       gender,
     };
 
+    const startedAt = Date.now();
+    let httpStatus: number | undefined;
     try {
       const res = await fetch("/api/transform", {
         method: "POST",
@@ -591,6 +595,7 @@ export function AppFlow() {
         body: JSON.stringify(requestBody),
         signal: controller.signal,
       });
+      httpStatus = res.status;
       const data = (await res.json()) as TransformResponse;
 
       if (!res.ok || "error" in data) {
@@ -610,6 +615,11 @@ export function AppFlow() {
       // limita por retrato generado, no por intento — si Gemini falla
       // no consumimos un slot).
       incrementPortraitCount();
+      analytics.portraitSuccess({
+        character: characterId,
+        gender,
+        latency_ms: Date.now() - startedAt,
+      });
       haptic("success");
     } catch (err) {
       if (
@@ -617,10 +627,22 @@ export function AppFlow() {
         err.name === "AbortError" &&
         userCancelledRef.current
       ) {
+        // No es un fallo: el usuario apretó Cancelar.
         transitionState(() => setStep("choose"), "backward");
         return;
       }
-      if (err instanceof DOMException && err.name === "AbortError") {
+      const isAbort = err instanceof DOMException && err.name === "AbortError";
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      analytics.portraitFailed({
+        error_type: categorizeError({
+          status: httpStatus,
+          isAbort,
+          errorMessage,
+        }),
+        character: characterId,
+        gender,
+      });
+      if (isAbort) {
         setTransformError(
           "El retrato tardó más de lo esperado. Probá con otra foto o esperá un momento y reintentá.",
         );
@@ -687,6 +709,7 @@ export function AppFlow() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+      if (characterId) analytics.portraitDownloaded(characterId);
       haptic("tap");
     } catch {
       alert("No pudimos preparar la descarga. Probá de nuevo.");
@@ -733,6 +756,7 @@ export function AppFlow() {
         navigator.canShare(shareData)
       ) {
         await navigator.share(shareData);
+        if (characterId) analytics.portraitShared(characterId);
         return;
       }
       // Algunos browsers no soportan share con archivos pero sí texto.
@@ -740,6 +764,7 @@ export function AppFlow() {
         title: shareData.title,
         text: shareData.text,
       });
+      if (characterId) analytics.portraitShared(characterId);
     } catch (err) {
       // AbortError = el usuario cerró el panel nativo. Silencio.
       if ((err as Error).name === "AbortError") return;
@@ -798,6 +823,7 @@ export function AppFlow() {
                 gender={gender}
                 onGenderChange={(g) => {
                   setGender(g);
+                  analytics.genderSelected(g);
                   // Si la selección actual está restringida al otro género,
                   // limpiarla. Caso: tenías Patricio (caballero) seleccionado
                   // y cambiás a dama → el rol no aplica, deseleccionamos.
@@ -809,7 +835,10 @@ export function AppFlow() {
                   }
                 }}
                 characterId={characterId}
-                onCharacterChange={setCharacterId}
+                onCharacterChange={(id) => {
+                  setCharacterId(id);
+                  if (id) analytics.characterSelected(id);
+                }}
                 onBack={goCamera}
                 onStart={handleStartPaint}
                 onEnterDemo={

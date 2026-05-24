@@ -1,6 +1,6 @@
 # Términos y Condiciones · Aviso de Privacidad
 
-*Versión 2 — vigente desde mayo de 2026.*
+*Versión 3 — vigente desde mayo de 2026.*
 
 ## En dos minutos
 
@@ -34,6 +34,20 @@ Para saber cuántas personas usan la app y mejorar el proyecto, usamos **Vercel 
 - **Sólo cuenta:** cantidad de visitas a cada página, país (no la ciudad), tipo de dispositivo (mobile/desktop), navegador. Nada que pueda usarse para reconocerte.
 - Para contar visitantes únicos sin cookies, Vercel calcula un **hash temporal** combinando tu IP y el user-agent del día. Ese hash se descarta cada 24 horas y no se asocia a vos.
 - Las métricas las ve sólo el autor del proyecto, en el panel de Vercel, en forma agregada.
+
+### Eventos específicos del flow
+
+Además de la analítica básica, registramos algunos **eventos anónimos** del recorrido por la app para entender qué personajes pegan más y dónde se traba la gente. Son siempre valores de un menú fijo, **nunca contenido libre** y **nunca vinculado a vos**:
+
+- `character_selected` — qué personaje elegiste (porteno, patriota, vendedor, patricio, gaucho o aguatero).
+- `gender_selected` — dama o caballero.
+- `portrait_success` — generación exitosa. Guarda personaje, género y cuánto tardó la IA en responder (en milisegundos).
+- `portrait_failed` — generación con error. Sólo registra una **categoría** del error (`rate_limit`, `quota_blocked`, `timeout`, `api_error`, etc.), nunca el mensaje completo.
+- `portrait_downloaded` — usaste el botón Descargar (con el personaje).
+- `portrait_shared` — usaste el botón Compartir (con el personaje).
+- `quota_blocked` — chocaste con el límite de 4 retratos diarios.
+
+Nada de esto incluye tu foto, el retrato generado, tu IP, ni ningún dato personal. Sirve sólo para entender el uso agregado de la app.
 
 Si te molesta esto, **un bloqueador de scripts** (uBlock Origin, Brave shields, etc.) lo desactiva automáticamente y la app sigue funcionando igual.
 
