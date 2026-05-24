@@ -56,10 +56,11 @@ export const metadata: Metadata = {
     email: false,
     address: false,
   },
-  icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
-  },
+  // Iconos: Next App Router los detecta automáticamente desde:
+  //   - app/favicon.ico  (multi-resolución 16/32/48/64 con Sol simplificado)
+  //   - app/icon.svg     (Sol detallado, browsers modernos lo escalan crisp)
+  //   - app/apple-icon.png (180x180 para iOS, diseño detallado)
+  // No hace falta declarar `icons` acá; Next genera los <link> en el HTML.
   /*
    * OpenGraph + Twitter Card: lo que WhatsApp, Telegram, iMessage, Slack,
    * Twitter/X, LinkedIn, Facebook y Discord usan para construir el preview
